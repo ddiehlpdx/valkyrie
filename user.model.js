@@ -35,7 +35,7 @@ User.init({
         allowNull: false,
         defaultValue: true
     },
-    isAdming: {
+    isAdmin: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
@@ -72,7 +72,8 @@ User.init({
                     'username',
                     'email',
                     'password',
-                    'isActive'
+                    'isActive',
+                    'IsAdmin'
                 ]
             }
         }
