@@ -28,3 +28,5 @@ Collaborator.init({
     sequelize,
     modelName: 'Collaborator'
 });
+Collaborator.hasOne(User);
+Collaborator.hasOne(Project);
