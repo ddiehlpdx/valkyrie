@@ -66,7 +66,7 @@ exports.update = async (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message`An error occurred while updating user with id=${id}. ${err}.`
+                    err.message || `An error occurred while updating user with id=${id}. ${err}.`
             });
         });
 };
@@ -89,7 +89,7 @@ exports.delete = async (req, res) => {
         .catch(err => {
             res.status(500).send({
                 message:
-                    err.message || `An error occurred while deleting user wit id=${id}. ${id}.`
+                    err.message || `An error occurred while deleting user with id=${id}. ${err}.`
             });
         });
 };
