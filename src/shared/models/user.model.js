@@ -59,8 +59,7 @@ User.init({
                     'username',
                     'email',
                     'password',
-                    'isActive',
-                    'IsAdmin'
+                    'isActive'
                 ]
             }
         }
