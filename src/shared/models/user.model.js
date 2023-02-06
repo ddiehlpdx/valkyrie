@@ -7,18 +7,10 @@ class User extends Model { }
 
 User.init({
     id: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         primaryKey: true
     },
     username: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    firstName: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    lastName: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -34,11 +26,6 @@ User.init({
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: true
-    },
-    isAdmin: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
     }
 }, {
     hooks: {
