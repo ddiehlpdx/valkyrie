@@ -1,0 +1,23 @@
+{
+  "name": "@valkyrie/root",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "lerna": "6.4.1"
+  },
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddiehlpdx/valkyrie.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ddiehlpdx/valkyrie/issues"
+  },
+  "homepage": "https://github.com/ddiehlpdx/valkyrie#readme"
+}
