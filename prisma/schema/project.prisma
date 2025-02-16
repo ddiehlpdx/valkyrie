@@ -1,0 +1,18 @@
+model Project {
+  id      String @id @default(uuid())
+  name    String
+  ownerId String
+
+  owner User @relation(fields: [ownerId], references: [id])
+
+  collaborators  Collaborator[]
+  professions    Profession[]
+  damageTypes    DamageType[]
+  abilityTypes   AbilityType[]
+  weaponTypes    WeaponType[]
+  armorTypes     ArmorType[]
+  equipmentTypes EquipmentType[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

@@ -1,0 +1,11 @@
+model EquipmentType {
+  id        String @id @default(uuid())
+  name      String
+  projectId String
+
+  project Project @relation(fields: [projectId], references: [id])
+
+  displayOrder Int      @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
