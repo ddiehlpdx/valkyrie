@@ -21,6 +21,7 @@ import {
     FormLabel,
     FormMessage
 } from "~/components/ui/form";
+import logo from '../assets/valkyrie_logo_transparent.png';
 
 const formSchema = z.object({
     email: z.string().
@@ -57,6 +58,7 @@ export default function SignUp() {
 
     return <>
         <Card>
+            <img src={logo} alt="Valkyrie Logo" className="w-48 h-48 mx-auto mt-4" />
             <CardHeader>
                 <CardTitle>Sign Up</CardTitle>
                 <CardDescription>Sign up for a new Valkyrie account.</CardDescription>
