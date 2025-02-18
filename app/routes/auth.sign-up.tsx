@@ -56,7 +56,7 @@ export default function SignUp() {
         console.log(values);
     }
 
-    return <>
+    return (
         <Card>
             <img src={logo} alt="Valkyrie Logo" className="w-48 h-48 mx-auto mt-4" />
             <CardHeader>
@@ -146,5 +146,5 @@ export default function SignUp() {
                 <p>Already have an account? <Link to="/auth/sign-in" className="underline">Sign in</Link></p>
             </CardFooter>
         </Card>
-    </>;
+    );
 }
