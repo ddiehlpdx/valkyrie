@@ -1,6 +1,7 @@
 model DamageType {
   id        String @id @default(uuid())
   name      String
+  baseType  BaseDamageType
   projectId String
 
   project Project @relation(fields: [projectId], references: [id])
@@ -8,4 +9,11 @@ model DamageType {
   displayOrder Int      @default(autoincrement())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+}
+
+enum BaseDamageType {
+  Physical
+  Magical
+  Chemical
+  Environmental
 }
