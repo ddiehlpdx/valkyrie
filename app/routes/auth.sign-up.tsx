@@ -21,7 +21,7 @@ import {
     FormLabel,
     FormMessage
 } from "~/components/ui/form";
-import logo from '../assets/valkyrie_logo_transparent.png';
+import logo from '~/assets/valkyrie_logo_transparent.png';
 
 const formSchema = z.object({
     email: z.string().
