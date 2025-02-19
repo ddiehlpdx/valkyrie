@@ -45,7 +45,7 @@ export default function ErrorBoundaryLayout() {
                   </CardDescription>
               </CardHeader>
               <CardContent className="text-center">
-                  { error instanceof Error ? error.message : 'An unkonw error occurred. Please try again later.'}
+                  { error instanceof Error ? error.message : 'An unkonw error occurred. Please try again later.' }
               </CardContent>
           </Card>
       );
