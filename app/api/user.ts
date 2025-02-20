@@ -20,6 +20,6 @@ export async function signIn(emailOrUsername: string, password: string) {
   return db.user.signIn(emailOrUsername, password);
 }
 
-export async function usernameIsAavailable(username: string) {
+export async function usernameIsAvailable(username: string) {
   return db.user.usernameIsAvailable(username);
 }
