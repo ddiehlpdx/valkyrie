@@ -1,5 +1,5 @@
 import SignInForm from "~/components/auth/sign-in-form";
-import ErrorBoundaryLayout from "~/components/shared/error-boundary-layout";
+import ErrorBoundaryLayout from "~/components/shared/error-boundary.layout";
 
 export function meta() {
     return [{
