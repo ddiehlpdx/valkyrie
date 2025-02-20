@@ -1,5 +1,5 @@
 model DamageType {
-  id        String @id @default(uuid())
+  id        String         @id @default(uuid())
   name      String
   baseType  BaseDamageType
   projectId String

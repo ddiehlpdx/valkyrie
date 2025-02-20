@@ -4,6 +4,8 @@ model User {
   username String @unique
   password String
 
+  profile Profile?
+
   projects       Project[]
   collaborations Collaborator[]
 
