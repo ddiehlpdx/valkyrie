@@ -21,5 +21,5 @@ export async function signIn(emailOrUsername: string, password: string) {
 }
 
 export async function usernameIsAavailable(username: string) {
-  return db.user.usernameIsAavailable(username);
+  return db.user.usernameIsAvailable(username);
 }

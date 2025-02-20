@@ -40,7 +40,7 @@ const db = new PrismaClient().$extends({
                 return user;
             },
 
-            async usernameIsAavailable(username: string): Promise<boolean> {
+            async usernameIsAvailable(username: string): Promise<boolean> {
                 const user = await db.user.findFirst({
                     where: {
                         username,
