@@ -23,7 +23,7 @@ export default function ErrorBoundaryLayout() {
                       Uh oh...
                   </CardTitle>
                   <CardDescription className="text-gray-900 text-center">
-                      {error.status} - {error.statusText}
+                      {error.status} { error.statusText ? ` - ${error.statusText}` : '' }
                   </CardDescription>
               </CardHeader>
               <CardContent className="text-center">
@@ -41,7 +41,7 @@ export default function ErrorBoundaryLayout() {
                       Uh oh...
                   </CardTitle>
                   <CardDescription className="text-gray-900 text-center">
-                      Unknown Error
+                      { error instanceof Error ? error.name : 'Unknown Error' }
                   </CardDescription>
               </CardHeader>
               <CardContent className="text-center">
