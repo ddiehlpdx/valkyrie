@@ -39,16 +39,6 @@ const db = new PrismaClient().$extends({
     
                 return user;
             },
-
-            async usernameIsAvailable(username: string): Promise<boolean> {
-                const user = await db.user.findFirst({
-                    where: {
-                        username,
-                    },
-                });
-
-                return !user;
-            }
         },
     },
 });

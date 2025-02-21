@@ -19,7 +19,3 @@ export async function signUp(email: string, username: string, password: string) 
 export async function signIn(emailOrUsername: string, password: string) {
   return db.user.signIn(emailOrUsername, password);
 }
-
-export async function usernameIsAvailable(username: string) {
-  return db.user.usernameIsAvailable(username);
-}
