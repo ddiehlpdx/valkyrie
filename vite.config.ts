@@ -23,4 +23,7 @@ export default defineConfig({
     tsconfigPaths(),
     tailwindcss()
   ],
+  optimizeDeps: {
+    exclude: ["@mapbox"],
+  },
 });
