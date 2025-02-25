@@ -1,7 +1,7 @@
 import { ActionFunctionArgs, redirect } from '@remix-run/node';
+import { getUserByEmail, getUserByUsername, signUp } from '~/api/user';
 import SignUpForm from '~/components/auth/sign-up-form';
 import ErrorBoundaryLayout from "~/components/shared/error-boundary.layout";
-import { getUserByEmail, getUserByUsername, signUp } from '~/api/user';
 
 export function meta() {
     return [{

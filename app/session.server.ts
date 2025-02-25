@@ -8,7 +8,11 @@ export type SessionFlashData = {
     error: string;
 }
 
-const AUTH_SECRET = process.env.AUTH_SECRET || 'default';
+const AUTH_SECRET = process.env.AUTH_SECRET;
+
+if (!AUTH_SECRET) {
+    throw new Error('AUTH_SECRET environment value is required.');
+}
 
 const { getSession, commitSession, destroySession } = createCookieSessionStorage<SessionData, SessionFlashData>({
     cookie: {

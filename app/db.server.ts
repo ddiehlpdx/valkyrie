@@ -28,13 +28,13 @@ const db = new PrismaClient().$extends({
                 });
     
                 if (!user) {
-                    throw new Error('Invalid email or username');
+                    throw new Error('Invalid email or username.');
                 }
     
                 const passwordMatch = compareSync(password, user.password);
     
                 if (!passwordMatch) {
-                    throw new Error('Invalid login or password');
+                    throw new Error('Invalid login or password.');
                 }
     
                 return user;
