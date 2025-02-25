@@ -14,7 +14,7 @@ const { getSession, commitSession, destroySession } = createCookieSessionStorage
     cookie: {
         name: '__valkyrie_session',
         httpOnly: true,
-        maxAge: 180,
+        maxAge: 60 * 60 * 24,
         path: '/',
         sameSite: 'lax',
         secrets: [AUTH_SECRET],
