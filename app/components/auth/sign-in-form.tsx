@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod";
@@ -21,6 +21,7 @@ import {
     FormMessage
 } from "../ui/form";
 import logo from "../../assets/valkyrie_logo_transparent.png";
+import type { SessionFlashData } from "~/session.server";
 
 const formSchema = z.object({
     emailOrUsername: z.string(),
@@ -28,6 +29,9 @@ const formSchema = z.object({
 });
 
 export default function SignInForm() {
+    const { error } = useLoaderData<SessionFlashData>();
+
+    console.log('error:', error);
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
