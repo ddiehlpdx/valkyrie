@@ -18,7 +18,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
       return redirect('/dashboard');
     }
 
-    return { error: session.get('error') };
+    const error = session.get('error');
+
+    return Response.json(
+        { error },
+        {
+            headers: {
+                'Set-Cookie': await commitSession(session)
+            }
+        }
+    );
 }
 
 export async function action({ request }: ActionFunctionArgs) {
@@ -31,7 +40,7 @@ export async function action({ request }: ActionFunctionArgs) {
     const user = await signIn(emailOrUsername, password);
 
     if (!user) {
-        session.flash('error', 'Invalid username/password.');
+        session.flash('error', 'Invalid login/password.');
 
         return redirect('/auth/sign-in', {
             headers: {

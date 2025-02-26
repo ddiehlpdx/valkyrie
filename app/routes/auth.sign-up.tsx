@@ -1,4 +1,5 @@
-import { ActionFunctionArgs, redirect } from '@remix-run/node';
+import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { getSession, commitSession } from "~/session.server";
 import { getUserByEmail, getUserByUsername, signUp } from '~/api/user';
 import SignUpForm from '~/components/auth/sign-up-form';
 import ErrorBoundaryLayout from "~/components/shared/error-boundary.layout";
@@ -10,33 +11,62 @@ export function meta() {
     }];
 }
 
+export async function loader({ request }: LoaderFunctionArgs) {
+    const session = await getSession(request.headers.get('Cookie'));
+  
+    if (session.has('userId')) {
+      return redirect('/dashboard');
+    }
+
+    const error = session.get('error');
+
+    return Response.json(
+        { error },
+        {
+            headers: {
+                'Set-Cookie': await commitSession(session)
+            }
+        }
+    );
+}
+
+
 export async function action({ request }: ActionFunctionArgs) {
+    const session = await getSession(request.headers.get('Cookie'));
     const formData = await request.formData();
     const username = formData.get('username') as string;
 
     if (await getUserByUsername(username)) {
-        return {
-            error: true,
-            message: 'Username is already taken.',
-            path: ['username']
-        };
+        session.flash('error', 'Username is already taken.');
+
+        return redirect('/auth/sign-up', {
+            headers: {
+                'Set-Cookie': await commitSession(session)
+            }
+        });
     }
 
     const email = formData.get('email') as string;
 
     if (await getUserByEmail(email)) {
-        return {
-            error: true,
-            message: 'Account for this email already exists.',
-            path: ['email']
-        };
+        session.flash('error', 'Account for this email address already exists.');
+
+        return redirect('/auth/sign-up', {
+            headers: {
+                'Set-Cookie': await commitSession(session)
+            }
+        });
     }
 
     const password = formData.get('password') as string;
     
     await signUp(email, username, password);
 
-    return redirect('/auth/sign-in');
+    return redirect('/auth/sign-in', {
+        headers: {
+            'Set-Cookie': await commitSession(session)
+        }
+    });
 }
 
 export default function SignUp() {

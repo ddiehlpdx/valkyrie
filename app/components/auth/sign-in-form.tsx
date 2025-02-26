@@ -30,8 +30,7 @@ const formSchema = z.object({
 
 export default function SignInForm() {
     const { error } = useLoaderData<SessionFlashData>();
-
-    console.log('error:', error);
+    
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -46,6 +45,7 @@ export default function SignInForm() {
             <CardHeader>
                 <CardTitle>Sign In</CardTitle>
                 <CardDescription>Sign in to an existing Valkyrie account.</CardDescription>
+                <p className="text-[0.8rem] font-medium text-destructive">{ error ? error : '' }</p>
             </CardHeader>
             <CardContent>
                 <Form {...form}>

@@ -17,7 +17,7 @@ const db = new PrismaClient().$extends({
                 return user;
             },
 
-            async signIn(emailOrUsername: string, password: string): Promise<User> {
+            async signIn(emailOrUsername: string, password: string): Promise<User | undefined> {
                 const user = await db.user.findFirst({
                     where: {
                         OR: [
@@ -28,13 +28,13 @@ const db = new PrismaClient().$extends({
                 });
     
                 if (!user) {
-                    throw new Error('Invalid email or username.');
+                    return;
                 }
     
                 const passwordMatch = compareSync(password, user.password);
     
                 if (!passwordMatch) {
-                    throw new Error('Invalid login or password.');
+                    return;
                 }
     
                 return user;

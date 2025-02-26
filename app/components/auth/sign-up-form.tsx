@@ -1,4 +1,4 @@
-import { Link } from "@remix-run/react";
+import { Link, useLoaderData, useSubmit } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod";
@@ -22,6 +22,7 @@ import {
     FormMessage
 } from "../ui/form";
 import logo from "../../assets/valkyrie_logo_transparent.png";
+import type { SessionFlashData } from "~/session.server";
 
 const formSchema = z.object({
     email: z.string().
@@ -42,6 +43,9 @@ const formSchema = z.object({
     });
 
 export default function SignUpForm() {
+    const submit = useSubmit();
+    const { error } = useLoaderData<SessionFlashData>();
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -52,16 +56,21 @@ export default function SignUpForm() {
         }
     });
 
+    function onSubmit() {
+        submit(form.getValues(), { method: 'post' });
+    }
+
     return (
         <Card>
             <img src={logo} alt="Valkyrie Logo" className="w-48 h-48 mx-auto mt-4" />
             <CardHeader>
                 <CardTitle>Sign Up</CardTitle>
                 <CardDescription>Sign up for a new Valkyrie account.</CardDescription>
+                <p className="text-[0.8rem] font-medium text-destructive">{ error ? error : '' }</p>
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form method="post" className="space-y-3">
+                    <form method="post" onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
                         <FormField
                             control={form.control}
                             name="email"
