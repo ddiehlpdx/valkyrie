@@ -30,7 +30,7 @@ const formSchema = z.object({
 
 export default function SignInForm() {
     const { error } = useLoaderData<SessionFlashData>();
-    
+
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -80,7 +80,7 @@ export default function SignInForm() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="mt-4">Submit</Button>
+                        <Button type="submit" className="mt-4 w-full">Submit</Button>
                     </form>
                 </Form>
             </CardContent>

@@ -143,7 +143,7 @@ export default function SignUpForm() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="mt-4">Submit</Button>
+                        <Button type="submit" className="mt-4 w-full">Submit</Button>
                     </form>
                 </Form>
             </CardContent>
