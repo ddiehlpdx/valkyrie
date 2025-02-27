@@ -6,9 +6,8 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
-import styles from "./tailwind.css?url"
-
-import "./tailwind.css";
+import styles from "./tailwind.css?url";
+import theme from "./theme.css?url";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -22,6 +21,7 @@ export const links: LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
   { rel: "stylesheet", href: styles },
+  { rel: "stylesheet", href: theme }
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
