@@ -1,15 +1,15 @@
 import { db } from "~/db.server";
 
 export async function getUserById(id: string) {
-  return db.user.findUnique({ where: { id } });
+  return db.user.findUnique({ where: { id }, omit: { password: true } });
 }
 
 export async function getUserByEmail(email: string) {
-  return db.user.findUnique({ where: { email } });
+  return db.user.findUnique({ where: { email }, omit: { password: true } });
 }
 
 export async function getUserByUsername(username: string) {
-  return db.user.findUnique({ where: { username } });
+  return db.user.findUnique({ where: { username }, omit: { password: true } });
 }
 
 export async function signUp(email: string, username: string, password: string) {
