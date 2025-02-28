@@ -14,10 +14,11 @@ import {
   SidebarTrigger,
 } from "~/components/ui/sidebar";
 import { LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { Outlet } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import { getSession } from "~/session.server";
 import { getUserById } from "~/api/user";
 import { getProfileByUserId } from "~/api/profile";
+import { getProjectsByUserId } from "~/api/project";
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await getSession(request.headers.get('Cookie'));
@@ -25,17 +26,23 @@ export async function loader({ request }: LoaderFunctionArgs) {
   if (!session.has('userId')) {
     return redirect('/auth/sign-in');
   }
-  
-  const user = await getUserById(session.get('userId') as string);
-  const profile = await getProfileByUserId(user?.id as string);
 
+  const userId = session.get('userId') as string;
+
+  const user = await getUserById(userId);
+  const profile = await getProfileByUserId(userId);
+  const projects = await getProjectsByUserId(userId);
+  
   return {
     user,
-    profile
-  };
+    profile,
+    projects
+  }
 }
 
 export default function Dashboard() {
+  // const { user, profile, projects } = useLoaderData<typeof loader>();
+
   return (
       <div id="dashboard" className="flex h-screen items-center justify-center">
         <SidebarProvider>
@@ -52,7 +59,7 @@ export default function Dashboard() {
                   <BreadcrumbList>
                     <BreadcrumbItem className="hidden md:block">
                       <BreadcrumbLink href="#">
-                        Building Your Application
+                        Dashboard
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <BreadcrumbSeparator className="hidden md:block" />
