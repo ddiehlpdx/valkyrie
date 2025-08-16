@@ -6,6 +6,7 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
+import { Toaster } from "sonner";
 import styles from "./tailwind.css?url";
 import theme from "./theme.css?url";
 
@@ -26,15 +27,23 @@ export const links: LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark h-full">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <style dangerouslySetInnerHTML={{
+          __html: `
+            html, body {
+              overscroll-behavior: none;
+            }
+          `
+        }} />
       </head>
-      <body>
+      <body className="bg-background text-foreground antialiased h-full">
         {children}
+        <Toaster richColors position="top-right" duration={2500} />
         <ScrollRestoration />
         <Scripts />
       </body>

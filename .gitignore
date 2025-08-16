@@ -3,3 +3,6 @@ node_modules
 /.cache
 /build
 .env
+
+# User uploads - should be local to each environment
+/public/users/uploads/

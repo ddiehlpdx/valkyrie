@@ -12,3 +12,29 @@ export async function getProfileByUserId(userId: string) {
         }
     });
 }
+
+// update profile data
+export async function updateProfile(userId: string, data: {
+    tagline?: string;
+    bio?: string;
+    avatar?: string;
+}) {
+    return db.profile.update({
+        where: {
+            userId
+        },
+        data
+    });
+}
+
+// clear avatar from profile (set to null)
+export async function clearAvatar(userId: string) {
+    return db.profile.update({
+        where: {
+            userId
+        },
+        data: {
+            avatar: null
+        }
+    });
+}

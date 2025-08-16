@@ -1,9 +1,20 @@
 import * as React from "react";
 import {
-  BookOpen,
   Bot,
   Settings2,
   SquareTerminal,
+  Map,
+  Users,
+  Zap,
+  Package,
+  ScrollText,
+  MessageSquare,
+  Target,
+  Sliders,
+  FlaskConical,
+  Image,
+  GitBranch,
+  FolderOpen,
 } from "lucide-react";
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -15,69 +26,301 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "../ui/sidebar";
-import { Profile, Project, User } from "@prisma/client";
+import { Profile } from "@prisma/client";
 
-// This is sample data.
 const data = {
   navMain: [
     {
-      title: "Playground",
+      title: "Dashboard",
       url: "#",
       icon: SquareTerminal,
       isActive: true,
       items: [
         {
-          title: "History",
+          title: "Overview",
           url: "#",
         },
         {
-          title: "Starred",
+          title: "Recent Projects",
           url: "#",
         },
         {
-          title: "Settings",
+          title: "Quick Actions",
           url: "#",
         },
       ],
     },
     {
-      title: "Models",
+      title: "Project",
+      url: "#",
+      icon: FolderOpen,
+      items: [
+        {
+          title: "All Projects",
+          url: "#",
+        },
+        {
+          title: "New Project",
+          url: "#",
+        },
+        {
+          title: "Project Settings",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Maps & Battlefields",
+      url: "#",
+      icon: Map,
+      items: [
+        {
+          title: "Battle Maps",
+          url: "#",
+        },
+        {
+          title: "World Map",
+          url: "#",
+        },
+        {
+          title: "Terrain Editor",
+          url: "#",
+        },
+        {
+          title: "Map Templates",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Characters & Units",
+      url: "#",
+      icon: Users,
+      items: [
+        {
+          title: "Player Units",
+          url: "#",
+        },
+        {
+          title: "Enemy Units",
+          url: "#",
+        },
+        {
+          title: "NPC Characters",
+          url: "#",
+        },
+        {
+          title: "Unit Templates",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Classes & Jobs",
       url: "#",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
+          title: "Job Classes",
           url: "#",
         },
         {
-          title: "Explorer",
+          title: "Skill Trees",
           url: "#",
         },
         {
-          title: "Quantum",
+          title: "Class Balance",
           url: "#",
         },
       ],
     },
     {
-      title: "Documentation",
+      title: "Skills & Abilities",
       url: "#",
-      icon: BookOpen,
+      icon: Zap,
       items: [
         {
-          title: "Introduction",
+          title: "Combat Skills",
           url: "#",
         },
         {
-          title: "Get Started",
+          title: "Magic Spells",
           url: "#",
         },
         {
-          title: "Tutorials",
+          title: "Passive Abilities",
           url: "#",
         },
         {
-          title: "Changelog",
+          title: "Status Effects",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Items & Equipment",
+      url: "#",
+      icon: Package,
+      items: [
+        {
+          title: "Weapons",
+          url: "#",
+        },
+        {
+          title: "Armor",
+          url: "#",
+        },
+        {
+          title: "Consumables",
+          url: "#",
+        },
+        {
+          title: "Accessories",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Story & Scenarios",
+      url: "#",
+      icon: ScrollText,
+      items: [
+        {
+          title: "Campaign",
+          url: "#",
+        },
+        {
+          title: "Battle Scenarios",
+          url: "#",
+        },
+        {
+          title: "Cutscenes",
+          url: "#",
+        },
+        {
+          title: "Chapter Flow",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Dialogue System",
+      url: "#",
+      icon: MessageSquare,
+      items: [
+        {
+          title: "Conversations",
+          url: "#",
+        },
+        {
+          title: "Character Voices",
+          url: "#",
+        },
+        {
+          title: "Localization",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Battle System",
+      url: "#",
+      icon: Target,
+      items: [
+        {
+          title: "Victory Conditions",
+          url: "#",
+        },
+        {
+          title: "AI Behavior",
+          url: "#",
+        },
+        {
+          title: "Turn Order",
+          url: "#",
+        },
+        {
+          title: "Damage Formulas",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Game Rules",
+      url: "#",
+      icon: Sliders,
+      items: [
+        {
+          title: "Core Mechanics",
+          url: "#",
+        },
+        {
+          title: "Difficulty Settings",
+          url: "#",
+        },
+        {
+          title: "Progression Rules",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Testing & Balance",
+      url: "#",
+      icon: FlaskConical,
+      items: [
+        {
+          title: "Playtesting",
+          url: "#",
+        },
+        {
+          title: "Balance Reports",
+          url: "#",
+        },
+        {
+          title: "Debug Tools",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Asset Library",
+      url: "#",
+      icon: Image,
+      items: [
+        {
+          title: "Sprites",
+          url: "#",
+        },
+        {
+          title: "Animations",
+          url: "#",
+        },
+        {
+          title: "Audio",
+          url: "#",
+        },
+        {
+          title: "UI Elements",
+          url: "#",
+        },
+      ],
+    },
+    {
+      title: "Collaboration",
+      url: "#",
+      icon: GitBranch,
+      items: [
+        {
+          title: "Team Members",
+          url: "#",
+        },
+        {
+          title: "Version History",
+          url: "#",
+        },
+        {
+          title: "Shared Assets",
           url: "#",
         },
       ],
@@ -88,19 +331,15 @@ const data = {
       icon: Settings2,
       items: [
         {
-          title: "General",
+          title: "Project Settings",
           url: "#",
         },
         {
-          title: "Team",
+          title: "Export Options",
           url: "#",
         },
         {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
+          title: "Preferences",
           url: "#",
         },
       ],
@@ -108,7 +347,16 @@ const data = {
   ],
 }
 
-export function AppSidebar() {
+interface AppSidebarProps {
+  user?: {
+    id: string;
+    email: string;
+    username: string;
+  } | null;
+  profile?: Profile | null;
+}
+
+export function AppSidebar({ user, profile }: AppSidebarProps) {
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -118,7 +366,7 @@ export function AppSidebar() {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser />
+        <NavUser user={user} profile={profile} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

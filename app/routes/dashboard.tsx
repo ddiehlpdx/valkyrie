@@ -14,7 +14,7 @@ import {
   SidebarTrigger,
 } from "~/components/ui/sidebar";
 import { LoaderFunctionArgs, redirect } from "@remix-run/node";
-import { Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData, useLocation } from "@remix-run/react";
 import { getSession } from "~/session.server";
 import { getUserById } from "~/api/user";
 import { getProfileByUserId } from "~/api/profile";
@@ -41,13 +41,45 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export default function Dashboard() {
-  // const { user, profile, projects } = useLoaderData<typeof loader>();
+  const { user, profile, projects } = useLoaderData<typeof loader>();
+  const location = useLocation();
+
+  // Generate breadcrumb based on current path
+  const getBreadcrumb = () => {
+    const path = location.pathname;
+    
+    switch (path) {
+      case '/dashboard':
+        return { title: 'Overview', showDashboard: false };
+      
+      case '/dashboard/profile':
+        return { title: 'Profile', showDashboard: true };
+      
+      case '/dashboard/settings':
+        return { title: 'Settings', showDashboard: true };
+      
+      default:
+        if (path.startsWith('/dashboard/')) {
+          // Extract the last segment and format it
+          const segments = path.split('/');
+          const lastSegment = segments[segments.length - 1];
+          const title = lastSegment.split('-').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1)
+          ).join(' ');
+          return { title, showDashboard: true };
+        }
+        
+        return { title: 'Dashboard', showDashboard: false };
+    }
+  };
+
+  const breadcrumb = getBreadcrumb();
 
   return (
-      <div id="dashboard" className="flex h-screen items-center justify-center">
+      <div id="dashboard" className="flex min-h-screen">
         <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
+          <AppSidebar user={user} profile={profile} />
+          <SidebarInset className="flex-1 flex flex-col">
             <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
               <div className="flex items-center gap-2 px-4">
                 <SidebarTrigger className="-ml-1" />
@@ -57,27 +89,25 @@ export default function Dashboard() {
                 />
                 <Breadcrumb>
                   <BreadcrumbList>
-                    <BreadcrumbItem className="hidden md:block">
-                      <BreadcrumbLink href="#">
-                        Dashboard
-                      </BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator className="hidden md:block" />
+                    {breadcrumb.showDashboard && (
+                      <>
+                        <BreadcrumbItem className="hidden md:block">
+                          <BreadcrumbLink href="/dashboard">
+                            Dashboard
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator className="hidden md:block" />
+                      </>
+                    )}
                     <BreadcrumbItem>
-                      <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                      <BreadcrumbPage>{breadcrumb.title}</BreadcrumbPage>
                     </BreadcrumbItem>
                   </BreadcrumbList>
                 </Breadcrumb>
               </div>
             </header>
-            <Outlet />
-            <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-              <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div className="bg-muted/50 aspect-video rounded-xl" />
-                <div className="bg-muted/50 aspect-video rounded-xl" />
-                <div className="bg-muted/50 aspect-video rounded-xl" />
-              </div>
-              <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
+            <div className="flex-1 flex flex-col p-4 pt-0">
+              <Outlet />
             </div>
           </SidebarInset>
         </SidebarProvider>
