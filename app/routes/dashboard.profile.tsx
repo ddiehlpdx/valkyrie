@@ -11,6 +11,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
 import { X } from "lucide-react";
@@ -43,6 +44,20 @@ export async function action({ request }: ActionFunctionArgs) {
   const userId = session.get('userId') as string;
 
   try {
+    // Check if this is a clear avatar request first
+    const contentType = request.headers.get('content-type') || '';
+    
+    if (!contentType.includes('multipart/form-data')) {
+      // Handle simple form data (like clear avatar)
+      const formData = await request.formData();
+      const clearAvatarAction = formData.get('clearAvatar') as string;
+      
+      if (clearAvatarAction === 'true') {
+        await clearAvatar(userId);
+        return json({ success: true, message: "Avatar cleared successfully!" });
+      }
+    }
+
     // Parse multipart form data for file uploads
     const uploadHandler = unstable_createMemoryUploadHandler({
       maxPartSize: 5 * 1024 * 1024, // 5MB
@@ -53,13 +68,6 @@ export async function action({ request }: ActionFunctionArgs) {
     const tagline = formData.get('tagline') as string;
     const bio = formData.get('bio') as string;
     const avatarFile = formData.get('avatar') as File | null;
-    const clearAvatarAction = formData.get('clearAvatar') as string;
-
-    // Handle clear avatar action
-    if (clearAvatarAction === 'true') {
-      await clearAvatar(userId);
-      return json({ success: true, message: "Avatar cleared successfully!" });
-    }
 
     let avatarUrl: string | undefined;
 
@@ -97,12 +105,33 @@ export default function ProfilePage() {
   
   // State for image preview
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  
+  // State for tracking form changes
+  const [currentValues, setCurrentValues] = useState({
+    tagline: profile.tagline || "",
+    bio: profile.bio || "",
+  });
+  
+  const [savedValues, setSavedValues] = useState({
+    tagline: profile.tagline || "",
+    bio: profile.bio || "",
+  });
+  
+  // Check if there are unsaved changes
+  const hasUnsavedChanges = currentValues.tagline !== savedValues.tagline || 
+                           currentValues.bio !== savedValues.bio ||
+                           previewImage !== null;
 
   // Handle action results with toast notifications
   useEffect(() => {
     if (actionData?.success) {
       toast.success(actionData.message || "Profile updated successfully!");
       setPreviewImage(null);
+      // Update saved values to match current values
+      setSavedValues({
+        tagline: currentValues.tagline,
+        bio: currentValues.bio,
+      });
       // Clear the file input
       const fileInput = document.getElementById('avatar') as HTMLInputElement;
       if (fileInput) {
@@ -114,7 +143,7 @@ export default function ProfilePage() {
     if (actionData?.message && !actionData.success) {
       toast.error(actionData.message);
     }
-  }, [actionData]);
+  }, [actionData, currentValues]);
 
   // Handle file selection for preview
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,10 +214,19 @@ export default function ProfilePage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Profile Details</CardTitle>
-            <CardDescription>
-              Customize your profile information that others can see.
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Profile Details</CardTitle>
+                <CardDescription>
+                  Customize your profile information that others can see.
+                </CardDescription>
+              </div>
+              {hasUnsavedChanges && (
+                <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
+                  Unsaved changes
+                </Badge>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <Form method="post" encType="multipart/form-data" className="space-y-4">
@@ -269,7 +307,8 @@ export default function ProfilePage() {
                   id="tagline"
                   name="tagline"
                   placeholder="Game developer, tactical RPG enthusiast"
-                  defaultValue={profile.tagline || ""}
+                  value={currentValues.tagline}
+                  onChange={(e) => setCurrentValues(prev => ({ ...prev, tagline: e.target.value }))}
                   maxLength={100}
                 />
                 <p className="text-sm text-muted-foreground">
@@ -283,7 +322,8 @@ export default function ProfilePage() {
                   id="bio"
                   name="bio"
                   placeholder="Tell us about yourself, your game development experience, or what you're working on..."
-                  defaultValue={profile.bio || ""}
+                  value={currentValues.bio}
+                  onChange={(e) => setCurrentValues(prev => ({ ...prev, bio: e.target.value }))}
                   rows={4}
                   maxLength={500}
                 />
@@ -292,9 +332,11 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Saving..." : "Save Changes"}
-              </Button>
+              {hasUnsavedChanges && (
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </Button>
+              )}
             </Form>
           </CardContent>
         </Card>

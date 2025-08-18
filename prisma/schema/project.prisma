@@ -1,7 +1,8 @@
 model Project {
-  id      String @id @default(uuid())
-  name    String
-  ownerId String
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  ownerId     String
 
   owner User @relation(fields: [ownerId], references: [id])
 

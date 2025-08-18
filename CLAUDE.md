@@ -96,6 +96,19 @@ This is a **Remix** application using **Vite** as the build tool, with a Postgre
 - Don't be so quick to agree with me all the time, it's okay to challenge me when I am going against best practice or not thinking ahead. Best practice is crucially important and we always want to work with performance and scale in mind.
 - All success/failure notifications should use toast/flash messages (via Sonner) that appear briefly and auto-dismiss. Never use Alert components or other elements that push page content around.
 - Else statements are for chumps. Never use else, and instead use an early return strategy or a switch for multiple cases. Switches should include a default and appropriate error handling when possible.
+- **Smart Forms Pattern**: All forms with editable content must implement the smart save pattern:
+  - Use controlled components with state tracking for current vs saved values
+  - Only show save button when there are actual unsaved changes
+  - Display orange "Unsaved changes" badge in card header when changes are detected
+  - Update saved state after successful form submission to clear the badge
+  - Include Badge import: `import { Badge } from "~/components/ui/badge"`
+  - Badge styling: `<Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">Unsaved changes</Badge>`
+- **Form Validation**: All forms must use Zod schemas for validation:
+  - Define validation schema with `z.object()` and appropriate field rules
+  - Use `react-hook-form` with `zodResolver` for client-side validation
+  - Include proper error messages for each validation rule
+  - Use shadcn Form components (`FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormMessage`)
+  - Example: `const formSchema = z.object({ email: z.string().email(), username: z.string().min(3).max(64) })`
 
 ## Additional Important Context
 - The app we are building is called Valkyrie. Valkyrie is meant to be like the "RPG Maker" for tactical RPGs like Final Fantasy Tactics and Ogre Battle. We should always keep this in mind when developing new features and maintaining existing ones.
