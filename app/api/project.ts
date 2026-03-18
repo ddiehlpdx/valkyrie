@@ -58,17 +58,29 @@ export async function getProjectsByUserId(userId: string) {
 
 export async function createProject(data: {
     name: string;
-    description?: string; // We'll store this elsewhere if needed
+    description?: string;
     template: 'blank' | 'starter';
     ownerId: string;
 }) {
-    return db.project.create({
-        data: {
-            name: data.name,
-            ownerId: data.ownerId,
-            // Note: template logic and description storage to be implemented later
-        }
+    return db.$transaction(async (tx) => {
+        const project = await tx.project.create({
+            data: {
+                name: data.name,
+                description: data.description || null,
+                ownerId: data.ownerId,
+            },
+        });
+
+        await tx.projectSettings.create({
+            data: { projectId: project.id },
+        });
+
+        return project;
     });
+}
+
+export async function deleteProject(projectId: string) {
+    return db.project.delete({ where: { id: projectId } });
 }
 
 // Collaboration functions

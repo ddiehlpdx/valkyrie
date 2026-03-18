@@ -9,6 +9,7 @@ import {
   SidebarGroup,
   SidebarGroupLabel,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -16,23 +17,29 @@ import {
   SidebarMenuSubItem,
 } from "../ui/sidebar";
 
+export interface NavItem {
+  title: string;
+  url: string;
+  icon?: LucideIcon;
+  isActive?: boolean;
+  disabled?: boolean;
+  badge?: string;
+  items?: {
+    title: string;
+    url: string;
+  }[];
+}
+
 export function NavMain({
+  label,
   items,
 }: {
-  items: {
-    title: string
-    url: string
-    icon?: LucideIcon
-    isActive?: boolean
-    items?: {
-      title: string
-      url: string
-    }[]
-  }[]
+  label?: string;
+  items: NavItem[];
 }) {
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Platform</SidebarGroupLabel>
+      <SidebarGroupLabel>{label ?? "Platform"}</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           item.items && item.items.length > 0 ? (
@@ -67,16 +74,26 @@ export function NavMain({
             </Collapsible>
           ) : (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <Link to={item.url}>
+              {item.disabled ? (
+                <SidebarMenuButton tooltip={item.title} className="opacity-50 pointer-events-none">
                   {item.icon && <item.icon />}
                   <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
+                </SidebarMenuButton>
+              ) : (
+                <SidebarMenuButton asChild>
+                  <Link to={item.url}>
+                    {item.icon && <item.icon />}
+                    <span>{item.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+              )}
+              {item.badge && (
+                <SidebarMenuBadge className="text-[10px] opacity-60">{item.badge}</SidebarMenuBadge>
+              )}
             </SidebarMenuItem>
           )
         ))}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

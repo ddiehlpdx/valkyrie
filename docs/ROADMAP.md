@@ -2,54 +2,67 @@
 
 ## Context
 
-Valkyrie aims to be the "RPG Maker" for tactical RPGs (Final Fantasy Tactics, Tactics Ogre, Triangle Strategy) — a full in-browser editor AND game runtime. The app currently has authentication, user profiles, a dashboard shell with a 15-section sidebar (all links pointing to `#`), 44 Radix UI components, and 6 bare-bones game type models in the database (Profession, AbilityType, DamageType, WeaponType, ArmorType, EquipmentType — each with only `id`, `name`, `projectId`, `displayOrder`).
+Valkyrie aims to be the "RPG Maker" for tactical RPGs (Final Fantasy Tactics, Tactics Ogre, Triangle Strategy) — a full in-browser editor AND game runtime.
+
+**Current state:** Phase 0 is complete. Authentication (sign-up/sign-in with async bcrypt, cookie sessions), user profiles with avatar upload, full project CRUD with collaborator management, ProjectSettings (grid/battle/progression config), project deletion with cascade, access control middleware (owner vs collaborator roles), a dashboard with project card grid, and conditional sidebar navigation showing game design sections when inside a project. The database has 6 bare-bones game type models (Profession, AbilityType, DamageType, WeaponType, ArmorType, EquipmentType — each with `id`, `name`, `projectId`, `displayOrder`) plus ProjectSettings (1:1 with Project). Two rounds of code review have been completed, covering security, performance, and code quality.
 
 This roadmap takes us from current state to a playable MVP across 9 phases.
 
 ### Key Architectural Decisions
-- **Project context**: URL-based (`/dashboard/projects/:projectId/...`) — aligns with Remix, supports deep links, multiple tabs, bookmarks
+- **Route structure**: Projects live at `/projects/:projectId/...` (separate from `/dashboard`). This gives projects their own layout with dedicated sidebar and breadcrumbs, independent of the dashboard layout.
 - **Stat system**: Hybrid — fixed core stats (HP, MP, MOV) + user-defined custom stats per project
 - **Map rendering**: HTML5 Canvas from the start (needed for runtime anyway)
 - **Formulas**: Stored as string expressions, evaluated with a sandboxed parser (never `eval()`)
 
 ---
 
-## Phase 0: Project Management (Foundation)
+## Phase 0: Project Management (Foundation) — COMPLETE
 
 **Everything depends on this.** No game feature works without project context.
 
-### Schema Changes
-- **Modify** `prisma/schema/project.prisma` — add `description` (Text), `thumbnail` (String?), `settings` relation, `@@index([ownerId])`
-- **Create** `prisma/schema/projectSettings.prisma` — ProjectSettings model with:
-  - Grid defaults: `defaultGridSizeX`, `defaultGridSizeY`, `maxMapHeight`
-  - Battle: `maxUnitsPerBattle`, `turnSystem` (enum: Initiative/RoundRobin/PhaseBase), `enablePermadeath`, `enableFriendlyFire`
-  - Progression: `maxLevel`, `baseStatPoints`, `statGrowthModel` (enum: ClassBased/Individual/Hybrid)
-  - Display: `tileSize`
-- **Modify** all 6 game type schemas + collaborator — add `onDelete: Cascade` to project relations
+**Schema:**
+- `description` (String?) on Project
+- `@@index([ownerId])` on Project
+- `onDelete: Cascade` on all relations (project->user, all 6 game types, collaborator, profile, projectSettings)
+- `@@unique([projectId, userId])` + `@@index([userId])` on Collaborator
+- `ProjectSettings` model (1:1 with Project): grid defaults (`defaultGridSizeX`, `defaultGridSizeY`, `defaultTileSize`), battle config (`turnSystem` enum, `maxUnitsPerBattle`), progression (`maxLevel`, `statGrowthModel` enum)
+- Enums: `TurnSystem` (Initiative/RoundRobin/PhaseBased), `StatGrowthModel` (ClassBased/Individual/Hybrid)
 
-### Routes
-| Route File | Purpose |
-|---|---|
-| `dashboard._index.tsx` | Dashboard home — project card grid, empty state CTA |
-| `dashboard.projects.new.tsx` | Create project form (name, description, thumbnail) |
-| `dashboard.projects.$projectId.tsx` | Project layout/gateway — validates access, loads project + settings |
-| `dashboard.projects.$projectId._index.tsx` | Project overview — name, description, quick stats, quick actions |
-| `dashboard.projects.$projectId.settings.tsx` | Project settings form (grid, battle, progression sections) |
+**Routes (at `/projects/...`, not `/dashboard/projects/...`):**
+- `dashboard._index.tsx` — project card grid with responsive layout and empty state CTA
+- `projects.new.tsx` — 3-step creation wizard (details, template, confirm)
+- `projects.$projectId.tsx` — project layout with access validation, sidebar, breadcrumbs
+- `projects.$projectId._index.tsx` — project overview with quick actions, stats, team
+- `projects.$projectId.settings.tsx` — project info editing, collaborator management, game settings (grid/battle/progression), danger zone with project deletion
+- `projects.$projectId.maps.tsx` — maps placeholder (UI only, mock data)
 
-### API Layer
-- **Fix** `app/api/project.ts` — `getProjectsByUserId` has a bug (unawaited async map for collaborations)
-- **Add** to `app/api/project.ts`: `createProject` (transaction: project + default settings), `updateProject`, `deleteProject`, `getProjectWithSettings`, `userHasProjectAccess`
-- **Create** `app/api/projectSettings.ts`: `getProjectSettings` (upsert pattern), `updateProjectSettings`
+**API (`app/api/project.ts`):**
+- `getProjectById`, `getProjectsByUserId`, `createProject` (transaction: project + default settings), `updateProject`, `deleteProject`
+- `hasProjectAccess` (single query), `isProjectOwner`, `isProjectCollaborator`
+- `addCollaborator`, `removeCollaborator`, `getProjectCollaborators`, `searchUsers`
 
-### Components
-- **Rewrite** `app/components/dashboard/project-selector.tsx` — URL-based navigation (no local state)
-- **Create** `project-card.tsx`, `create-project-form.tsx`, `project-settings-form.tsx`, `delete-project-dialog.tsx`
-- **Modify** `app-sidebar.tsx` — wire up ProjectSelector, conditionally show game sections only when project is active
-- **Modify** `nav-main.tsx` — change `<a>` tags to Remix `<Link>` components
+**API (`app/api/projectSettings.ts`):**
+- `getProjectSettings`, `createDefaultProjectSettings`, `updateProjectSettings` (upsert pattern)
 
-### Sidebar Behavior
-- No project selected: show only Dashboard + Project nav sections
-- Project selected: show all 15 sections with URLs pointing to `/dashboard/projects/:projectId/...`
+**Server utilities (`app/lib/project-access.server.ts`):**
+- `requireProjectAccess`, `requireProjectOwnership`, `checkProjectAccess`
+
+**Components:**
+- `project-selector.tsx` — URL-based project switcher with owner/collaborator badges
+- `app-sidebar.tsx` — conditional sidebar: "Platform" group (Dashboard) + "Game Design" group when inside a project (Maps enabled, Characters/Abilities/Equipment disabled with "Soon" badge)
+- `nav-main.tsx` — Remix `<Link>` components, supports `disabled` and `badge` props for coming-soon items
+
+**Code quality (from code review):**
+- `signUp` omits password hash from return (`omit: { password: true }`)
+- Async bcrypt with 12 salt rounds
+- Sonner toast notifications for all success/error states
+- `<Link>` components for SPA navigation (no `<a href>`)
+- Error boundaries with semantic theme colors
+- Avatar file cleanup on clear/replace
+- Tailwind CSS v4 consolidated (theme.css as single source of truth)
+
+**Deferred to later phases:**
+- `thumbnail` (String?) on Project — nice-to-have for project cards
 
 ---
 
@@ -80,8 +93,8 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
   ```
 
 ### Routes
-- `dashboard.projects.$projectId.stats.tsx` — stat definition list with CRUD
-- `dashboard.projects.$projectId.elements.tsx` — element list + interaction matrix
+- `projects.$projectId.stats.tsx` — stat definition list with CRUD
+- `projects.$projectId.elements.tsx` — element list + interaction matrix
 
 ### Editor UI
 - **Stats**: sortable table — name, abbreviation, category, min/max/default, isPercentage. Core stats are non-deletable. "Seed from template" button (FFT-style, FE-style, custom blank).
@@ -105,8 +118,8 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 - **Create** `professionPrerequisite.prisma`: professionId + requiredProfessionId + requiredLevel (self-referential relation)
 
 ### Routes
-- `dashboard.projects.$projectId.professions.tsx` — profession list
-- `dashboard.projects.$projectId.professions.$professionId.tsx` — profession detail editor
+- `projects.$projectId.professions.tsx` — profession list
+- `projects.$projectId.professions.$professionId.tsx` — profession detail editor
 
 ### Editor UI (tabbed detail view)
 - **General**: name, description, icon
@@ -143,9 +156,9 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 - **Create** `professionAbility.prisma`: professionId + abilityId + learnLevel + jpCost? (`@@unique` pair)
 
 ### Routes
-- `dashboard.projects.$projectId.abilities.tsx` — ability list (filterable by AbilityType)
-- `dashboard.projects.$projectId.abilities.$abilityId.tsx` — ability detail editor
-- `dashboard.projects.$projectId.status-effects.tsx` — status effect list + detail
+- `projects.$projectId.abilities.tsx` — ability list (filterable by AbilityType)
+- `projects.$projectId.abilities.$abilityId.tsx` — ability detail editor
+- `projects.$projectId.status-effects.tsx` — status effect list + detail
 
 ### Editor UI
 - **Ability detail** (tabs): General, Costs, Targeting (range/AoE with visual shape selector), Formulas (with stat autocomplete + preview), Status Effects (multi-select + chance %), Timing
@@ -175,10 +188,10 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 - **Create** `accessoryStatusEffect.prisma`: accessoryId (unique) + statusEffectId
 
 ### Routes
-- `dashboard.projects.$projectId.weapons.tsx` — weapon list + detail
-- `dashboard.projects.$projectId.armor.tsx` — armor list + detail
-- `dashboard.projects.$projectId.accessories.tsx` — accessory list + detail
-- `dashboard.projects.$projectId.consumables.tsx` — consumable list + detail
+- `projects.$projectId.weapons.tsx` — weapon list + detail
+- `projects.$projectId.armor.tsx` — armor list + detail
+- `projects.$projectId.accessories.tsx` — accessory list + detail
+- `projects.$projectId.consumables.tsx` — consumable list + detail
 
 ### Editor UI Pattern (repeated for each equipment type)
 - List view filtered by type category
@@ -207,8 +220,8 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 - **Create** `unitLearnedAbility.prisma`: unitId + abilityId (`@@unique` pair)
 
 ### Routes
-- `dashboard.projects.$projectId.units.tsx` — unit list (tabs: Player/Enemy/NPC)
-- `dashboard.projects.$projectId.units.$unitId.tsx` — unit detail editor
+- `projects.$projectId.units.tsx` — unit list (tabs: Player/Enemy/NPC)
+- `projects.$projectId.units.$unitId.tsx` — unit detail editor
 
 ### Editor UI
 - **General**: name, description, type, level, portrait/sprite
@@ -234,9 +247,9 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 - **Create** `mapEvent.prisma`: battleMapId, name, eventType (enum: Chest/Switch/Trap/Portal/Destructible/Conversation), x, y, triggerData (Json?)
 
 ### Routes
-- `dashboard.projects.$projectId.terrain.tsx` — terrain type list + CRUD
-- `dashboard.projects.$projectId.maps.tsx` — map list (card grid with thumbnails)
-- `dashboard.projects.$projectId.maps.$mapId.tsx` — full-page map editor
+- `projects.$projectId.terrain.tsx` — terrain type list + CRUD
+- `projects.$projectId.maps.tsx` — map list (card grid with thumbnails) — placeholder already exists
+- `projects.$projectId.maps.$mapId.tsx` — full-page map editor
 
 ### Map Editor (Canvas-based)
 - **Toolbar**: terrain paint brush, elevation +/-, spawn zone paint, event placement, eraser
@@ -270,10 +283,10 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 - `battleConfig.prisma`: projectId (unique 1:1), turnOrderSystem (enum), ctFormula?, physicalDamageFormula?, magicalDamageFormula?, healingFormula?, expFormula?, levelUpFormula?, jumpFormula?, maxLevel, maxPartySize
 
 ### Routes
-- `dashboard.projects.$projectId.campaign.tsx` — chapter list with drag-reorder, scenarios per chapter
-- `dashboard.projects.$projectId.scenarios.$scenarioId.tsx` — scenario editor (tabs: Setup, Unit Placement, Conditions, Rewards, Dialogue)
-- `dashboard.projects.$projectId.dialogues.tsx` — dialogue list + sequential/node editor
-- `dashboard.projects.$projectId.battle-config.tsx` — project-wide battle system configuration
+- `projects.$projectId.campaign.tsx` — chapter list with drag-reorder, scenarios per chapter
+- `projects.$projectId.scenarios.$scenarioId.tsx` — scenario editor (tabs: Setup, Unit Placement, Conditions, Rewards, Dialogue)
+- `projects.$projectId.dialogues.tsx` — dialogue list + sequential/node editor
+- `projects.$projectId.battle-config.tsx` — project-wide battle system configuration
 
 ### Key UI
 - **Scenario Unit Placement**: shows the selected map grid on canvas, drag units from side panel onto spawn zones
@@ -331,7 +344,7 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 ## Phase Summary & Dependency Graph
 
 ```
-Phase 0: Project Management          [FOUNDATION — build first]
+Phase 0: Project Management          [COMPLETE]
     |
 Phase 1: Stats & Elements            [Core data types]
     |
@@ -359,32 +372,41 @@ Phase 6 (Maps) can be built in parallel with Phases 3-5 since it only needs proj
 
 ## Route Structure (complete)
 ```
-/dashboard                                          (existing — project list home)
-/dashboard/profile                                  (existing)
-/dashboard/projects/new                             (Phase 0)
-/dashboard/projects/:projectId                      (Phase 0 — project layout)
-/dashboard/projects/:projectId/settings             (Phase 0)
-/dashboard/projects/:projectId/stats                (Phase 1)
-/dashboard/projects/:projectId/elements             (Phase 1)
-/dashboard/projects/:projectId/professions          (Phase 2)
-/dashboard/projects/:projectId/professions/:id      (Phase 2)
-/dashboard/projects/:projectId/abilities            (Phase 3)
-/dashboard/projects/:projectId/abilities/:id        (Phase 3)
-/dashboard/projects/:projectId/status-effects       (Phase 3)
-/dashboard/projects/:projectId/weapons              (Phase 4)
-/dashboard/projects/:projectId/armor                (Phase 4)
-/dashboard/projects/:projectId/accessories          (Phase 4)
-/dashboard/projects/:projectId/consumables          (Phase 4)
-/dashboard/projects/:projectId/units                (Phase 5)
-/dashboard/projects/:projectId/units/:id            (Phase 5)
-/dashboard/projects/:projectId/terrain              (Phase 6)
-/dashboard/projects/:projectId/maps                 (Phase 6)
-/dashboard/projects/:projectId/maps/:mapId          (Phase 6)
-/dashboard/projects/:projectId/campaign             (Phase 7)
-/dashboard/projects/:projectId/scenarios/:id        (Phase 7)
-/dashboard/projects/:projectId/dialogues            (Phase 7)
-/dashboard/projects/:projectId/battle-config        (Phase 7)
-/play/:projectId/:scenarioId                        (Phase 8)
+Existing:
+  /                                                 (redirects to /dashboard or /auth/sign-in)
+  /auth/sign-in                                     (existing)
+  /auth/sign-up                                     (existing)
+  /auth/logout                                      (existing)
+  /dashboard                                        (existing — project card grid)
+  /dashboard/profile                                (existing)
+
+Project Routes:
+  /projects/new                                     (existing — Phase 0)
+  /projects/:projectId                              (existing — Phase 0, project layout)
+  /projects/:projectId/settings                     (existing — Phase 0, includes game settings + danger zone)
+  /projects/:projectId/maps                         (placeholder — Phase 6)
+  /projects/:projectId/stats                        (Phase 1)
+  /projects/:projectId/elements                     (Phase 1)
+  /projects/:projectId/professions                  (Phase 2)
+  /projects/:projectId/professions/:id              (Phase 2)
+  /projects/:projectId/abilities                    (Phase 3)
+  /projects/:projectId/abilities/:id                (Phase 3)
+  /projects/:projectId/status-effects               (Phase 3)
+  /projects/:projectId/weapons                      (Phase 4)
+  /projects/:projectId/armor                        (Phase 4)
+  /projects/:projectId/accessories                  (Phase 4)
+  /projects/:projectId/consumables                  (Phase 4)
+  /projects/:projectId/units                        (Phase 5)
+  /projects/:projectId/units/:id                    (Phase 5)
+  /projects/:projectId/terrain                      (Phase 6)
+  /projects/:projectId/maps/:mapId                  (Phase 6)
+  /projects/:projectId/campaign                     (Phase 7)
+  /projects/:projectId/scenarios/:id                (Phase 7)
+  /projects/:projectId/dialogues                    (Phase 7)
+  /projects/:projectId/battle-config                (Phase 7)
+
+Runtime:
+  /play/:projectId/:scenarioId                      (Phase 8)
 ```
 
 ## Verification Strategy

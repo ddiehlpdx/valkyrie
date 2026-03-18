@@ -94,7 +94,7 @@ export default function ProjectLayout() {
   return (
     <div id="project-layout" className="flex min-h-screen">
       <SidebarProvider>
-        <AppSidebar user={user} profile={profile} projects={projects} />
+        <AppSidebar user={user} profile={profile} projects={projects} activeProjectId={project.id} />
         <SidebarInset className="flex-1 flex flex-col">
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <div className="flex items-center gap-2 px-4">
