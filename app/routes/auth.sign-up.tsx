@@ -1,8 +1,19 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, redirect } from '@remix-run/node';
+import { z } from 'zod';
 import { getSession, commitSession } from "~/session.server";
-import { getUserByEmail, getUserByUsername, signUp } from '~/api/user';
+import { signUp } from '~/api/user';
 import SignUpForm from '~/components/auth/sign-up-form';
 import ErrorBoundaryLayout from "~/components/shared/error-boundary.layout";
+
+const signUpSchema = z.object({
+    email: z.string().email('Please enter a valid email address.'),
+    username: z.string()
+        .min(3, 'Username must be at least 3 characters long.')
+        .max(64, 'Username must be at most 64 characters long.'),
+    password: z.string()
+        .min(8, 'Password must be at least 8 characters long.')
+        .max(64, 'Password must be at most 64 characters long.'),
+});
 
 export function meta() {
     return [{
@@ -13,7 +24,7 @@ export function meta() {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await getSession(request.headers.get('Cookie'));
-  
+
     if (session.has('userId')) {
       return redirect('/dashboard');
     }
@@ -34,22 +45,16 @@ export async function loader({ request }: LoaderFunctionArgs) {
 export async function action({ request }: ActionFunctionArgs) {
     const session = await getSession(request.headers.get('Cookie'));
     const formData = await request.formData();
-    const username = formData.get('username') as string;
 
-    if (await getUserByUsername(username)) {
-        session.flash('error', 'Username is already taken.');
+    const result = signUpSchema.safeParse({
+        email: formData.get('email'),
+        username: formData.get('username'),
+        password: formData.get('password'),
+    });
 
-        return redirect('/auth/sign-up', {
-            headers: {
-                'Set-Cookie': await commitSession(session)
-            }
-        });
-    }
-
-    const email = formData.get('email') as string;
-
-    if (await getUserByEmail(email)) {
-        session.flash('error', 'Account for this email address already exists.');
+    if (!result.success) {
+        const firstError = result.error.errors[0]?.message ?? 'Invalid input.';
+        session.flash('error', firstError);
 
         return redirect('/auth/sign-up', {
             headers: {
@@ -58,9 +63,19 @@ export async function action({ request }: ActionFunctionArgs) {
         });
     }
 
-    const password = formData.get('password') as string;
-    
-    await signUp(email, username, password);
+    const { email, username, password } = result.data;
+
+    try {
+        await signUp(email, username, password);
+    } catch {
+        session.flash('error', 'An account with that information already exists.');
+
+        return redirect('/auth/sign-up', {
+            headers: {
+                'Set-Cookie': await commitSession(session)
+            }
+        });
+    }
 
     return redirect('/auth/sign-in', {
         headers: {

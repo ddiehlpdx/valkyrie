@@ -1,11 +1,13 @@
 import { PrismaClient, User } from '@prisma/client';
-import { hashSync, compareSync } from 'bcrypt';
+import { hash, compare } from 'bcrypt';
+
+const SALT_ROUNDS = 12;
 
 const db = new PrismaClient().$extends({
     model: {
         user: {
             async signUp(email: string, username: string, password: string): Promise<User> {
-                const hashedPassword = hashSync(password, 10);
+                const hashedPassword = await hash(password, SALT_ROUNDS);
                 const user = await db.user.create({
                     data: {
                         email,
@@ -26,17 +28,17 @@ const db = new PrismaClient().$extends({
                         ],
                     },
                 });
-    
+
                 if (!user) {
                     return;
                 }
-    
-                const passwordMatch = compareSync(password, user.password);
-    
+
+                const passwordMatch = await compare(password, user.password);
+
                 if (!passwordMatch) {
                     return;
                 }
-    
+
                 return user;
             },
         },

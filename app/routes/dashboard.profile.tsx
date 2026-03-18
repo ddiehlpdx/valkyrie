@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { getSession } from "~/session.server";
 import { getUserById } from "~/api/user";
 import { getProfileByUserId, updateProfile, clearAvatar } from "~/api/profile";
-import { uploadAvatar } from "~/lib/file-upload.server";
+import { uploadAvatar, deleteAvatar } from "~/lib/file-upload.server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -68,12 +68,28 @@ export async function action({ request }: ActionFunctionArgs) {
     const tagline = formData.get('tagline') as string;
     const bio = formData.get('bio') as string;
     const avatarFile = formData.get('avatar') as File | null;
+    const clearAvatarAction = formData.get('clearAvatar') as string;
+
+    // Fetch current profile for avatar cleanup
+    const currentProfile = await getProfileByUserId(userId);
+
+    // Handle clear avatar action
+    if (clearAvatarAction === 'true') {
+      if (currentProfile.avatar) {
+        await deleteAvatar(currentProfile.avatar);
+      }
+      await clearAvatar(userId);
+      return json({ success: true, message: "Avatar cleared successfully!" });
+    }
 
     let avatarUrl: string | undefined;
 
     // Handle avatar upload if file is provided
     if (avatarFile && avatarFile.size > 0) {
       try {
+        if (currentProfile.avatar) {
+          await deleteAvatar(currentProfile.avatar);
+        }
         avatarUrl = await uploadAvatar(avatarFile);
       } catch (uploadError) {
         return json({ 
@@ -152,15 +168,15 @@ export default function ProfilePage() {
       // Validate file type
       const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
       if (!validTypes.includes(file.type)) {
-        alert('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
+        toast.error('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
         event.target.value = '';
         setPreviewImage(null);
         return;
       }
-      
+
       // Validate file size (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        toast.error('File size must be less than 5MB');
         event.target.value = '';
         setPreviewImage(null);
         return;

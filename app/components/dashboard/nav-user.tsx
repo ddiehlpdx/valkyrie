@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   User,
   Settings,
@@ -20,12 +19,10 @@ import {
 } from "../ui/dropdown-menu";
 import {
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "../ui/sidebar";
 import { Profile } from "@prisma/client";
-import { Form } from "@remix-run/react";
+import { Form, Link } from "@remix-run/react";
 
 interface NavUserProps {
   user?: {
@@ -37,10 +34,6 @@ interface NavUserProps {
 }
 
 export function NavUser({ user, profile }: NavUserProps) {
-  const { isMobile } = useSidebar();
-
-  console.log("NavUser props:", { user, profile }); // Debug log
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -69,10 +62,10 @@ export function NavUser({ user, profile }: NavUserProps) {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <a href="/dashboard/profile" className="cursor-pointer">
+              <Link to="/dashboard/profile" className="cursor-pointer">
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
-              </a>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="cursor-pointer">
               <Settings className="mr-2 h-4 w-4" />

@@ -16,13 +16,13 @@ export default function ErrorBoundaryLayout() {
 
     if (isRouteErrorResponse(error)) {
         return (
-          <Card className="border-red-500 bg-red-100 text-black">
+          <Card className="border-destructive bg-destructive/10 text-foreground">
               <CardHeader>
                   <img src={crashImg} alt="System Crash" className="w-24 h-24 mx-auto mb-8" />
                   <CardTitle className="text-center">
                       Uh oh...
                   </CardTitle>
-                  <CardDescription className="text-gray-900 text-center">
+                  <CardDescription className="text-muted-foreground text-center">
                       {error.status} { error.statusText ? ` - ${error.statusText}` : '' }
                   </CardDescription>
               </CardHeader>
@@ -34,13 +34,13 @@ export default function ErrorBoundaryLayout() {
       }
   
       return (
-          <Card className="border-red-500 bg-red-100 text-black">
+          <Card className="border-destructive bg-destructive/10 text-foreground">
               <CardHeader>
                   <img src={crashImg} alt="System Crash" className="w-24 h-24 mx-auto mb-8" />
                   <CardTitle className="text-center">
                       Uh oh...
                   </CardTitle>
-                  <CardDescription className="text-gray-900 text-center">
+                  <CardDescription className="text-muted-foreground text-center">
                       { error instanceof Error ? error.name : 'Unknown Error' }
                   </CardDescription>
               </CardHeader>

@@ -1,40 +1,101 @@
-# Welcome to Remix!
+# Valkyrie
 
-- 📖 [Remix docs](https://remix.run/docs)
+The RPG Maker for tactical RPGs. Build games inspired by Final Fantasy Tactics, Tactics Ogre, and Triangle Strategy — entirely in your browser.
 
-## Development
+Valkyrie is a web-based game editor and runtime that lets you design grid-based tactical RPG battles: define job classes, craft abilities with custom damage formulas, build maps with elevation and terrain, compose battle scenarios, and playtest them in-browser.
 
-Run the dev server:
+## Tech Stack
 
-```shellscript
+- **Framework**: [Remix](https://remix.run) v2 with [Vite](https://vitejs.dev)
+- **Database**: PostgreSQL with [Prisma](https://www.prisma.io) ORM
+- **UI**: React 18, [Radix UI](https://www.radix-ui.com), [Tailwind CSS](https://tailwindcss.com) v4
+- **Auth**: Cookie-based sessions with bcrypt password hashing
+- **Validation**: Zod schemas with react-hook-form
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js >= 20
+- PostgreSQL
+
+### Setup
+
+```sh
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your DATABASE_URL and AUTH_SECRET
+
+# Push the database schema
+npx prisma db push
+
+# Generate Prisma client
+npx prisma generate
+
+# Start the dev server
 npm run dev
 ```
 
-## Deployment
+The app will be available at `http://localhost:5173`.
 
-First, build your app for production:
+### Environment Variables
 
-```sh
-npm run build
+| Variable | Description |
+|---|---|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `AUTH_SECRET` | Secret key for session encryption |
+
+## Scripts
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm start` | Run production build |
+| `npm run lint` | Run ESLint |
+| `npm run typecheck` | Run TypeScript type checking |
+
+## Project Structure
+
+```
+app/
+├── api/            # Service layer (database operations)
+├── components/
+│   ├── ui/         # Base UI components (Radix + Tailwind)
+│   ├── dashboard/  # Dashboard layout, sidebar, navigation
+│   ├── auth/       # Sign-in / sign-up forms
+│   └── shared/     # Error boundaries, reusable components
+├── hooks/          # React hooks
+├── lib/            # Utilities (file upload, class merging)
+├── routes/         # Remix route handlers
+├── db.server.ts    # Prisma client with auth extensions
+├── session.server.ts # Cookie session management
+└── root.tsx        # App shell
+
+prisma/
+└── schema/         # Modular Prisma schema files (one per domain)
+
+docs/
+└── ROADMAP.md      # Full feature roadmap
 ```
 
-Then run the app in production mode:
+## Roadmap
 
-```sh
-npm start
-```
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full feature roadmap from current state to playable MVP, organized across 9 phases:
 
-Now you'll need to pick a host to deploy it to.
+0. **Project Management** — create/manage game projects
+1. **Stats & Elements** — hybrid stat system, elemental interactions
+2. **Professions/Jobs** — class system with stat growth and equipment permissions
+3. **Abilities & Status Effects** — skills with custom formulas, targeting, AoE
+4. **Equipment** — weapons, armor, accessories, consumables
+5. **Characters/Units** — player, enemy, and NPC unit definitions
+6. **Maps & Terrain** — canvas-based map editor with elevation and terrain types
+7. **Story & Scenarios** — campaigns, battle scenarios, dialogue system
+8. **Game Runtime** — in-browser playtest engine with pathfinding, combat, and AI
 
-### DIY
+## License
 
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
+Private — not currently open source.

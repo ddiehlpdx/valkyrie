@@ -13,7 +13,7 @@ export function meta() {
 
 export async function loader({ request }: LoaderFunctionArgs) {
     const session = await getSession(request.headers.get('Cookie'));
-  
+
     if (session.has('userId')) {
       return redirect('/dashboard');
     }
@@ -34,10 +34,21 @@ export async function action({ request }: ActionFunctionArgs) {
     const session = await getSession(request.headers.get("Cookie"));
     const formData = await request.formData();
 
-    const emailOrUsername = formData.get('emailOrUsername') as string;
-    const password = formData.get('password') as string;
+    const emailOrUsername = formData.get('emailOrUsername');
+    const password = formData.get('password');
 
-    const user = await signIn(emailOrUsername, password);
+    if (typeof emailOrUsername !== 'string' || !emailOrUsername.trim() ||
+        typeof password !== 'string' || !password) {
+        session.flash('error', 'Please fill in all fields.');
+
+        return redirect('/auth/sign-in', {
+            headers: {
+                'Set-Cookie': await commitSession(session)
+            }
+        });
+    }
+
+    const user = await signIn(emailOrUsername.trim(), password);
 
     if (!user) {
         session.flash('error', 'Invalid login/password.');

@@ -1,6 +1,5 @@
-"use client";
-
 import { ChevronRight, type LucideIcon } from "lucide-react";
+import { Link } from "@remix-run/react";
 import {
   Collapsible,
   CollapsibleContent,

@@ -1,4 +1,4 @@
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, unlink } from "fs/promises";
 import { join } from "path";
 import { v4 as uuidv4 } from "uuid";
 
@@ -6,11 +6,7 @@ const UPLOAD_DIR = join(process.cwd(), "public", "users", "uploads", "avatars");
 
 // Ensure upload directory exists
 async function ensureUploadDir() {
-  try {
-    await mkdir(UPLOAD_DIR, { recursive: true });
-  } catch (error) {
-    // Directory already exists, ignore error
-  }
+  await mkdir(UPLOAD_DIR, { recursive: true });
 }
 
 // Validate file type
@@ -29,6 +25,16 @@ function getFileExtension(mimeType: string): string {
     'image/webp': 'webp'
   };
   return extensions[mimeType] || 'jpg';
+}
+
+export async function deleteAvatar(avatarPath: string): Promise<void> {
+  if (!avatarPath) return;
+  const filePath = join(process.cwd(), "public", avatarPath);
+  try {
+    await unlink(filePath);
+  } catch {
+    // File may not exist on disk, safe to ignore
+  }
 }
 
 export async function uploadAvatar(file: File): Promise<string> {

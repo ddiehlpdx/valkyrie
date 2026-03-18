@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useSubmit } from "@remix-run/react";
+import { Link, useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod";
@@ -34,8 +34,8 @@ const formSchema = z.object({
         .min(8, { message: 'Password must be at least 8 characters long.' })
         .max(64, { message: 'Password must be at most 64 characters long.' }),
     passwordConfirm: z.string()
-        .min(8)
-        .max(64)
+        .min(8, { message: 'Password must be at least 8 characters long.' })
+        .max(64, { message: 'Password must be at most 64 characters long.' })
     })
     .refine(data => data.password === data.passwordConfirm, {
         message: 'Passwords do not match.',
@@ -44,6 +44,8 @@ const formSchema = z.object({
 
 export default function SignUpForm() {
     const submit = useSubmit();
+    const navigation = useNavigation();
+    const isSubmitting = navigation.state === 'submitting';
     const { error } = useLoaderData<SessionFlashData>();
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -143,7 +145,9 @@ export default function SignUpForm() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="mt-4 w-full">Submit</Button>
+                        <Button type="submit" className="mt-4 w-full" disabled={isSubmitting}>
+                            {isSubmitting ? 'Creating account...' : 'Sign Up'}
+                        </Button>
                     </form>
                 </Form>
             </CardContent>

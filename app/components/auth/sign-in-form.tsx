@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useNavigation, useSubmit } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod";
@@ -24,8 +24,8 @@ import logo from "../../assets/valkyrie_logo_transparent.png";
 import type { SessionFlashData } from "~/session.server";
 
 const formSchema = z.object({
-    emailOrUsername: z.string(),
-    password: z.string()
+    emailOrUsername: z.string().min(1, { message: 'Please enter your username or email.' }),
+    password: z.string().min(1, { message: 'Please enter your password.' })
 });
 
 export default function SignInForm() {
@@ -39,6 +39,14 @@ export default function SignInForm() {
         }
     });
 
+    const submit = useSubmit();
+    const navigation = useNavigation();
+    const isSubmitting = navigation.state === 'submitting';
+
+    function onSubmit() {
+        submit(form.getValues(), { method: 'post' });
+    }
+
     return (
         <Card>
             <img src={logo} alt="Valkyrie Logo" className="w-48 h-48 mx-auto mt-4" />
@@ -49,7 +57,7 @@ export default function SignInForm() {
             </CardHeader>
             <CardContent>
                 <Form {...form}>
-                    <form method="post" className="space-y-3">
+                    <form method="post" onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
                         <FormField
                             control={form.control}
                             name="emailOrUsername"
@@ -80,7 +88,9 @@ export default function SignInForm() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" className="mt-4 w-full">Submit</Button>
+                        <Button type="submit" className="mt-4 w-full" disabled={isSubmitting}>
+                            {isSubmitting ? 'Signing in...' : 'Sign In'}
+                        </Button>
                     </form>
                 </Form>
             </CardContent>
