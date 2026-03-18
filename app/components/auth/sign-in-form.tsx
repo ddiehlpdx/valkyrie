@@ -53,7 +53,7 @@ export default function SignInForm() {
             <CardHeader>
                 <CardTitle>Sign In</CardTitle>
                 <CardDescription>Sign in to an existing Valkyrie account.</CardDescription>
-                <p className="text-[0.8rem] font-medium text-destructive">{ error ? error : '' }</p>
+                {error && <p className="text-[0.8rem] font-medium text-destructive">{error}</p>}
             </CardHeader>
             <CardContent>
                 <Form {...form}>

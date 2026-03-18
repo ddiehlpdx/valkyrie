@@ -1,4 +1,4 @@
-import { LoaderFunctionArgs, redirect, json } from "@remix-run/node";
+import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, Outlet, useParams, useLocation } from "@remix-run/react";
 import { getSession } from "~/session.server";
 import { getUserById } from "~/api/user";
@@ -46,14 +46,14 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
     throw new Response("Not found", { status: 404 });
   }
 
-  return json({
+  return {
     user,
     project,
     profile,
     projects,
     userRole: accessCheck.role,
     isOwner: accessCheck.role === 'owner'
-  });
+  };
 }
 
 export default function ProjectLayout() {

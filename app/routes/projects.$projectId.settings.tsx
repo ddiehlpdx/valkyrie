@@ -1,5 +1,5 @@
-import { LoaderFunctionArgs, ActionFunctionArgs, redirect, json } from "@remix-run/node";
-import { useLoaderData, useActionData, useSubmit, useOutletContext, useRevalidator } from "@remix-run/react";
+import { LoaderFunctionArgs, ActionFunctionArgs, json } from "@remix-run/node";
+import { useActionData, useSubmit, useOutletContext, useRevalidator } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import { requireProjectOwnership } from "~/lib/project-access.server";
 import { 
@@ -15,16 +15,16 @@ import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { Badge } from "~/components/ui/badge";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { 
-  ArrowLeft, 
-  Settings, 
-  Users, 
-  Plus, 
-  Trash2, 
+import {
+  Settings,
+  Users,
+  Plus,
+  Trash2,
   Search,
   Crown,
   User
 } from "lucide-react";
+import { toast } from "sonner";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;
@@ -155,14 +155,14 @@ interface ProjectContext {
 }
 
 export default function ProjectSettingsPage() {
-  const { user, project, userRole, isOwner } = useOutletContext<ProjectContext>();
+  const { project, userRole, isOwner } = useOutletContext<ProjectContext>();
   const actionData = useActionData<typeof action>();
   const submit = useSubmit();
   const revalidator = useRevalidator();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<Array<{id: string, username: string, email: string}>>([]);
-  const [isSearching, setIsSearching] = useState(false);
+  const [pendingRemovalId, setPendingRemovalId] = useState<string | null>(null);
   
   // Project editing state
   const [projectName, setProjectName] = useState(project.name);
@@ -191,6 +191,17 @@ export default function ProjectSettingsPage() {
     }
   }, [actionData, projectName, projectDescription]);
 
+  // Show toast notifications for action results
+  useEffect(() => {
+    if (!actionData) return;
+    if ('success' in actionData && typeof actionData.success === 'string') {
+      toast.success(actionData.success);
+    }
+    if ('error' in actionData) {
+      toast.error(actionData.error as string);
+    }
+  }, [actionData]);
+
   const handleUserSearch = async (query: string) => {
     setSearchQuery(query);
     
@@ -199,7 +210,6 @@ export default function ProjectSettingsPage() {
       return;
     }
 
-    setIsSearching(true);
     const formData = new FormData();
     formData.append('action', 'search_users');
     formData.append('query', query);
@@ -221,14 +231,11 @@ export default function ProjectSettingsPage() {
   };
 
   const handleRemoveCollaborator = (collaboratorId: string) => {
-    if (!confirm('Are you sure you want to remove this collaborator?')) {
-      return;
-    }
-    
     const formData = new FormData();
     formData.append('action', 'remove_collaborator');
     formData.append('collaboratorId', collaboratorId);
     submit(formData, { method: 'post' });
+    setPendingRemovalId(null);
   };
 
   // Filter out users who are already collaborators or the owner
@@ -246,7 +253,7 @@ export default function ProjectSettingsPage() {
           <h1 className="text-3xl font-bold tracking-tight">Project Settings</h1>
         </div>
         <p className="text-muted-foreground">
-          Manage settings and collaborators for "{project.name}"
+          Manage settings and collaborators for &ldquo;{project.name}&rdquo;
         </p>
       </div>
 
@@ -262,7 +269,7 @@ export default function ProjectSettingsPage() {
                   </CardDescription>
                 </div>
                 {isOwner && hasChanges && (
-                  <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
+                  <Badge variant="outline" className="text-orange-400 border-orange-400/30 bg-orange-400/10">
                     Unsaved changes
                   </Badge>
                 )}
@@ -482,13 +489,32 @@ export default function ProjectSettingsPage() {
                             Collaborator
                           </Badge>
                           {isOwner && (
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => handleRemoveCollaborator(collaboration.userId)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            pendingRemovalId === collaboration.userId ? (
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => handleRemoveCollaborator(collaboration.userId)}
+                                >
+                                  Confirm
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => setPendingRemovalId(null)}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            ) : (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setPendingRemovalId(collaboration.userId)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )
                           )}
                         </div>
                       </div>
@@ -519,18 +545,6 @@ export default function ProjectSettingsPage() {
             </CardContent>
           </Card>
 
-          {/* Success/Error Messages */}
-          {actionData && 'success' in actionData && (
-            <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-md">
-              <p className="text-green-700 dark:text-green-300 text-sm">{actionData.success}</p>
-            </div>
-          )}
-          
-          {actionData && 'error' in actionData && (
-            <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-md">
-              <p className="text-red-700 dark:text-red-300 text-sm">{actionData.error}</p>
-            </div>
-          )}
         </div>
     </div>
   );

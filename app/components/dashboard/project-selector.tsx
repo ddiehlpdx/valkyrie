@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "@remix-run/react";
+import { useNavigate, useLocation, Link } from "@remix-run/react";
 import { ChevronsUpDown, Plus, FolderOpen, Crown, User, Settings } from "lucide-react";
 import {
   DropdownMenu,
@@ -11,15 +11,13 @@ import {
 } from "../ui/dropdown-menu";
 import {
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "../ui/sidebar";
 
 interface Project {
   id: string;
   name: string;
-  description?: string;
+  description?: string | null;
   ownerId: string;
   owner: {
     id: string;
@@ -43,7 +41,6 @@ interface ProjectSelectorProps {
 }
 
 export function ProjectSelector({ projects, currentUserId }: ProjectSelectorProps) {
-  const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const location = useLocation();
   const [activeProject, setActiveProject] = useState<Project | null>(null);
@@ -51,7 +48,7 @@ export function ProjectSelector({ projects, currentUserId }: ProjectSelectorProp
   // Set active project based on current URL or default to first project
   useEffect(() => {
     const currentPath = location.pathname;
-    const projectIdMatch = currentPath.match(/^\/projects\/([^\/]+)/);
+    const projectIdMatch = currentPath.match(/^\/projects\/([^/]+)/);
     
     if (projectIdMatch && projects.length > 0) {
       const currentProjectId = projectIdMatch[1];
@@ -140,13 +137,13 @@ export function ProjectSelector({ projects, currentUserId }: ProjectSelectorProp
                         </span>
                       </div>
                       {isOwner && (
-                        <a
-                          href={`/projects/${project.id}/settings`}
+                        <Link
+                          to={`/projects/${project.id}/settings`}
                           className="ml-auto p-1 hover:bg-accent rounded opacity-60 hover:opacity-100"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <Settings className="size-3" />
-                        </a>
+                        </Link>
                       )}
                     </DropdownMenuItem>
                   );
@@ -159,12 +156,12 @@ export function ProjectSelector({ projects, currentUserId }: ProjectSelectorProp
               </DropdownMenuLabel>
             )}
             <DropdownMenuItem className="gap-2 p-2" asChild>
-              <a href="/projects/new">
+              <Link to="/projects/new">
                 <div className="bg-background flex size-6 items-center justify-center rounded-md border">
                   <Plus className="size-4" />
                 </div>
                 <div className="font-medium">Create Project</div>
-              </a>
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

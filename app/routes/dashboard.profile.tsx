@@ -53,6 +53,10 @@ export async function action({ request }: ActionFunctionArgs) {
       const clearAvatarAction = formData.get('clearAvatar') as string;
       
       if (clearAvatarAction === 'true') {
+        const currentProfile = await getProfileByUserId(userId);
+        if (currentProfile.avatar) {
+          await deleteAvatar(currentProfile.avatar);
+        }
         await clearAvatar(userId);
         return json({ success: true, message: "Avatar cleared successfully!" });
       }
@@ -238,7 +242,7 @@ export default function ProfilePage() {
                 </CardDescription>
               </div>
               {hasUnsavedChanges && (
-                <Badge variant="outline" className="text-orange-600 border-orange-200 bg-orange-50">
+                <Badge variant="outline" className="text-orange-400 border-orange-400/30 bg-orange-400/10">
                   Unsaved changes
                 </Badge>
               )}

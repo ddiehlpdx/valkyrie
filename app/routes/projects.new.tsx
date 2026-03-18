@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, ActionFunctionArgs, redirect, json } from "@remix-run/node";
-import { useLoaderData, useActionData, useSubmit } from "@remix-run/react";
+import { useLoaderData, useActionData, useSubmit, Link } from "@remix-run/react";
 import { useState } from "react";
 import { getSession } from "~/session.server";
 import { getUserById } from "~/api/user";
@@ -432,10 +432,10 @@ export default function NewProjectPage() {
         <div className="mb-8">
           <div className="flex items-center gap-4 mb-4">
             <Button variant="ghost" size="sm" asChild>
-              <a href="/dashboard">
+              <Link to="/dashboard">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Dashboard
-              </a>
+              </Link>
             </Button>
           </div>
           <h1 className="text-3xl font-bold tracking-tight">Create New Project</h1>

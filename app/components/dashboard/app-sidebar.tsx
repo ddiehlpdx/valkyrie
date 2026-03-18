@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   SquareTerminal,
 } from "lucide-react";
@@ -25,6 +24,19 @@ const data = {
   ],
 }
 
+interface SidebarProject {
+  id: string;
+  name: string;
+  description?: string | null;
+  ownerId: string;
+  owner: { id: string; username: string; email: string };
+  collaborators: Array<{
+    id: string;
+    userId: string;
+    user: { id: string; username: string; email: string };
+  }>;
+}
+
 interface AppSidebarProps {
   user?: {
     id: string;
@@ -32,7 +44,7 @@ interface AppSidebarProps {
     username: string;
   } | null;
   profile?: Profile | null;
-  projects?: any[] | null;
+  projects?: SidebarProject[] | null;
 }
 
 export function AppSidebar({ user, profile, projects }: AppSidebarProps) {

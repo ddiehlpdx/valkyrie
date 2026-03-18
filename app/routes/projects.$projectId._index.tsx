@@ -1,4 +1,4 @@
-import { useOutletContext } from "@remix-run/react";
+import { useOutletContext, Link } from "@remix-run/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
@@ -11,7 +11,6 @@ import {
   Map, 
   Sword, 
   Zap, 
-  Shield,
   Calendar,
   Activity
 } from "lucide-react";
@@ -51,7 +50,7 @@ interface ProjectContext {
 }
 
 export default function ProjectOverview() {
-  const { user, project, userRole, isOwner } = useOutletContext<ProjectContext>();
+  const { project, userRole, isOwner } = useOutletContext<ProjectContext>();
 
   const quickActions = [
     {
@@ -121,10 +120,10 @@ export default function ProjectOverview() {
         </div>
         {isOwner && (
           <Button variant="outline" asChild>
-            <a href={`/projects/${project.id}/settings`}>
+            <Link to={`/projects/${project.id}/settings`}>
               <Settings className="h-4 w-4 mr-2" />
               Project Settings
-            </a>
+            </Link>
           </Button>
         )}
       </div>
@@ -135,7 +134,7 @@ export default function ProjectOverview() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {quickActions.map((action) => (
             <Card key={action.title} className="hover:shadow-md transition-shadow cursor-pointer">
-              <a href={action.href} className="block">
+              <Link to={action.href} className="block">
                 <CardHeader className="pb-3">
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${action.color} text-white`}>
@@ -147,7 +146,7 @@ export default function ProjectOverview() {
                     </div>
                   </div>
                 </CardHeader>
-              </a>
+              </Link>
             </Card>
           ))}
         </div>

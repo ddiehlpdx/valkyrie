@@ -6,17 +6,18 @@ const SALT_ROUNDS = 12;
 const db = new PrismaClient().$extends({
     model: {
         user: {
-            async signUp(email: string, username: string, password: string): Promise<User> {
+            async signUp(email: string, username: string, password: string) {
                 const hashedPassword = await hash(password, SALT_ROUNDS);
-                const user = await db.user.create({
+                return db.user.create({
                     data: {
                         email,
                         username,
                         password: hashedPassword,
                     },
+                    omit: {
+                        password: true,
+                    },
                 });
-
-                return user;
             },
 
             async signIn(emailOrUsername: string, password: string): Promise<User | undefined> {

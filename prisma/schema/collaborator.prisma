@@ -10,4 +10,5 @@ model Collaborator {
   updatedAt DateTime @updatedAt
 
   @@unique([projectId, userId])
+  @@index([userId])
 }

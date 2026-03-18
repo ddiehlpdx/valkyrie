@@ -119,12 +119,20 @@ export async function isProjectCollaborator(projectId: string, userId: string) {
 }
 
 export async function hasProjectAccess(projectId: string, userId: string) {
-    const isOwner = await isProjectOwner(projectId, userId);
-    if (isOwner) return { hasAccess: true, role: 'owner' as const };
-    
-    const isCollaborator = await isProjectCollaborator(projectId, userId);
-    if (isCollaborator) return { hasAccess: true, role: 'collaborator' as const };
-    
+    const project = await db.project.findUnique({
+        where: { id: projectId },
+        select: {
+            ownerId: true,
+            collaborators: {
+                where: { userId },
+                select: { id: true }
+            }
+        }
+    });
+
+    if (!project) return { hasAccess: false, role: null };
+    if (project.ownerId === userId) return { hasAccess: true, role: 'owner' as const };
+    if (project.collaborators.length > 0) return { hasAccess: true, role: 'collaborator' as const };
     return { hasAccess: false, role: null };
 }
 

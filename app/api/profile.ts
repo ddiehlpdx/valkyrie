@@ -2,28 +2,15 @@ import { db } from "~/db.server";
 
 // get or create a new profile for existing user
 export async function getProfileByUserId(userId: string) {
-    try {
-        return await db.profile.upsert({
-            where: {
-                userId
-            },
-            update: {},
-            create: {
-                userId
-            }
-        });
-    } catch (error) {
-        console.error('Profile upsert error:', error);
-        // If there's a foreign key error, just try to find existing profile
-        const existingProfile = await db.profile.findUnique({
-            where: { userId }
-        });
-        if (existingProfile) {
-            return existingProfile;
+    return db.profile.upsert({
+        where: {
+            userId
+        },
+        update: {},
+        create: {
+            userId
         }
-        // If no profile exists and we can't create one, return null
-        return null;
-    }
+    });
 }
 
 // update profile data

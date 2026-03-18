@@ -68,7 +68,7 @@ export default function SignUpForm() {
             <CardHeader>
                 <CardTitle>Sign Up</CardTitle>
                 <CardDescription>Sign up for a new Valkyrie account.</CardDescription>
-                <p className="text-[0.8rem] font-medium text-destructive">{ error ? error : '' }</p>
+                {error && <p className="text-[0.8rem] font-medium text-destructive">{error}</p>}
             </CardHeader>
             <CardContent>
                 <Form {...form}>
