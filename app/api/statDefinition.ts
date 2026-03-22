@@ -1,5 +1,5 @@
 import { db } from "~/db.server";
-import { categoryType } from "@prisma/client";
+import { CategoryType } from "@prisma/client";
 
 export async function getStatsByProjectId(projectId: string) {
     return db.statDefinition.findMany({
@@ -12,7 +12,7 @@ export async function createStat(data: {
     name: string;
     abbreviation: string;
     description?: string;
-    category: categoryType;
+    category: CategoryType;
     minValue: number;
     maxValue: number;
     defaultValue: number;
@@ -26,7 +26,7 @@ export async function updateStat(statId: string, data: {
     name?: string;
     abbreviation?: string;
     description?: string;
-    category?: categoryType;
+    category?: CategoryType;
     minValue?: number;
     maxValue?: number;
     defaultValue?: number;
