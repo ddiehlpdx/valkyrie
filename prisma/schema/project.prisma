@@ -6,14 +6,17 @@ model Project {
 
   owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  settings       ProjectSettings?
-  collaborators  Collaborator[]
-  professions    Profession[]
-  damageTypes    DamageType[]
-  abilityTypes   AbilityType[]
-  weaponTypes    WeaponType[]
-  armorTypes     ArmorType[]
-  equipmentTypes EquipmentType[]
+  settings            ProjectSettings?
+  collaborators       Collaborator[]
+  professions         Profession[]
+  damageTypes         DamageType[]
+  abilityTypes        AbilityType[]
+  weaponTypes         WeaponType[]
+  armorTypes          ArmorType[]
+  equipmentTypes      EquipmentType[]
+  statDefinitions     StatDefinition[]
+  elements            Element[]
+  elementInteractions ElementInteraction[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
