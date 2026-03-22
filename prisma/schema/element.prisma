@@ -1,0 +1,17 @@
+model Element {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  color       String
+  iconKey     String
+  projectId   String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  sourceInteractions ElementInteraction[] @relation("SourceInteractions")
+  targetInteractions ElementInteraction[] @relation("TargetInteractions")
+
+  displayOrder Int      @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
