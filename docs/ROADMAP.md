@@ -4,7 +4,7 @@
 
 Valkyrie aims to be the "RPG Maker" for tactical RPGs (Final Fantasy Tactics, Tactics Ogre, Triangle Strategy) — a full in-browser editor AND game runtime.
 
-**Current state:** Phase 0 is complete. Authentication (sign-up/sign-in with async bcrypt, cookie sessions), user profiles with avatar upload, full project CRUD with collaborator management, ProjectSettings (grid/battle/progression config), project deletion with cascade, access control middleware (owner vs collaborator roles), a dashboard with project card grid, and conditional sidebar navigation showing game design sections when inside a project. The database has 6 bare-bones game type models (Profession, AbilityType, DamageType, WeaponType, ArmorType, EquipmentType — each with `id`, `name`, `projectId`, `displayOrder`) plus ProjectSettings (1:1 with Project). Two rounds of code review have been completed, covering security, performance, and code quality.
+**Current state:** Phases 0 and 1 are complete. The foundation includes authentication (sign-up/sign-in with async bcrypt, cookie sessions), user profiles with avatar upload, full project CRUD with collaborator management, ProjectSettings (grid/battle/progression config), project deletion with cascade, access control middleware (owner vs collaborator roles), a dashboard with project card grid, and conditional sidebar navigation. Phase 1 delivered the core game data layer: StatDefinition (with CategoryType enum), Element (with color/icon), ElementInteraction (N×N multiplier matrix), plus full CRUD editors for DamageType, Profession (with weapon/armor type permissions), WeaponType, ArmorType, AbilityType, and EquipmentType. All editors feature drag-and-drop reordering (@dnd-kit), Zod + react-hook-form validation, Dialog-based create/edit, AlertDialog delete confirmation, and Sonner toast notifications. The smart save pattern and Editor UI Design Standards are established.
 
 This roadmap takes us from current state to a playable MVP across 9 phases.
 
@@ -66,71 +66,95 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 
 ---
 
-## Phase 1: Stats & Elements
+## Phase 1: Stats, Elements & Core Type Editors — COMPLETE
 
-**The atoms of the RPG system.** Everything references stats and elements.
+**The atoms of the RPG system.** Stats and elements are referenced by everything. This phase also delivered full CRUD editors for all existing game type models (DamageType, Profession, WeaponType, ArmorType, AbilityType, EquipmentType) and established the Editor UI Design Standards used by all future phases.
 
-### Schema
-- **Create** `prisma/schema/statDefinition.prisma`:
-  ```
-  StatDefinition: id, name, abbreviation, description, category (enum: Core/Offensive/Defensive/Speed/Luck/Custom),
-                  minValue, maxValue, defaultValue, isPercentage, isCore (Boolean — true for fixed stats),
-                  projectId, displayOrder
-  @@unique([projectId, abbreviation])
-  ```
-  - Core stats (seeded on project creation): HP, MP, MOV
-  - Custom stats: user-defined per project (STR, DEF, MAG, SPD, etc.)
+**Schema:**
+- `StatDefinition`: id, name, abbreviation, description, category (`CategoryType` enum: Core/Offensive/Defensive/Speed/Luck/Custom), minValue, maxValue, defaultValue, isPercentage, projectId, displayOrder. `@@unique([projectId, abbreviation])`
+- `Element`: id, name, description, color (hex), iconKey, projectId, displayOrder
+- `ElementInteraction`: id, sourceElementId, targetElementId, multiplier (Float, default 1.0), projectId. `@@unique([projectId, sourceElementId, targetElementId])`. Cascade delete from both source/target Element
+- `DamageType`: expanded with `BaseDamageType` enum (Physical/Magical/Chemical/Environmental), optional `elementId` (SetNull on delete)
+- `WeaponType`: expanded with optional `damageTypeId` (SetNull on delete)
+- `Profession`: expanded with `displayOrder`, relations to `ProfessionWeaponType` and `ProfessionArmorType`
+- `ProfessionWeaponType`: junction table — professionId + weaponTypeId + projectId. `@@unique([professionId, weaponTypeId])`. Cascade delete from both sides
+- `ProfessionArmorType`: junction table — professionId + armorTypeId + projectId. `@@unique([professionId, armorTypeId])`. Cascade delete from both sides
+- `ArmorType`, `AbilityType`, `EquipmentType`: expanded with `displayOrder`
+- Project model updated with relations to all new entities
 
-- **Create** `prisma/schema/element.prisma`:
-  ```
-  Element: id, name, description, color (hex), iconKey, projectId, displayOrder
-  ```
+**Routes (8 new editor routes):**
+- `projects.$projectId.stats.tsx` — stat definition CRUD with sortable table
+- `projects.$projectId.elements.tsx` — element CRUD with card grid + per-element interaction dialog
+- `projects.$projectId.damage-types.tsx` — damage type CRUD with element association
+- `projects.$projectId.professions.tsx` — profession CRUD with weapon/armor type checkboxes
+- `projects.$projectId.weapon-types.tsx` — weapon type CRUD
+- `projects.$projectId.armor-types.tsx` — armor type CRUD
+- `projects.$projectId.ability-types.tsx` — ability type CRUD
+- `projects.$projectId.equipment-types.tsx` — equipment type CRUD
 
-- **Create** `prisma/schema/elementInteraction.prisma`:
-  ```
-  ElementInteraction: id, sourceElementId, targetElementId, multiplier (Float, default 1.0), projectId
-  @@unique([projectId, sourceElementId, targetElementId])
-  ```
+**API (8 new service files in `app/api/`):**
+- `statDefinition.ts` — `getStatsByProjectId`, `createStat`, `updateStat`, `deleteStat`, `reorderStats`
+- `element.ts` — `getElementsByProjectId`, `createElement`, `updateElement`, `deleteElement`, `reorderElements`
+- `elementInteraction.ts` — `getInteractionsByProjectId`, `upsertInteraction`, `bulkUpsertInteractions` (transactional batch), `deleteInteraction`
+- `damageType.ts` — CRUD + `reorderDamageTypes` (includes element relation)
+- `profession.ts` — CRUD + `reorderProfessions` (transactional with junction table cascade delete/recreate)
+- `weaponType.ts`, `armorType.ts`, `abilityType.ts`, `equipmentType.ts` — standard CRUD + reorder
 
-### Routes
-- `projects.$projectId.stats.tsx` — stat definition list with CRUD
-- `projects.$projectId.elements.tsx` — element list + interaction matrix
+**Components:**
+- `app/components/stats/` — `stat-form-dialog.tsx` (Zod validation with cross-field refinements: maxValue > minValue, defaultValue in range), `stat-table.tsx` (dnd-kit sortable rows, `CATEGORY_COLORS` color-coded badges, GripVertical drag handles)
+- `app/components/elements/` — `element-form-dialog.tsx` (hex color picker, `ELEMENT_ICONS` map with 19 Lucide icons, live preview), `element-grid.tsx` (dnd-kit rect sorting strategy), `element-card.tsx` (sortable card with icon/color/description/interaction count), `interaction-dialog.tsx` (smart save pattern with unsaved changes badge, color-tinted multiplier inputs: red < 1.0, green > 1.0, bulk upsert on save)
+- `app/components/core-rules/` — `damage-type-form-dialog.tsx` (BaseDamageType enum + element dropdown), `profession-form-dialog.tsx` (weapon/armor type checkbox lists), `named-type-form-dialog.tsx` (reusable for simple name-only entities), matching `*-table.tsx` components for each with dnd-kit reordering
 
-### Editor UI
-- **Stats**: sortable table — name, abbreviation, category, min/max/default, isPercentage. Core stats are non-deletable. "Seed from template" button (FFT-style, FE-style, custom blank).
-- **Elements**: list editor + color picker. Sub-page: interaction matrix (elements x elements grid, cells = multiplier values)
+**Sidebar & navigation:**
+- Game Design sections now active with collapsible groups: Core Rules (Stats, Elements, Damage Types), Characters & Classes (Professions), Abilities & Skills (Ability Types), Equipment & Items (Armor Types, Equipment Types, Weapon Types)
+- Dynamic breadcrumbs for all new routes in project layout
 
-### API
-- `app/api/statDefinition.ts` — CRUD + `seedCoreStats(projectId)` (called during project creation)
-- `app/api/element.ts` — CRUD + `getInteractionMatrix`, `upsertInteraction`
+**Patterns established (Editor UI Design Standards):**
+- Route pattern: loader (`requireProjectAccess` + fetch ordered data) → action (`switch` on `formData.get("action")` with `create_`, `update_`, `delete_`, `reorder_` prefixes)
+- Dialog-based create/edit with Zod + react-hook-form + shadcn Form components
+- AlertDialog delete confirmation with consequence description
+- Drag-and-drop reordering via @dnd-kit with immediate persistence (transactional batch updates)
+- Smart save pattern for bulk operations (ref-based change tracking, unsaved changes badge)
+- `useEffect` watching `actionData` for Sonner toast notifications
+- All patterns documented in CLAUDE.md for consistency in future phases
+
+**Dependencies added:** `@dnd-kit/core`, `@dnd-kit/sortable`, `@dnd-kit/utilities`
+
+**Deferred to later phases:**
+- "Seed from template" button for stats (FFT-style, FE-style, custom blank)
+- Core stat seeding on project creation (HP, MP, MOV)
 
 ---
 
 ## Phase 2: Professions/Job Classes
 
-**Expand the bare Profession model into a full job class system.**
+**Expand the Profession model into a full job class system.** Basic Profession CRUD with weapon/armor type permissions already exists from Phase 1. This phase adds stat integration, growth rates, prerequisites, and a tabbed detail editor.
 
-### Schema
-- **Modify** `prisma/schema/profession.prisma` — add `description`, `iconKey`, relations to new models
+### Already complete (from Phase 1)
+- Profession model with name, displayOrder, projectId
+- ProfessionWeaponType and ProfessionArmorType junction tables
+- Profession list route (`projects.$projectId.professions.tsx`) with CRUD + drag-and-drop reorder
+- ProfessionFormDialog with weapon/armor type checkbox selection
+
+### Schema (new)
+- **Modify** `prisma/schema/profession.prisma` — add `description`, `iconKey`
 - **Create** `professionBaseStat.prisma`: professionId + statDefinitionId + value (`@@unique` pair)
 - **Create** `professionGrowthRate.prisma`: professionId + statDefinitionId + growthRate (Float) (`@@unique` pair)
-- **Create** `professionEquipmentPermission.prisma`: professionId + weaponTypeId? + armorTypeId? + equipmentTypeId?
 - **Create** `professionPrerequisite.prisma`: professionId + requiredProfessionId + requiredLevel (self-referential relation)
 
-### Routes
-- `projects.$projectId.professions.tsx` — profession list
-- `projects.$projectId.professions.$professionId.tsx` — profession detail editor
+### Routes (new)
+- `projects.$projectId.professions.$professionId.tsx` — profession detail editor (tabbed)
 
-### Editor UI (tabbed detail view)
+### Editor UI (tabbed detail view, enhances existing profession route)
 - **General**: name, description, icon
 - **Base Stats**: compact table with each project stat + value input
 - **Growth Rates**: same layout for growth rate values
-- **Equipment**: checkboxes for each WeaponType, ArmorType, EquipmentType
+- **Equipment**: weapon/armor/equipment type checkboxes (refine existing implementation)
 - **Prerequisites**: multi-select for other professions + level threshold each
 - **Class Tree Visualizer**: read-only graph showing prerequisite chains (nice-to-have)
 
 ### Dependencies
-- Phase 1 (StatDefinition)
+- Phase 1 (StatDefinition) ✓
 
 ---
 
@@ -346,7 +370,7 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 ```
 Phase 0: Project Management          [COMPLETE]
     |
-Phase 1: Stats & Elements            [Core data types]
+Phase 1: Stats, Elements & Editors   [COMPLETE]
     |
 Phase 2: Professions/Jobs            [depends on Phase 1]
     |
@@ -385,9 +409,14 @@ Project Routes:
   /projects/:projectId                              (existing — Phase 0, project layout)
   /projects/:projectId/settings                     (existing — Phase 0, includes game settings + danger zone)
   /projects/:projectId/maps                         (placeholder — Phase 6)
-  /projects/:projectId/stats                        (Phase 1)
-  /projects/:projectId/elements                     (Phase 1)
-  /projects/:projectId/professions                  (Phase 2)
+  /projects/:projectId/stats                        (existing — Phase 1)
+  /projects/:projectId/elements                     (existing — Phase 1)
+  /projects/:projectId/damage-types                 (existing — Phase 1)
+  /projects/:projectId/professions                  (existing — Phase 1, enhanced in Phase 2)
+  /projects/:projectId/weapon-types                 (existing — Phase 1)
+  /projects/:projectId/armor-types                  (existing — Phase 1)
+  /projects/:projectId/ability-types                (existing — Phase 1)
+  /projects/:projectId/equipment-types              (existing — Phase 1)
   /projects/:projectId/professions/:id              (Phase 2)
   /projects/:projectId/abilities                    (Phase 3)
   /projects/:projectId/abilities/:id                (Phase 3)
