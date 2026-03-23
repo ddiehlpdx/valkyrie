@@ -74,12 +74,28 @@ export default function ProjectLayout() {
         return { title: 'Overview', isSubPage: false };
       case 'settings':
         return { title: 'Settings', isSubPage: true };
+      case 'stats':
+        return { title: 'Stat Definitions', isSubPage: true };
+      case 'elements':
+        return { title: 'Elements', isSubPage: true };
       case 'maps':
         return { title: 'Maps', isSubPage: true };
       case 'characters':
         return { title: 'Characters', isSubPage: true };
       case 'abilities':
         return { title: 'Abilities', isSubPage: true };
+      case 'ability-types':
+        return { title: 'Ability Types', isSubPage: true };
+      case 'armor-types':
+        return { title: 'Armor Types', isSubPage: true };
+      case 'damage-types':
+        return { title: 'Damage Types', isSubPage: true };
+      case 'equipment-types':
+        return { title: 'Equipment Types', isSubPage: true };
+      case 'professions':
+        return { title: 'Professions', isSubPage: true };
+      case 'weapon-types':
+        return { title: 'Weapon Types', isSubPage: true };
       default:
         // Format any other sub-route nicely
         const title = subRoute.split('/').pop()?.split('-').map(word => 

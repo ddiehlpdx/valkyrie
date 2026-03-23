@@ -32,3 +32,14 @@ export async function updateElement(elementId: string, data: {
 export async function deleteElement(elementId: string) {
     return db.element.delete({ where: { id: elementId } });
 }
+
+export async function reorderElements(projectId: string, orderedIds: string[]) {
+    return db.$transaction(
+        orderedIds.map((id, index) =>
+            db.element.update({
+                where: { id },
+                data: { displayOrder: index },
+            })
+        )
+    );
+}

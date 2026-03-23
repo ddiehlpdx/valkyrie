@@ -6,8 +6,8 @@ model ElementInteraction {
   projectId       String
 
   project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  sourceElement Element @relation("SourceInteractions", fields: [sourceElementId], references: [id])
-  targetElement Element @relation("TargetInteractions", fields: [targetElementId], references: [id])
+  sourceElement Element @relation("SourceInteractions", fields: [sourceElementId], references: [id], onDelete: Cascade)
+  targetElement Element @relation("TargetInteractions", fields: [targetElementId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

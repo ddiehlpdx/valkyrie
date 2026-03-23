@@ -1,9 +1,10 @@
 import {
   SquareTerminal,
   Map,
-  User,
   Zap,
   Sword,
+  BookOpen,
+  GraduationCap,
 } from "lucide-react";
 import { NavMain, type NavItem } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -58,25 +59,41 @@ function getGameDesignNav(projectId: string): NavItem[] {
       icon: Map,
     },
     {
+      title: "Core Rules",
+      url: "#",
+      icon: BookOpen,
+      isActive: true,
+      items: [
+        { title: "Stats", url: `/projects/${projectId}/stats` },
+        { title: "Elements", url: `/projects/${projectId}/elements` },
+        { title: "Damage Types", url: `/projects/${projectId}/damage-types` },
+      ],
+    },
+    {
       title: "Characters & Classes",
-      url: `/projects/${projectId}/characters`,
-      icon: User,
-      disabled: true,
-      badge: "Soon",
+      url: "#",
+      icon: GraduationCap,
+      items: [
+        { title: "Professions", url: `/projects/${projectId}/professions` },
+      ],
     },
     {
       title: "Abilities & Skills",
-      url: `/projects/${projectId}/abilities`,
+      url: "#",
       icon: Zap,
-      disabled: true,
-      badge: "Soon",
+      items: [
+        { title: "Ability Types", url: `/projects/${projectId}/ability-types` },
+      ],
     },
     {
       title: "Equipment & Items",
-      url: `/projects/${projectId}/equipment`,
+      url: "#",
       icon: Sword,
-      disabled: true,
-      badge: "Soon",
+      items: [
+        { title: "Armor Types", url: `/projects/${projectId}/armor-types` },
+        { title: "Equipment Types", url: `/projects/${projectId}/equipment-types` },
+        { title: "Weapon Types", url: `/projects/${projectId}/weapon-types` },
+      ],
     },
   ];
 }

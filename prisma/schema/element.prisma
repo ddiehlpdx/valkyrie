@@ -10,6 +10,7 @@ model Element {
 
   sourceInteractions ElementInteraction[] @relation("SourceInteractions")
   targetInteractions ElementInteraction[] @relation("TargetInteractions")
+  damageTypes        DamageType[]
 
   displayOrder Int      @default(autoincrement())
   createdAt    DateTime @default(now())
