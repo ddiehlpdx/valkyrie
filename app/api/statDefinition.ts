@@ -41,3 +41,14 @@ export async function updateStat(statId: string, data: {
 export async function deleteStat(statId: string) {
     return db.statDefinition.delete({ where: { id: statId } });
 }
+
+export async function reorderStats(projectId: string, orderedIds: string[]) {
+    return db.$transaction(
+        orderedIds.map((id, index) =>
+            db.statDefinition.update({
+                where: { id },
+                data: { displayOrder: index },
+            })
+        )
+    );
+}

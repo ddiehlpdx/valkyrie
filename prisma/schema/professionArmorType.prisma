@@ -1,0 +1,12 @@
+model ProfessionArmorType {
+  id           String @id @default(uuid())
+  professionId String
+  armorTypeId  String
+  projectId    String
+
+  profession Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  armorType  ArmorType  @relation(fields: [armorTypeId], references: [id], onDelete: Cascade)
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([professionId, armorTypeId])
+}

@@ -110,5 +110,44 @@ This is a **Remix** application using **Vite** as the build tool, with a Postgre
   - Use shadcn Form components (`FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormMessage`)
   - Example: `const formSchema = z.object({ email: z.string().email(), username: z.string().min(3).max(64) })`
 
+## Editor UI Design Standards
+
+These standards apply to all CRUD editor pages (Stats, Elements, and future entity editors).
+
+### Page Layout
+- **Header**: Entity name as `h1` with a lucide icon, descriptive subtitle below, and a "+ New [Entity]" button aligned right
+- **Data Display**: Use data tables (`app/components/ui/table`) for entities with many fields (e.g., Stats); use card grids for visual/compact entities (e.g., Elements)
+- **Sections**: If a page has multiple concerns (e.g., Elements + Interactions), separate with `<Separator>` and distinct Card boundaries
+
+### CRUD Pattern
+- **Create/Edit**: Use `Dialog` component (not Sheet or separate route) with Zod + react-hook-form validation inside shadcn `Form` components
+- **Delete**: Always confirm via `AlertDialog` with a clear description of consequences (e.g., "This will permanently remove the element and all of its interactions.")
+- **Reorder**: Use `@dnd-kit` drag-and-drop with `GripVertical` handle icon; persist order immediately on drop via form submission
+- **Notifications**: All success/error feedback via Sonner toast (never Alert components)
+
+### Form Dialogs
+- Use shadcn `Dialog` with `DialogHeader`, `DialogFooter`
+- Include `FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormMessage` from shadcn Form
+- Reset form state when dialog opens for "create"; pre-populate fields for "edit"
+- Close dialog on submit, show toast on action result via `useEffect` watching `actionData`
+- Cancel button uses `variant="outline"`; submit button is primary
+
+### Interaction Matrices
+- Use for NxN entity-vs-entity relationships (e.g., Element Interactions)
+- Provide both grid view and per-entity list view, toggleable via a `INTERACTION_VIEW` constant (`"A"` = grid, `"B"` = list)
+- Default multiplier is `1.0` (neutral); color-code cells: red tint for < 1.0 (resistance), green tint for > 1.0 (weakness)
+- Use bulk save with the smart save pattern (unsaved changes badge + save button)
+
+### Component Organization
+- Editor components live in `app/components/{entity-name}/` folders (e.g., `app/components/stats/`, `app/components/elements/`)
+- Common component types per entity: `{entity}-form-dialog.tsx`, `{entity}-table.tsx` or `{entity}-card.tsx` + `{entity}-grid.tsx`
+- Icon/constant mappings (e.g., `ELEMENT_ICONS`) are exported from the form dialog file for reuse by card/grid components
+
+### Route Conventions for Editors
+- Routes live at `app/routes/projects.$projectId.{entity}.tsx`
+- Loader: `requireProjectAccess` + fetch entity data
+- Action: switch on `formData.get("action")` with cases for `create_`, `update_`, `delete_`, `reorder_` prefixed by entity name
+- Page component: uses `useOutletContext` for project data, `useLoaderData` for entity data, `useActionData` + `useEffect` for toast notifications
+
 ## Additional Important Context
 - The app we are building is called Valkyrie. Valkyrie is meant to be like the "RPG Maker" for tactical RPGs like Final Fantasy Tactics and Ogre Battle. We should always keep this in mind when developing new features and maintaining existing ones.

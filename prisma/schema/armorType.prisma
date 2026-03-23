@@ -5,6 +5,8 @@ model ArmorType {
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
+  professions ProfessionArmorType[]
+
   displayOrder Int      @default(autoincrement())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
