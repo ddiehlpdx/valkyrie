@@ -15,9 +15,8 @@ model Project {
   armorTypes          ArmorType[]
   equipmentTypes      EquipmentType[]
   statDefinitions     StatDefinition[]
-  elements            Element[]
-  elementInteractions   ElementInteraction[]
-  professionWeaponTypes ProfessionWeaponType[]
+  damageTypeInteractions DamageTypeInteraction[]
+  professionWeaponTypes  ProfessionWeaponType[]
   professionArmorTypes  ProfessionArmorType[]
 
   createdAt DateTime @default(now())

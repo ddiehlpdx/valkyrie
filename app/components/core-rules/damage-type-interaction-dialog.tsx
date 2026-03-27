@@ -14,27 +14,28 @@ import { Badge } from "~/components/ui/badge";
 import { Label } from "~/components/ui/label";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Save } from "lucide-react";
-import { ELEMENT_ICONS } from "./element-form-dialog";
+import { DAMAGE_TYPE_ICONS } from "./damage-type-form-dialog";
 
-interface ElementData {
+interface DamageTypeData {
   id: string;
   name: string;
+  baseType: string;
   color: string;
   iconKey: string;
 }
 
 interface InteractionData {
   id: string;
-  sourceElementId: string;
-  targetElementId: string;
+  sourceDamageTypeId: string;
+  targetDamageTypeId: string;
   multiplier: number;
 }
 
-interface InteractionDialogProps {
+interface DamageTypeInteractionDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  sourceElement: ElementData | null;
-  allElements: ElementData[];
+  sourceDamageType: DamageTypeData | null;
+  allDamageTypes: DamageTypeData[];
   interactions: InteractionData[];
 }
 
@@ -44,34 +45,35 @@ function getRowTint(value: number): string {
   return "";
 }
 
-export function InteractionDialog({
+export function DamageTypeInteractionDialog({
   open,
   onOpenChange,
-  sourceElement,
-  allElements,
+  sourceDamageType,
+  allDamageTypes,
   interactions,
-}: InteractionDialogProps) {
+}: DamageTypeInteractionDialogProps) {
   const submit = useSubmit();
   const savedValuesRef = useRef<Map<string, number>>(new Map());
   const [currentValues, setCurrentValues] = useState<Map<string, number>>(new Map());
 
-  // Initialize/reset state when dialog opens with a new source element
   useEffect(() => {
-    if (!open || !sourceElement) return;
+    if (!open || !sourceDamageType) return;
 
     const saved = new Map<string, number>();
     for (const interaction of interactions) {
-      if (interaction.sourceElementId !== sourceElement.id) continue;
-      saved.set(interaction.targetElementId, interaction.multiplier);
+      if (interaction.sourceDamageTypeId !== sourceDamageType.id) continue;
+      saved.set(interaction.targetDamageTypeId, interaction.multiplier);
     }
     savedValuesRef.current = new Map(saved);
     setCurrentValues(new Map(saved));
-  }, [open, sourceElement, interactions]);
+  }, [open, sourceDamageType, interactions]);
 
-  const targetElements = allElements.filter((el) => el.id !== sourceElement?.id);
+  const targets = allDamageTypes.filter(
+    (dt) => dt.id !== sourceDamageType?.id && dt.baseType === sourceDamageType?.baseType
+  );
 
   const hasUnsavedChanges = (() => {
-    for (const target of targetElements) {
+    for (const target of targets) {
       const current = currentValues.get(target.id) ?? 1.0;
       const saved = savedValuesRef.current.get(target.id) ?? 1.0;
       if (current !== saved) return true;
@@ -88,21 +90,21 @@ export function InteractionDialog({
   }, []);
 
   function handleSave() {
-    if (!sourceElement) return;
+    if (!sourceDamageType) return;
 
     const changedInteractions: Array<{
-      sourceElementId: string;
-      targetElementId: string;
+      sourceDamageTypeId: string;
+      targetDamageTypeId: string;
       multiplier: number;
     }> = [];
 
-    for (const target of targetElements) {
+    for (const target of targets) {
       const current = currentValues.get(target.id) ?? 1.0;
       const saved = savedValuesRef.current.get(target.id) ?? 1.0;
       if (current !== saved) {
         changedInteractions.push({
-          sourceElementId: sourceElement.id,
-          targetElementId: target.id,
+          sourceDamageTypeId: sourceDamageType.id,
+          targetDamageTypeId: target.id,
           multiplier: current,
         });
       }
@@ -115,15 +117,13 @@ export function InteractionDialog({
     formData.append("interactions", JSON.stringify(changedInteractions));
     submit(formData, { method: "post" });
 
-    // Optimistically update saved state
     for (const interaction of changedInteractions) {
-      savedValuesRef.current.set(interaction.targetElementId, interaction.multiplier);
+      savedValuesRef.current.set(interaction.targetDamageTypeId, interaction.multiplier);
     }
-    // Force re-render to clear unsaved badge
     setCurrentValues(new Map(currentValues));
   }
 
-  const SourceIcon = sourceElement ? ELEMENT_ICONS[sourceElement.iconKey] : null;
+  const SourceIcon = sourceDamageType ? DAMAGE_TYPE_ICONS[sourceDamageType.iconKey] : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -131,21 +131,21 @@ export function InteractionDialog({
         <DialogHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {sourceElement && (
+              {sourceDamageType && (
                 <div
                   className="flex items-center justify-center h-9 w-9 rounded-lg"
                   style={{
-                    backgroundColor: sourceElement.color + "20",
-                    color: sourceElement.color,
+                    backgroundColor: sourceDamageType.color + "20",
+                    color: sourceDamageType.color,
                   }}
                 >
                   {SourceIcon && <SourceIcon className="h-5 w-5" />}
                 </div>
               )}
               <div>
-                <DialogTitle>{sourceElement?.name}: Interactions</DialogTitle>
+                <DialogTitle>{sourceDamageType?.name}: Interactions</DialogTitle>
                 <DialogDescription>
-                  Set damage multipliers against other elements.
+                  How much damage does {sourceDamageType?.name} deal against each type? 1.0x is normal, higher is more effective, lower is less.
                 </DialogDescription>
               </div>
             </div>
@@ -160,22 +160,23 @@ export function InteractionDialog({
           </div>
         </DialogHeader>
 
-        <div className="mb-2 flex gap-4 text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <div className="h-3 w-6 rounded bg-red-500/10 border border-red-500/20" />
-            <span>Resistant (&lt; 1.0x)</span>
-          </div>
+        <div className="mb-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <div className="h-3 w-6 rounded bg-green-500/10 border border-green-500/20" />
-            <span>Weak (&gt; 1.0x)</span>
+            <span>Super effective (&gt; 1.0x)</span>
           </div>
+          <div className="flex items-center gap-1.5">
+            <div className="h-3 w-6 rounded bg-red-500/10 border border-red-500/20" />
+            <span>Resisted (&lt; 1.0x)</span>
+          </div>
+          <span>1.0x = normal damage</span>
         </div>
 
         <ScrollArea className="max-h-[400px]">
           <div className="space-y-2 pr-3">
-            {targetElements.map((target) => {
+            {targets.map((target) => {
               const value = currentValues.get(target.id) ?? 1.0;
-              const TargetIcon = ELEMENT_ICONS[target.iconKey];
+              const TargetIcon = DAMAGE_TYPE_ICONS[target.iconKey];
 
               return (
                 <div
@@ -191,7 +192,22 @@ export function InteractionDialog({
                   >
                     {TargetIcon && <TargetIcon className="h-4 w-4" />}
                   </div>
-                  <Label className="flex-1 text-sm font-medium">{target.name}</Label>
+                  <div className="flex-1 min-w-0">
+                    <Label className="text-sm font-medium">{target.name}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {sourceDamageType?.name} deals{" "}
+                      <span className={
+                        value > 1.0 ? "text-green-500 font-medium" :
+                        value < 1.0 ? "text-red-500 font-medium" : ""
+                      }>
+                        {value}x
+                      </span>
+                      {" "}to {target.name}
+                      {value > 1.0 && " (super effective)"}
+                      {value < 1.0 && value > 0 && " (resisted)"}
+                      {value === 0 && " (immune)"}
+                    </p>
+                  </div>
                   <Input
                     type="number"
                     step="0.1"
@@ -204,16 +220,15 @@ export function InteractionDialog({
                         handleChange(target.id, parsed);
                       }
                     }}
-                    className="h-8 w-20 text-center text-sm"
+                    className="h-8 w-20 text-center text-sm shrink-0"
                   />
-                  <span className="text-xs text-muted-foreground w-3">x</span>
                 </div>
               );
             })}
 
-            {targetElements.length === 0 && (
+            {targets.length === 0 && (
               <p className="text-sm text-muted-foreground text-center py-6">
-                Create more elements to configure interactions.
+                Create at least two damage types to configure interactions.
               </p>
             )}
           </div>
