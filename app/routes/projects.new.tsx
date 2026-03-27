@@ -229,7 +229,7 @@ export default function NewProjectPage() {
           <div className="space-y-6">
             <div className="space-y-2">
               <h3 className="text-lg font-semibold">Step 2: Choose Template</h3>
-              <p className="text-muted-foreground">Start with a blank project or use default game elements.</p>
+              <p className="text-muted-foreground">Start with a blank project or use default game data.</p>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
@@ -254,7 +254,7 @@ export default function NewProjectPage() {
                       Start completely from scratch with an empty project. Perfect for experienced developers who want full control.
                     </p>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• No pre-configured elements</li>
+                      <li>• No pre-configured data</li>
                       <li>• Complete creative freedom</li>
                       <li>• Fastest setup time</li>
                     </ul>
@@ -280,12 +280,12 @@ export default function NewProjectPage() {
                   <div className="flex-1">
                     <h4 className="font-semibold text-lg mb-2">Starter Template</h4>
                     <p className="text-sm text-muted-foreground mb-3">
-                      Begin with common game elements pre-configured. Great for beginners or rapid prototyping.
+                      Begin with common game data pre-configured. Great for beginners or rapid prototyping.
                     </p>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Basic damage types (Physical, Magic, etc.)</li>
                       <li>• Common equipment types</li>
-                      <li>• Standard elements (Fire, Water, Earth, Air)</li>
+                      <li>• Standard damage types (Slash, Fire, Ice, Lightning)</li>
                       <li>• Sample character classes</li>
                     </ul>
                   </div>
@@ -295,7 +295,7 @@ export default function NewProjectPage() {
 
             <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-md p-3">
               <div className="text-amber-600 dark:text-amber-400 text-sm">
-                <strong>Note:</strong> You can add, remove, or modify any game elements later regardless of which template you choose.
+                <strong>Note:</strong> You can add, remove, or modify any game data later regardless of which template you choose.
               </div>
             </div>
           </div>
@@ -369,7 +369,7 @@ export default function NewProjectPage() {
                       </p>
                       <p className="text-muted-foreground text-sm">
                         {formData.template === 'starter' 
-                          ? 'Includes pre-configured game elements to get you started quickly'
+                          ? 'Includes pre-configured game data to get you started quickly'
                           : 'Start completely from scratch with full creative control'
                         }
                       </p>

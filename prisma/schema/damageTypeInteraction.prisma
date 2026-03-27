@@ -1,0 +1,16 @@
+model DamageTypeInteraction {
+  id                 String @id @default(uuid())
+  sourceDamageTypeId String
+  targetDamageTypeId String
+  multiplier         Float  @default(1.0)
+  projectId          String
+
+  project          Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  sourceDamageType DamageType @relation("SourceDamageType", fields: [sourceDamageTypeId], references: [id], onDelete: Cascade)
+  targetDamageType DamageType @relation("TargetDamageType", fields: [targetDamageTypeId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, sourceDamageTypeId, targetDamageTypeId])
+}

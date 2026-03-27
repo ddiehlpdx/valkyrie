@@ -1,6 +1,5 @@
 import {
   SquareTerminal,
-  Map,
   Zap,
   Sword,
   BookOpen,
@@ -53,19 +52,13 @@ const platformNav: NavItem[] = [
 
 function getGameDesignNav(projectId: string): NavItem[] {
   return [
-    {
-      title: "Maps & Battlefields",
-      url: `/projects/${projectId}/maps`,
-      icon: Map,
-    },
-    {
+{
       title: "Core Rules",
       url: "#",
       icon: BookOpen,
       isActive: true,
       items: [
         { title: "Stats", url: `/projects/${projectId}/stats` },
-        { title: "Elements", url: `/projects/${projectId}/elements` },
         { title: "Damage Types", url: `/projects/${projectId}/damage-types` },
       ],
     },

@@ -1,27 +1,27 @@
 import { db } from "~/db.server";
 
 export async function getInteractionsByProjectId(projectId: string) {
-    return db.elementInteraction.findMany({
+    return db.damageTypeInteraction.findMany({
         where: { projectId },
         include: {
-            sourceElement: true,
-            targetElement: true,
+            sourceDamageType: true,
+            targetDamageType: true,
         },
     });
 }
 
 export async function upsertInteraction(data: {
     projectId: string;
-    sourceElementId: string;
-    targetElementId: string;
+    sourceDamageTypeId: string;
+    targetDamageTypeId: string;
     multiplier: number;
 }) {
-    return db.elementInteraction.upsert({
+    return db.damageTypeInteraction.upsert({
         where: {
-            projectId_sourceElementId_targetElementId: {
+            projectId_sourceDamageTypeId_targetDamageTypeId: {
                 projectId: data.projectId,
-                sourceElementId: data.sourceElementId,
-                targetElementId: data.targetElementId,
+                sourceDamageTypeId: data.sourceDamageTypeId,
+                targetDamageTypeId: data.targetDamageTypeId,
             },
         },
         update: { multiplier: data.multiplier },
@@ -32,19 +32,19 @@ export async function upsertInteraction(data: {
 export async function bulkUpsertInteractions(
     projectId: string,
     interactions: Array<{
-        sourceElementId: string;
-        targetElementId: string;
+        sourceDamageTypeId: string;
+        targetDamageTypeId: string;
         multiplier: number;
     }>
 ) {
     return db.$transaction(
         interactions.map((interaction) =>
-            db.elementInteraction.upsert({
+            db.damageTypeInteraction.upsert({
                 where: {
-                    projectId_sourceElementId_targetElementId: {
+                    projectId_sourceDamageTypeId_targetDamageTypeId: {
                         projectId,
-                        sourceElementId: interaction.sourceElementId,
-                        targetElementId: interaction.targetElementId,
+                        sourceDamageTypeId: interaction.sourceDamageTypeId,
+                        targetDamageTypeId: interaction.targetDamageTypeId,
                     },
                 },
                 update: { multiplier: interaction.multiplier },
@@ -55,5 +55,5 @@ export async function bulkUpsertInteractions(
 }
 
 export async function deleteInteraction(interactionId: string) {
-    return db.elementInteraction.delete({ where: { id: interactionId } });
+    return db.damageTypeInteraction.delete({ where: { id: interactionId } });
 }

@@ -5,22 +5,25 @@ export async function getDamageTypesByProjectId(projectId: string) {
     return db.damageType.findMany({
         where: { projectId },
         orderBy: { displayOrder: 'asc' },
-        include: { element: true },
     });
 }
 
 export async function createDamageType(data: {
     name: string;
     baseType: BaseDamageType;
+    color: string;
+    iconKey: string;
+    description?: string | null;
     projectId: string;
-    elementId?: string | null;
 }) {
     return db.damageType.create({
         data: {
             name: data.name,
             baseType: data.baseType,
+            color: data.color,
+            iconKey: data.iconKey,
+            description: data.description || null,
             projectId: data.projectId,
-            elementId: data.elementId || null,
         },
     });
 }
@@ -28,7 +31,9 @@ export async function createDamageType(data: {
 export async function updateDamageType(id: string, data: {
     name?: string;
     baseType?: BaseDamageType;
-    elementId?: string | null;
+    color?: string;
+    iconKey?: string;
+    description?: string | null;
 }) {
     return db.damageType.update({
         where: { id },

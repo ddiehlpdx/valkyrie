@@ -21,6 +21,10 @@ export interface UpdateProjectSettingsData {
   maxUnitsPerBattle?: number;
   maxLevel?: number;
   statGrowthModel?: StatGrowthModel;
+  physicalColor?: string;
+  magicalColor?: string;
+  chemicalColor?: string;
+  environmentalColor?: string;
 }
 
 export async function updateProjectSettings(
