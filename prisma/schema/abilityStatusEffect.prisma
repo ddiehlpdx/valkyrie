@@ -1,0 +1,20 @@
+model AbilityStatusEffect {
+  id             String     @id @default(uuid())
+  abilityId      String
+  statusEffectId String
+  effectType     EffectType @default(Inflict)
+  chance         Float      @default(1.0)
+  projectId      String
+
+  ability      Ability      @relation(fields: [abilityId], references: [id], onDelete: Cascade)
+  statusEffect StatusEffect @relation(fields: [statusEffectId], references: [id], onDelete: Cascade)
+  project      Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([abilityId, statusEffectId, effectType])
+  @@index([statusEffectId])
+}
+
+enum EffectType {
+  Inflict
+  Cure
+}

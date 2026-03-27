@@ -19,7 +19,8 @@ model StatDefinition {
   isPercentage Boolean
   projectId    String
 
-  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project                  Project                    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  statusEffectModifiers    StatusEffectStatModifier[]
 
   displayOrder Int      @default(autoincrement())
   createdAt    DateTime @default(now())

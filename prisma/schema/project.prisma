@@ -1,24 +1,29 @@
 model Project {
-  id          String  @id @default(uuid())
+  id          String @id @default(uuid())
   name        String
   description String?
   ownerId     String
 
   owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-  settings            ProjectSettings?
-  collaborators       Collaborator[]
-  professions         Profession[]
-  damageTypes         DamageType[]
-  abilityTypes        AbilityType[]
-  weaponTypes         WeaponType[]
-  armorTypes          ArmorType[]
-  equipmentTypes      EquipmentType[]
-  statDefinitions     StatDefinition[]
-  elements            Element[]
-  elementInteractions   ElementInteraction[]
-  professionWeaponTypes ProfessionWeaponType[]
-  professionArmorTypes  ProfessionArmorType[]
+  settings                   ProjectSettings?
+  collaborators              Collaborator[]
+  professions                Profession[]
+  damageTypes                DamageType[]
+  abilityTypes               AbilityType[]
+  weaponTypes                WeaponType[]
+  armorTypes                 ArmorType[]
+  equipmentTypes             EquipmentType[]
+  statDefinitions            StatDefinition[]
+  elements                   Element[]
+  elementInteractions        ElementInteraction[]
+  professionWeaponTypes      ProfessionWeaponType[]
+  professionArmorTypes       ProfessionArmorType[]
+  abilities                  Ability[]
+  statusEffects              StatusEffect[]
+  abilityStatusEffects       AbilityStatusEffect[]
+  professionAbilities        ProfessionAbility[]
+  statusEffectStatModifiers  StatusEffectStatModifier[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

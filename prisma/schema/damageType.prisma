@@ -9,6 +9,7 @@ model DamageType {
   element Element? @relation(fields: [elementId], references: [id], onDelete: SetNull)
 
   weaponTypes WeaponType[]
+  abilities   Ability[]
 
   displayOrder Int      @default(autoincrement())
   createdAt    DateTime @default(now())

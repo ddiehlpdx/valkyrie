@@ -11,6 +11,7 @@ model Element {
   sourceInteractions ElementInteraction[] @relation("SourceInteractions")
   targetInteractions ElementInteraction[] @relation("TargetInteractions")
   damageTypes        DamageType[]
+  abilities          Ability[]
 
   displayOrder Int      @default(autoincrement())
   createdAt    DateTime @default(now())

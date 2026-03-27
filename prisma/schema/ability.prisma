@@ -1,0 +1,42 @@
+model Ability {
+  id          String @id @default(uuid())
+  name        String
+  description String?
+  projectId   String
+
+  abilityTypeId String?
+  abilityType   AbilityType? @relation(fields: [abilityTypeId], references: [id], onDelete: SetNull)
+
+  elementId    String?
+  element      Element? @relation(fields: [elementId], references: [id], onDelete: SetNull)
+  damageTypeId String?
+  damageType   DamageType? @relation(fields: [damageTypeId], references: [id], onDelete: SetNull)
+
+  targetType TargetType @default(SingleEnemy)
+  rangeMin   Int        @default(1)
+  rangeMax   Int        @default(1)
+  aoeRadius  Int        @default(0)
+
+  mpCost       Int @default(0)
+  powerFormula String?
+
+  project       Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  professions   ProfessionAbility[]
+  statusEffects AbilityStatusEffect[]
+
+  displayOrder Int      @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+enum TargetType {
+  Self
+  SingleAlly
+  SingleEnemy
+  AllAllies
+  AllEnemies
+  Area
+  Line
+}

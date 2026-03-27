@@ -1,0 +1,39 @@
+model StatusEffect {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  color       String
+  iconKey     String
+  projectId   String
+
+  category         StatusEffectCategory @default(Neutral)
+  durationType     DurationType         @default(Temporary)
+  duration         Int?
+
+  stackable        Boolean @default(false)
+  preventsActions  Boolean @default(false)
+  causesRecurring  Boolean @default(false)
+  recurringFormula String?
+
+  project       Project                    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  statModifiers StatusEffectStatModifier[]
+  abilities     AbilityStatusEffect[]
+
+  displayOrder Int      @default(autoincrement())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+enum StatusEffectCategory {
+  Buff
+  Debuff
+  Neutral
+}
+
+enum DurationType {
+  Temporary
+  Permanent
+  UntilBattleEnd
+}
