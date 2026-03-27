@@ -7,8 +7,6 @@ model Ability {
   abilityTypeId String?
   abilityType   AbilityType? @relation(fields: [abilityTypeId], references: [id], onDelete: SetNull)
 
-  elementId    String?
-  element      Element? @relation(fields: [elementId], references: [id], onDelete: SetNull)
   damageTypeId String?
   damageType   DamageType? @relation(fields: [damageTypeId], references: [id], onDelete: SetNull)
 

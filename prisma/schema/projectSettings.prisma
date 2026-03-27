@@ -29,6 +29,12 @@ model ProjectSettings {
   maxLevel        Int             @default(99)
   statGrowthModel StatGrowthModel @default(ClassBased)
 
+  // Base damage type colors
+  physicalColor      String @default("#d4d4d4")
+  magicalColor       String @default("#d4d4d4")
+  chemicalColor      String @default("#d4d4d4")
+  environmentalColor String @default("#d4d4d4")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
