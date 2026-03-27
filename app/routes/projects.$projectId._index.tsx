@@ -3,14 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/com
 import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { 
-  Users, 
-  Crown, 
-  User, 
-  Settings, 
-  Map, 
-  Sword, 
-  Zap, 
+import {
+  Users,
+  Crown,
+  User,
+  Settings,
   Calendar,
   Activity
 } from "lucide-react";
@@ -51,37 +48,6 @@ interface ProjectContext {
 
 export default function ProjectOverview() {
   const { project, userRole, isOwner } = useOutletContext<ProjectContext>();
-
-  const quickActions = [
-    {
-      title: "Maps & Battlefields",
-      description: "Design battle maps and world locations",
-      icon: Map,
-      href: `/projects/${project.id}/maps`,
-      color: "bg-blue-500"
-    },
-    {
-      title: "Characters & Classes",
-      description: "Create heroes, enemies, and job classes",
-      icon: User,
-      href: `/projects/${project.id}/characters`,
-      color: "bg-green-500"
-    },
-    {
-      title: "Abilities & Skills",
-      description: "Design combat abilities and special moves",
-      icon: Zap,
-      href: `/projects/${project.id}/abilities`,
-      color: "bg-purple-500"
-    },
-    {
-      title: "Equipment & Items",
-      description: "Create weapons, armor, and consumables",
-      icon: Sword,
-      href: `/projects/${project.id}/equipment`,
-      color: "bg-orange-500"
-    }
-  ];
 
   return (
     <div className="space-y-6">
@@ -126,30 +92,6 @@ export default function ProjectOverview() {
             </Link>
           </Button>
         )}
-      </div>
-
-      {/* Quick Actions Grid */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Quick Actions</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {quickActions.map((action) => (
-            <Card key={action.title} className="hover:shadow-md transition-shadow cursor-pointer">
-              <Link to={action.href} className="block">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg ${action.color} text-white`}>
-                      <action.icon className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-lg">{action.title}</CardTitle>
-                      <CardDescription>{action.description}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-              </Link>
-            </Card>
-          ))}
-        </div>
       </div>
 
       {/* Project Stats */}
