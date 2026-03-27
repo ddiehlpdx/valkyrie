@@ -8,6 +8,8 @@ model Profession {
   allowedWeaponTypes ProfessionWeaponType[]
   allowedArmorTypes  ProfessionArmorType[]
 
+  professionAbilities ProfessionAbility[]
+
   displayOrder Int      @default(autoincrement())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

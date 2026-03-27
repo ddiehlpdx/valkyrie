@@ -1,0 +1,14 @@
+model ProfessionAbility {
+  id           String @id @default(uuid())
+  professionId String
+  abilityId    String
+  jpCost       Int    @default(0)
+  projectId    String
+
+  profession Profession @relation(fields: [professionId], references: [id], onDelete: Cascade)
+  ability    Ability    @relation(fields: [abilityId], references: [id], onDelete: Cascade)
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([professionId, abilityId])
+  @@index([abilityId])
+}
