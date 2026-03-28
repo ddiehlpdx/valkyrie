@@ -15,7 +15,7 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { GripVertical, Pencil, Trash2, ArrowRightLeft, Link } from "lucide-react";
-import { DAMAGE_TYPE_ICONS } from "./damage-type-form-dialog";
+import { ICON_MAP } from "~/components/shared/icon-picker";
 
 export interface DamageTypeData {
   id: string;
@@ -57,7 +57,7 @@ export function DamageTypeCard({
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const Icon = DAMAGE_TYPE_ICONS[damageType.iconKey];
+  const Icon = ICON_MAP[damageType.iconKey];
 
   return (
     <Card ref={setNodeRef} style={style} className="group relative">

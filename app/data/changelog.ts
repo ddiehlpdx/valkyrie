@@ -241,6 +241,15 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: "2026-03-shared-icon-system",
+    date: "2026-03-28",
+    title: "Shared Icon System with Grouped Picker",
+    description:
+      "Extracted the icon library into a shared module with ~260 lucide icons across 23 labeled categories including Combat, Defense, Elements, Fire, Ice, Water, Light, Dark, Poison, Psychic, Life, Crystal, Sound, Time, Beast, Tech, Magic, People, Movement, Buffs/Debuffs, Status, Items, and Exploration. The grouped icon picker is now reusable across all entity editors.",
+    category: "improvement",
+    phase: "phase-1",
+  },
+  {
     id: "2026-03-stat-system-redesign",
     date: "2026-03-28",
     title: "Stat System Redesign",
