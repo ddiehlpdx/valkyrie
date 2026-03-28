@@ -155,5 +155,17 @@ These standards apply to all CRUD editor pages (Stats, Elements, and future enti
 - Action: switch on `formData.get("action")` with cases for `create_`, `update_`, `delete_`, `reorder_` prefixed by entity name
 - Page component: uses `useOutletContext` for project data, `useLoaderData` for entity data, `useActionData` + `useEffect` for toast notifications
 
+## Dashboard Changelog & Roadmap Tracker
+
+The dashboard (`app/routes/dashboard._index.tsx`) displays a changelog feed and roadmap progress tracker. The data lives in `app/data/changelog.ts` as static TypeScript arrays.
+
+**When making roadmap-related changes, always update the dashboard tracker:**
+- **Completing a phase**: Update the phase's `status` field in `ROADMAP_PHASES` (e.g., `"upcoming"` → `"in-progress"` → `"complete"`)
+- **Adding new features**: Add a new `ChangelogEntry` to the top of `CHANGELOG_ENTRIES` with the current date, a user-friendly title and description, appropriate category (`feature`, `improvement`, `infrastructure`, `milestone`), and optional `phase` reference
+- **Phase highlights**: Update the `highlights` array on any phase whose scope or deliverables change
+- **Milestone entries**: When a phase is fully complete, add a `milestone` category changelog entry marking the completion
+
+Components live in `app/components/changelog/`: `roadmap-tracker.tsx`, `changelog-feed.tsx`, `changelog-entry-card.tsx`.
+
 ## Additional Important Context
 - The app we are building is called Valkyrie. Valkyrie is meant to be like the "RPG Maker" for tactical RPGs like Final Fantasy Tactics and Ogre Battle. We should always keep this in mind when developing new features and maintaining existing ones.
