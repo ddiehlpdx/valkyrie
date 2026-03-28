@@ -798,7 +798,7 @@ export function IconPicker({ value = DEFAULT_ICON_KEY, onValueChange }: IconPick
                         <div className="px-1 pb-1 text-xs font-semibold text-muted-foreground">
                           {group.label}
                         </div>
-                        <div className="grid grid-cols-10 gap-1">
+                        <div className="grid grid-cols-7 gap-1">
                           {Object.entries(group.icons).map(([key, Icon]) => (
                             <button
                               key={key}
@@ -806,11 +806,11 @@ export function IconPicker({ value = DEFAULT_ICON_KEY, onValueChange }: IconPick
                               title={key}
                               onClick={() => handleSelect(key)}
                               className={cn(
-                                "flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors",
+                                "flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors",
                                 value === key && "bg-accent text-accent-foreground ring-1 ring-primary"
                               )}
                             >
-                              <Icon className="h-4 w-4" />
+                              <Icon className="h-6 w-6" />
                             </button>
                           ))}
                         </div>
