@@ -1,9 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSubmit } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CategoryType } from "../../../generated/prisma/browser";
 import {
   Dialog,
   DialogContent,
@@ -21,24 +20,39 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "~/components/ui/command";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
+import { Badge } from "~/components/ui/badge";
+import { ChevronsUpDown, Cpu } from "lucide-react";
+import { SystemStatKey } from "../../../generated/prisma/browser";
+
+const SYSTEM_KEY_DESCRIPTIONS: Record<string, string> = {
+  HP: "Used by the engine for death checks",
+  MP: "Used by the engine for ability costs",
+  MOV: "Used by the engine for movement range",
+};
 
 const statFormSchema = z
   .object({
     name: z.string().min(1, "Name is required").max(64, "Name must be 64 characters or less"),
     abbreviation: z.string().min(1, "Abbreviation is required").max(6, "Abbreviation must be 6 characters or less"),
     description: z.string().max(500, "Description must be 500 characters or less").optional().or(z.literal("")),
-    category: z.nativeEnum(CategoryType, { errorMap: () => ({ message: "Select a category" }) }),
+    group: z.string().max(32, "Group must be 32 characters or less").optional().or(z.literal("")),
     minValue: z.coerce.number().int("Must be a whole number"),
     maxValue: z.coerce.number().int("Must be a whole number"),
     defaultValue: z.coerce.number().int("Must be a whole number"),
@@ -55,15 +69,6 @@ const statFormSchema = z
 
 type StatFormValues = z.infer<typeof statFormSchema>;
 
-const CATEGORY_LABELS: Record<CategoryType, string> = {
-  Core: "Core",
-  Offensive: "Offensive",
-  Defensive: "Defensive",
-  Speed: "Speed",
-  Luck: "Luck",
-  Custom: "Custom",
-};
-
 interface StatFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -72,18 +77,22 @@ interface StatFormDialogProps {
     name: string;
     abbreviation: string;
     description: string | null;
-    category: CategoryType;
+    systemKey: SystemStatKey | null;
+    group: string | null;
     minValue: number;
     maxValue: number;
     defaultValue: number;
     isPercentage: boolean;
   } | null;
   projectId: string;
+  existingGroups?: string[];
 }
 
-export function StatFormDialog({ open, onOpenChange, stat, projectId }: StatFormDialogProps) {
+export function StatFormDialog({ open, onOpenChange, stat, projectId, existingGroups = [] }: StatFormDialogProps) {
   const submit = useSubmit();
   const isEditing = !!stat;
+  const isCoreStat = !!stat?.systemKey;
+  const [groupPopoverOpen, setGroupPopoverOpen] = useState(false);
 
   const form = useForm<StatFormValues>({
     resolver: zodResolver(statFormSchema),
@@ -91,7 +100,7 @@ export function StatFormDialog({ open, onOpenChange, stat, projectId }: StatForm
       name: "",
       abbreviation: "",
       description: "",
-      category: CategoryType.Core,
+      group: "",
       minValue: 0,
       maxValue: 999,
       defaultValue: 1,
@@ -107,7 +116,7 @@ export function StatFormDialog({ open, onOpenChange, stat, projectId }: StatForm
         name: stat.name,
         abbreviation: stat.abbreviation,
         description: stat.description || "",
-        category: stat.category,
+        group: stat.group || "",
         minValue: stat.minValue,
         maxValue: stat.maxValue,
         defaultValue: stat.defaultValue,
@@ -120,7 +129,7 @@ export function StatFormDialog({ open, onOpenChange, stat, projectId }: StatForm
       name: "",
       abbreviation: "",
       description: "",
-      category: CategoryType.Core,
+      group: "",
       minValue: 0,
       maxValue: 999,
       defaultValue: 1,
@@ -138,7 +147,7 @@ export function StatFormDialog({ open, onOpenChange, stat, projectId }: StatForm
     formData.append("name", values.name);
     formData.append("abbreviation", values.abbreviation);
     formData.append("description", values.description || "");
-    formData.append("category", values.category);
+    formData.append("group", values.group || "");
     formData.append("minValue", String(values.minValue));
     formData.append("maxValue", String(values.maxValue));
     formData.append("defaultValue", String(values.defaultValue));
@@ -152,11 +161,21 @@ export function StatFormDialog({ open, onOpenChange, stat, projectId }: StatForm
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? "Edit Stat" : "New Stat"}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            {isEditing ? "Edit Stat" : "New Stat"}
+            {isCoreStat && (
+              <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
+                <Cpu className="h-3 w-3 mr-1" />
+                Engine Stat
+              </Badge>
+            )}
+          </DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? "Update this stat definition for your project."
-              : "Create a new stat definition for your project."}
+            {isCoreStat && stat?.systemKey
+              ? SYSTEM_KEY_DESCRIPTIONS[stat.systemKey]
+              : isEditing
+                ? "Update this stat definition for your project."
+                : "Create a new stat definition for your project."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -211,24 +230,59 @@ export function StatFormDialog({ open, onOpenChange, stat, projectId }: StatForm
 
             <FormField
               control={form.control}
-              name="category"
+              name="group"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                <FormItem className="flex flex-col">
+                  <FormLabel>Group</FormLabel>
+                  {existingGroups.length > 0 ? (
+                    <Popover open={groupPopoverOpen} onOpenChange={setGroupPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant="outline"
+                            role="combobox"
+                            className="justify-between font-normal"
+                          >
+                            {field.value || "Select or type a group..."}
+                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="p-0" align="start">
+                        <Command>
+                          <CommandInput
+                            placeholder="Search or create group..."
+                            value={field.value}
+                            onValueChange={field.onChange}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              {field.value ? `Use "${field.value}" as new group` : "Type to create a group"}
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {existingGroups.map((group) => (
+                                <CommandItem
+                                  key={group}
+                                  value={group}
+                                  onSelect={(value) => {
+                                    field.onChange(value);
+                                    setGroupPopoverOpen(false);
+                                  }}
+                                >
+                                  {group}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  ) : (
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
+                      <Input placeholder="e.g. Offensive, Defensive, Speed..." {...field} />
                     </FormControl>
-                    <SelectContent>
-                      {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
-                        <SelectItem key={value} value={value}>
-                          {label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  )}
+                  <FormDescription>Optional. Organize stats into groups for display.</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -276,21 +330,23 @@ export function StatFormDialog({ open, onOpenChange, stat, projectId }: StatForm
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="isPercentage"
-              render={({ field }) => (
-                <FormItem className="flex items-center justify-between rounded-lg border p-3">
-                  <div className="space-y-0.5">
-                    <FormLabel>Percentage Stat</FormLabel>
-                    <FormDescription>Display this stat as a percentage value</FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            {!isCoreStat && (
+              <FormField
+                control={form.control}
+                name="isPercentage"
+                render={({ field }) => (
+                  <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Percentage Stat</FormLabel>
+                      <FormDescription>Display this stat as a percentage value</FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

@@ -27,7 +27,7 @@ npm install
 
 # Set up environment variables
 cp .env.example .env
-# Edit .env with your DATABASE_URL, DIRECT_DATABASE_URL, and AUTH_SECRET
+# Edit .env with your DATABASE_URL and AUTH_SECRET
 
 # Push the database schema
 npx prisma db push
@@ -42,8 +42,8 @@ The app will be available at `http://localhost:5173`.
 
 | Variable | Description |
 |---|---|
-| `DATABASE_URL` | Prisma Accelerate connection string (used at runtime) |
-| `DIRECT_DATABASE_URL` | Direct PostgreSQL connection string (used by Prisma CLI for migrations) |
+| `DATABASE_URL` | PostgreSQL connection string (or Prisma Accelerate URL) |
+| `DIRECT_DATABASE_URL` | *(Optional)* Direct PostgreSQL connection string for Prisma CLI. Falls back to `DATABASE_URL` if not set |
 | `AUTH_SECRET` | Secret key for session encryption |
 
 ## Scripts
