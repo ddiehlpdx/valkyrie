@@ -15,7 +15,7 @@ import { Package, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { NamedTypeTable, type NamedTypeItem } from "~/components/core-rules/named-type-table";
 import { NamedTypeFormDialog } from "~/components/core-rules/named-type-form-dialog";
-import { DEFAULT_ICON_KEY } from "~/components/shared/icon-picker";
+import { DEFAULT_ICON_KEY } from "~/components/shared/icon-constants";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;

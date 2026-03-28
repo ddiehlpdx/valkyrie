@@ -16,7 +16,7 @@ import { Sword, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { WeaponTypeTable, type WeaponTypeItem } from "~/components/core-rules/weapon-type-table";
 import { WeaponTypeFormDialog } from "~/components/core-rules/weapon-type-form-dialog";
-import { DEFAULT_ICON_KEY } from "~/components/shared/icon-picker";
+import { DEFAULT_ICON_KEY } from "~/components/shared/icon-constants";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;

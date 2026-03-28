@@ -17,7 +17,7 @@ import { GraduationCap, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { ProfessionTable, type ProfessionItem } from "~/components/core-rules/profession-table";
 import { ProfessionFormDialog } from "~/components/core-rules/profession-form-dialog";
-import { DEFAULT_ICON_KEY } from "~/components/shared/icon-picker";
+import { DEFAULT_ICON_KEY } from "~/components/shared/icon-constants";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;

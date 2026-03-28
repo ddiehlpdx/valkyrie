@@ -636,7 +636,8 @@ export const ICON_MAP: Record<string, AppIcon> = ICON_GROUPS.reduce<
   Record<string, AppIcon>
 >((acc, group) => ({ ...acc, ...group.icons }), {});
 
-export const DEFAULT_ICON_KEY = "CircleDot";
+import { DEFAULT_ICON_KEY } from "~/components/shared/icon-constants";
+export { DEFAULT_ICON_KEY };
 
 // ── Keyword search index ───────────────────────────────────────────
 // Each icon gets keywords from: its name (split on caps), its group label,
