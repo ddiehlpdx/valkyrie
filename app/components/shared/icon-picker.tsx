@@ -1,4 +1,7 @@
 import type { LucideIcon } from "lucide-react";
+import type { IconType } from "react-icons";
+
+export type AppIcon = LucideIcon | IconType;
 import {
   // Combat / Weapon
   Anvil,
@@ -301,25 +304,286 @@ import {
   Tent,
   Wheat,
   Workflow,
+  // New lucide additions
+  // Defense
+  ShieldBan,
+  ShieldClose,
+  ShieldEllipsis,
+  ShieldMinus,
+  ShieldQuestion,
+  ShieldX,
+  // Items
+  Boxes,
+  Container,
+  Package2,
+  PackageCheck,
+  PackageOpen,
+  PackagePlus,
+  PackageX,
+  ShoppingBag,
+  Vault,
+  // Books / Knowledge
+  Book,
+  BookA,
+  BookCheck,
+  BookCopy,
+  BookDashed,
+  BookHeart,
+  BookKey,
+  BookLock,
+  BookMarked,
+  BookMinus,
+  BookOpenCheck,
+  BookOpenText,
+  BookPlus,
+  BookText,
+  BookType,
+  BookUp,
+  BookUp2,
+  BookUser,
+  BookX,
+  // Keys / Doors
+  DoorClosed,
+  DoorOpen,
+  Key,
+  KeyRound,
+  KeySquare,
+  LockKeyholeOpen,
+  LockOpen,
+  Unlock,
+  UnlockKeyhole,
+  // Light Sources
+  Lamp,
+  LampCeiling,
+  LampDesk,
+  LampFloor,
+  LampWallDown,
+  LampWallUp,
+  // Food / Consumables
+  CupSoda,
+  UtensilsCrossed,
+  Utensils,
+  Wine,
+  // Misc
+  Armchair,
+  ChefHat,
+  Club,
+  FlaskConicalOff,
+  GraduationCap,
+  Handshake,
+  HandPlatter,
+  Headphones,
+  Headset,
+  LightbulbOff,
+  Ribbon,
+  Scale,
+  Scale3d,
+  SignpostBig,
+  Wand2,
 } from "lucide-react";
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
+  // GI: Weapons — Blades
+  GiBroadsword,
+  GiCrossedSwords,
+  GiPlainDagger,
+  GiSacrificialDagger,
+  GiStiletto,
+  GiKatana,
+  GiSaberSlash,
+  GiSwordBrandish,
+  GiSwordInStone,
+  GiTwoHandedSword,
+  GiPointySword,
+  GiSwordSpade,
+  GiShiningSword,
+  GiCloakDagger,
+  // GI: Weapons — Axes & Blunt
+  GiBattleAxe,
+  GiWarAxe,
+  GiThorHammer,
+  GiSpikedMace,
+  GiFlangedMace,
+  GiMaceHead,
+  GiFlail,
+  GiCrookFlail,
+  GiWoodClub,
+  // GI: Weapons — Ranged
+  GiBowArrow,
+  GiPocketBow,
+  GiCrossbow,
+  GiArrowCluster,
+  GiMusket,
+  GiPistolGun,
+  GiSlingshot,
+  GiThrownDaggers,
+  GiThrownSpear,
+  GiBoomerang,
+  GiThreePointedShuriken,
+  GiSaberAndPistol,
+  // GI: Weapons — Polearms
+  GiTrident,
+  GiHalberd,
+  GiGlaive,
+  // GI: Weapons — Staves & Magic
+  GiWizardStaff,
+  GiCrystalWand,
+  GiOrbWand,
+  GiMagicLamp,
+  // GI: Armor — Head
+  GiVisoredHelm,
+  GiClosedBarbute,
+  GiPointyHat,
+  GiCowled,
+  GiBandana,
+  GiCrown as GiCrownIcon,
+  GiTiara,
+  GiHoodedFigure,
+  GiHelmet,
+  GiHeavyHelm,
+  GiLightHelm,
+  GiHornedHelm,
+  GiSpartanHelmet,
+  GiVikingHelmet,
+  GiSamuraiHelmet,
+  GiElfHelmet,
+  GiDwarfHelmet,
+  GiCrestedHelmet,
+  GiBlackKnightHelm,
+  GiHeadbandKnot,
+  // GI: Armor — Body
+  GiChestArmor,
+  GiLeatherArmor,
+  GiBreastplate,
+  GiChainMail,
+  GiMailShirt,
+  GiScaleMail,
+  GiArmorVest,
+  GiNinjaArmor,
+  GiLayeredArmor,
+  GiAbdominalArmor,
+  GiTrenchBodyArmor,
+  GiCapeArmor,
+  GiSpikedArmor,
+  GiRobe,
+  // GI: Armor — Hands
+  GiGauntlet,
+  GiGloves,
+  GiBracers,
+  GiMailedFist,
+  GiArmorPunch,
+  // GI: Armor — Feet
+  GiBoots,
+  GiLegArmor,
+  GiGreaves,
+  GiWalkingBoot,
+  GiLeatherBoot,
+  GiMetalBoot,
+  GiSteeltoeBoots,
+  GiBootStomp,
+  // GI: Armor — Shoulders & Other
+  GiShoulderArmor,
+  GiSpikedShoulderArmor,
+  GiShoulderScales,
+  GiBeltArmor,
+  GiArmoredPants,
+  // GI: Shields
+  GiShield as GiShieldIcon,
+  GiRoundShield,
+  GiBoltShield,
+  GiShieldReflect,
+  GiSpikedShield,
+  GiTemplarShield,
+  // GI: Accessories — Jewelry
+  GiRing,
+  GiNecklace,
+  GiGemPendant,
+  GiEarrings,
+  GiCrystalBall,
+  GiCharm,
+  GiGemChain,
+  // GI: Accessories — Cloaks & Belts
+  GiCape as GiCapeIcon,
+  GiCloak as GiCloakIcon,
+  GiVampireCape,
+  GiWingCloak,
+  GiBelt,
+  GiBeltBuckles,
+  // GI: Professions / Classes
+  GiMountedKnight,
+  GiKnightBanner,
+  GiNinjaHead,
+  GiWitchFlight,
+  GiWitchFace,
+  GiMonkFace,
+  GiMeditation,
+  GiArcheryTarget,
+  GiSwordman,
+  GiBarbarian,
+  GiFencer,
+  GiBowman,
+  GiTank,
+  GiTemplarEye,
+  // GI: Status Effects
+  GiPoison,
+  GiNightSleep,
+  GiSleepy,
+  GiFrozenBlock,
+  GiBurningDot,
+  GiStarStruck,
+  GiBlindfold,
+  GiSightDisabled,
+  GiSilenced,
+  GiMagicShield,
+  GiHealthPotion,
+  GiMagicPotion,
+  GiSprint,
+  GiSlowBlob,
+  // GI: Magic Schools
+  GiFireball,
+  GiIceBolt,
+  GiPowerLightning,
+  GiLightningTrio,
+  GiChainLightning,
+  GiHolyGrail,
+  GiDeathSkull,
+  GiPoisonBottle,
+  GiMagicSwirl,
+  GiSpiralArrow,
+  // GI: Items / Loot
+  GiChest,
+  GiLockedChest,
+  GiOpenChest,
+  GiGoldBar,
+  GiGoldNuggets,
+  GiCoinsPile,
+  GiScrollUnfurled,
+  GiSpellBook,
+  GiPotionBall,
+} from "react-icons/gi";
+import { useState, useMemo } from "react";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { Search, ChevronsUpDown } from "lucide-react";
+import { cn } from "~/lib/utils";
 
 export interface IconGroup {
   label: string;
-  icons: Record<string, LucideIcon>;
+  collection: "lucide" | "game-icons";
+  icons: Record<string, AppIcon>;
 }
 
 export const ICON_GROUPS: IconGroup[] = [
   {
     label: "Combat / Weapon",
+    collection: "lucide",
     icons: {
       Anvil,
       Axe,
@@ -344,6 +608,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Defense / Protection",
+    collection: "lucide",
     icons: {
       BrickWall,
       Castle,
@@ -353,13 +618,20 @@ export const ICON_GROUPS: IconGroup[] = [
       LockKeyhole,
       Shield,
       ShieldAlert,
+      ShieldBan,
       ShieldCheck,
+      ShieldClose,
+      ShieldEllipsis,
       ShieldHalf,
+      ShieldMinus,
       ShieldPlus,
+      ShieldQuestion,
+      ShieldX,
     },
   },
   {
     label: "Elemental / Nature",
+    collection: "lucide",
     icons: {
       Clover,
       Cloud,
@@ -395,6 +667,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Fire / Heat",
+    collection: "lucide",
     icons: {
       CookingPot,
       FireExtinguisher,
@@ -407,6 +680,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Ice / Cold",
+    collection: "lucide",
     icons: {
       IceCreamCone,
       MountainSnow,
@@ -417,6 +691,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Water / Ocean",
+    collection: "lucide",
     icons: {
       Dam,
       Droplet,
@@ -430,6 +705,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Lightning / Energy",
+    collection: "lucide",
     icons: {
       PlugZap,
       Zap,
@@ -437,6 +713,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Light / Holy",
+    collection: "lucide",
     icons: {
       Church,
       Flashlight,
@@ -458,6 +735,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Dark / Arcane",
+    collection: "lucide",
     icons: {
       CircleDot,
       CircleDotDashed,
@@ -476,6 +754,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Poison / Toxin",
+    collection: "lucide",
     icons: {
       Biohazard,
       Cannabis,
@@ -490,6 +769,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Psychic / Mind",
+    collection: "lucide",
     icons: {
       Brain,
       BrainCircuit,
@@ -507,6 +787,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Life / Healing",
+    collection: "lucide",
     icons: {
       Bandage,
       HandCoins,
@@ -525,6 +806,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Crystal / Mineral",
+    collection: "lucide",
     icons: {
       Cone,
       Cuboid,
@@ -539,6 +821,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Sound / Sonic",
+    collection: "lucide",
     icons: {
       AudioLines,
       AudioWaveform,
@@ -556,6 +839,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Time / Gravity",
+    collection: "lucide",
     icons: {
       Clock,
       History,
@@ -571,6 +855,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Beast / Animal",
+    collection: "lucide",
     icons: {
       Bird,
       Bone,
@@ -591,6 +876,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Tech / Construct",
+    collection: "lucide",
     icons: {
       Bolt,
       Bot,
@@ -610,6 +896,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Magic / Spell",
+    collection: "lucide",
     icons: {
       Atom,
       BookOpen,
@@ -623,6 +910,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "People / Roles",
+    collection: "lucide",
     icons: {
       BicepsFlexed,
       CircleUser,
@@ -636,6 +924,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Movement / Navigation",
+    collection: "lucide",
     icons: {
       Compass,
       Footprints,
@@ -650,6 +939,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Buffs / Debuffs",
+    collection: "lucide",
     icons: {
       Activity,
       ArrowBigDown,
@@ -669,6 +959,7 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Status Indicators",
+    collection: "lucide",
     icons: {
       AlertTriangle,
       Badge,
@@ -681,44 +972,395 @@ export const ICON_GROUPS: IconGroup[] = [
   },
   {
     label: "Items / Equipment",
+    collection: "lucide",
     icons: {
       Archive,
       Backpack,
       Box,
+      Boxes,
       Coins,
+      Container,
       Dumbbell,
       Gift,
       Glasses,
       Package,
+      Package2,
+      PackageCheck,
+      PackageOpen,
+      PackagePlus,
+      PackageX,
       Shirt,
+      ShoppingBag,
+      Vault,
     },
   },
   {
     label: "Exploration / Utility",
+    collection: "lucide",
     icons: {
       Aperture,
+      Armchair,
       Blend,
       Bookmark,
+      ChefHat,
+      Club,
       Flag,
+      FlaskConicalOff,
       Focus,
+      GraduationCap,
       Hand,
+      Handshake,
+      HandPlatter,
+      Headphones,
+      Headset,
+      LightbulbOff,
       Milestone,
       Proportions,
+      Ribbon,
+      Scale,
+      Scale3d,
       ScanSearch,
       Shovel,
+      SignpostBig,
       Siren,
       Spade,
       Tag,
       Tags,
       Tent,
+      Wand2,
       Wheat,
       Workflow,
     },
   },
+  {
+    label: "Books / Knowledge",
+    collection: "lucide",
+    icons: {
+      Book,
+      BookA,
+      BookCheck,
+      BookCopy,
+      BookDashed,
+      BookHeart,
+      BookKey,
+      BookLock,
+      BookMarked,
+      BookMinus,
+      BookOpenCheck,
+      BookOpenText,
+      BookPlus,
+      BookText,
+      BookType,
+      BookUp,
+      BookUp2,
+      BookUser,
+      BookX,
+    },
+  },
+  {
+    label: "Keys / Doors",
+    collection: "lucide",
+    icons: {
+      DoorClosed,
+      DoorOpen,
+      Key,
+      KeyRound,
+      KeySquare,
+      LockKeyholeOpen,
+      LockOpen,
+      Unlock,
+      UnlockKeyhole,
+    },
+  },
+  {
+    label: "Light Sources",
+    collection: "lucide",
+    icons: {
+      Lamp,
+      LampCeiling,
+      LampDesk,
+      LampFloor,
+      LampWallDown,
+      LampWallUp,
+    },
+  },
+  {
+    label: "Food / Consumables",
+    collection: "lucide",
+    icons: {
+      CupSoda,
+      Utensils,
+      UtensilsCrossed,
+      Wine,
+    },
+  },
+  // ── Game Icons (react-icons/gi) ──────────────────────────
+  {
+    label: "GI: Weapons — Blades",
+    collection: "game-icons",
+    icons: {
+      GiBroadsword,
+      GiCloakDagger,
+      GiCrossedSwords,
+      GiKatana,
+      GiPlainDagger,
+      GiPointySword,
+      GiSaberSlash,
+      GiSacrificialDagger,
+      GiShiningSword,
+      GiStiletto,
+      GiSwordBrandish,
+      GiSwordInStone,
+      GiSwordSpade,
+      GiTwoHandedSword,
+    },
+  },
+  {
+    label: "GI: Weapons — Axes & Blunt",
+    collection: "game-icons",
+    icons: {
+      GiBattleAxe,
+      GiCrookFlail,
+      GiFlail,
+      GiFlangedMace,
+      GiMaceHead,
+      GiSpikedMace,
+      GiThorHammer,
+      GiWarAxe,
+      GiWoodClub,
+    },
+  },
+  {
+    label: "GI: Weapons — Ranged",
+    collection: "game-icons",
+    icons: {
+      GiArrowCluster,
+      GiBoomerang,
+      GiBowArrow,
+      GiCrossbow,
+      GiMusket,
+      GiPistolGun,
+      GiPocketBow,
+      GiSaberAndPistol,
+      GiSlingshot,
+      GiThreePointedShuriken,
+      GiThrownDaggers,
+      GiThrownSpear,
+    },
+  },
+  {
+    label: "GI: Weapons — Polearms",
+    collection: "game-icons",
+    icons: {
+      GiGlaive,
+      GiHalberd,
+      GiTrident,
+    },
+  },
+  {
+    label: "GI: Weapons — Staves & Magic",
+    collection: "game-icons",
+    icons: {
+      GiCrystalWand,
+      GiMagicLamp,
+      GiOrbWand,
+      GiWizardStaff,
+    },
+  },
+  {
+    label: "GI: Armor — Head",
+    collection: "game-icons",
+    icons: {
+      GiBandana,
+      GiBlackKnightHelm,
+      GiClosedBarbute,
+      GiCowled,
+      GiCrestedHelmet,
+      GiCrownIcon,
+      GiDwarfHelmet,
+      GiElfHelmet,
+      GiHeadbandKnot,
+      GiHeavyHelm,
+      GiHelmet,
+      GiHoodedFigure,
+      GiHornedHelm,
+      GiLightHelm,
+      GiPointyHat,
+      GiSamuraiHelmet,
+      GiSpartanHelmet,
+      GiTiara,
+      GiVikingHelmet,
+      GiVisoredHelm,
+    },
+  },
+  {
+    label: "GI: Armor — Body",
+    collection: "game-icons",
+    icons: {
+      GiAbdominalArmor,
+      GiArmorVest,
+      GiBreastplate,
+      GiCapeArmor,
+      GiChainMail,
+      GiChestArmor,
+      GiLayeredArmor,
+      GiLeatherArmor,
+      GiMailShirt,
+      GiNinjaArmor,
+      GiRobe,
+      GiScaleMail,
+      GiSpikedArmor,
+      GiTrenchBodyArmor,
+    },
+  },
+  {
+    label: "GI: Armor — Hands",
+    collection: "game-icons",
+    icons: {
+      GiArmorPunch,
+      GiBracers,
+      GiGauntlet,
+      GiGloves,
+      GiMailedFist,
+    },
+  },
+  {
+    label: "GI: Armor — Feet",
+    collection: "game-icons",
+    icons: {
+      GiBootStomp,
+      GiBoots,
+      GiGreaves,
+      GiLeatherBoot,
+      GiLegArmor,
+      GiMetalBoot,
+      GiSteeltoeBoots,
+      GiWalkingBoot,
+    },
+  },
+  {
+    label: "GI: Armor — Shoulders & Other",
+    collection: "game-icons",
+    icons: {
+      GiArmoredPants,
+      GiBeltArmor,
+      GiShoulderArmor,
+      GiShoulderScales,
+      GiSpikedShoulderArmor,
+    },
+  },
+  {
+    label: "GI: Shields",
+    collection: "game-icons",
+    icons: {
+      GiBoltShield,
+      GiRoundShield,
+      GiShieldIcon,
+      GiShieldReflect,
+      GiSpikedShield,
+      GiTemplarShield,
+    },
+  },
+  {
+    label: "GI: Accessories — Jewelry",
+    collection: "game-icons",
+    icons: {
+      GiCharm,
+      GiCrystalBall,
+      GiEarrings,
+      GiGemChain,
+      GiGemPendant,
+      GiNecklace,
+      GiRing,
+    },
+  },
+  {
+    label: "GI: Accessories — Cloaks & Belts",
+    collection: "game-icons",
+    icons: {
+      GiBelt,
+      GiBeltBuckles,
+      GiCapeIcon,
+      GiCloakIcon,
+      GiVampireCape,
+      GiWingCloak,
+    },
+  },
+  {
+    label: "GI: Professions / Classes",
+    collection: "game-icons",
+    icons: {
+      GiArcheryTarget,
+      GiBarbarian,
+      GiBowman,
+      GiFencer,
+      GiKnightBanner,
+      GiMeditation,
+      GiMonkFace,
+      GiMountedKnight,
+      GiNinjaHead,
+      GiSwordman,
+      GiTank,
+      GiTemplarEye,
+      GiWitchFace,
+      GiWitchFlight,
+    },
+  },
+  {
+    label: "GI: Status Effects",
+    collection: "game-icons",
+    icons: {
+      GiBlindfold,
+      GiBurningDot,
+      GiFrozenBlock,
+      GiHealthPotion,
+      GiMagicPotion,
+      GiMagicShield,
+      GiNightSleep,
+      GiPoison,
+      GiSightDisabled,
+      GiSilenced,
+      GiSleepy,
+      GiSlowBlob,
+      GiSprint,
+      GiStarStruck,
+    },
+  },
+  {
+    label: "GI: Magic Schools",
+    collection: "game-icons",
+    icons: {
+      GiChainLightning,
+      GiDeathSkull,
+      GiFireball,
+      GiHolyGrail,
+      GiIceBolt,
+      GiLightningTrio,
+      GiMagicSwirl,
+      GiPoisonBottle,
+      GiPowerLightning,
+      GiSpiralArrow,
+    },
+  },
+  {
+    label: "GI: Items / Loot",
+    collection: "game-icons",
+    icons: {
+      GiChest,
+      GiCoinsPile,
+      GiGoldBar,
+      GiGoldNuggets,
+      GiLockedChest,
+      GiOpenChest,
+      GiPotionBall,
+      GiScrollUnfurled,
+      GiSpellBook,
+    },
+  },
 ];
 
-export const ICON_MAP: Record<string, LucideIcon> = ICON_GROUPS.reduce<
-  Record<string, LucideIcon>
+export const ICON_MAP: Record<string, AppIcon> = ICON_GROUPS.reduce<
+  Record<string, AppIcon>
 >((acc, group) => ({ ...acc, ...group.icons }), {});
 
 export const DEFAULT_ICON_KEY = "CircleDot";
@@ -728,27 +1370,109 @@ interface IconPickerProps {
   onValueChange: (value: string) => void;
 }
 
+type CollectionFilter = "all" | "lucide" | "game-icons";
+
 export function IconPicker({ value = DEFAULT_ICON_KEY, onValueChange }: IconPickerProps) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const [tab, setTab] = useState<CollectionFilter>("all");
+
+  const SelectedIcon = ICON_MAP[value];
+
+  const filteredGroups = useMemo(() => {
+    const lowerSearch = search.toLowerCase();
+    return ICON_GROUPS
+      .filter((group) => tab === "all" || group.collection === tab)
+      .map((group) => {
+        const filtered = Object.entries(group.icons).filter(([key]) =>
+          key.toLowerCase().includes(lowerSearch)
+        );
+        if (filtered.length === 0) return null;
+        return { ...group, icons: Object.fromEntries(filtered) };
+      })
+      .filter(Boolean) as IconGroup[];
+  }, [search, tab]);
+
+  function handleSelect(key: string) {
+    onValueChange(key);
+    setOpen(false);
+    setSearch("");
+  }
+
   return (
-    <Select onValueChange={onValueChange} value={value}>
-      <SelectTrigger>
-        <SelectValue placeholder="Select an icon" />
-      </SelectTrigger>
-      <SelectContent>
-        {ICON_GROUPS.map((group) => (
-          <SelectGroup key={group.label}>
-            <SelectLabel>{group.label}</SelectLabel>
-            {Object.entries(group.icons).map(([key, Icon]) => (
-              <SelectItem key={key} value={key}>
-                <div className="flex items-center gap-2">
-                  <Icon className="h-4 w-4" />
-                  <span>{key}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectGroup>
-        ))}
-      </SelectContent>
-    </Select>
+    <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setSearch(""); }}>
+      <DialogTrigger asChild>
+        <Button
+          variant="outline"
+          className="w-full justify-between font-normal"
+        >
+          <div className="flex items-center gap-2">
+            {SelectedIcon && <SelectedIcon className="h-4 w-4" />}
+            <span>{value}</span>
+          </div>
+          <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[440px] p-0 gap-0">
+        <DialogHeader className="px-4 pt-4 pb-0">
+          <DialogTitle className="text-base">Choose an Icon</DialogTitle>
+        </DialogHeader>
+        <div className="flex items-center gap-2 border-b px-4 py-2">
+          <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <Input
+            placeholder="Search icons..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="h-8 border-0 p-0 shadow-none focus-visible:ring-0"
+          />
+        </div>
+        <Tabs value={tab} onValueChange={(v) => setTab(v as CollectionFilter)}>
+          <div className="border-b px-4 pt-1">
+            <TabsList className="h-8 w-full">
+              <TabsTrigger value="all" className="text-xs flex-1">All</TabsTrigger>
+              <TabsTrigger value="lucide" className="text-xs flex-1">Lucide</TabsTrigger>
+              <TabsTrigger value="game-icons" className="text-xs flex-1">Game Icons</TabsTrigger>
+            </TabsList>
+          </div>
+          {(["all", "lucide", "game-icons"] as const).map((tabValue) => (
+            <TabsContent key={tabValue} value={tabValue} className="mt-0">
+              <div className="h-[350px] overflow-y-auto">
+                {filteredGroups.length === 0 ? (
+                  <div className="py-6 text-center text-sm text-muted-foreground">
+                    No icons found.
+                  </div>
+                ) : (
+                  <div className="p-3">
+                    {filteredGroups.map((group) => (
+                      <div key={group.label} className="mb-3">
+                        <div className="px-1 pb-1 text-xs font-semibold text-muted-foreground">
+                          {group.label}
+                        </div>
+                        <div className="grid grid-cols-10 gap-1">
+                          {Object.entries(group.icons).map(([key, Icon]) => (
+                            <button
+                              key={key}
+                              type="button"
+                              title={key}
+                              onClick={() => handleSelect(key)}
+                              className={cn(
+                                "flex h-8 w-8 items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors",
+                                value === key && "bg-accent text-accent-foreground ring-1 ring-primary"
+                              )}
+                            >
+                              <Icon className="h-4 w-4" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -241,6 +241,15 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: "2026-03-game-icons",
+    date: "2026-03-28",
+    title: "RPG Icon Library with 160+ Game Icons",
+    description:
+      "Integrated game-icons.net via react-icons, adding 160+ RPG-specific icons: weapon types (swords, bows, daggers, axes, polearms, staves), armor pieces (helmets, body armor, gauntlets, boots), shields, accessories (rings, necklaces, amulets, cloaks), profession symbols, status effects, magic schools, and items/loot. The icon picker now features a searchable dialog with tabs to filter between Lucide and Game Icons collections.",
+    category: "feature",
+    phase: "phase-1",
+  },
+  {
     id: "2026-03-entity-icons",
     date: "2026-03-28",
     title: "Icons for All Core Entity Types",
