@@ -13,6 +13,7 @@ export async function getProfessionsByProjectId(projectId: string) {
 
 export async function createProfession(data: {
     name: string;
+    iconKey?: string;
     projectId: string;
     weaponTypeIds?: string[];
     armorTypeIds?: string[];
@@ -21,6 +22,7 @@ export async function createProfession(data: {
         const profession = await tx.profession.create({
             data: {
                 name: data.name,
+                iconKey: data.iconKey,
                 projectId: data.projectId,
             },
         });
@@ -51,6 +53,7 @@ export async function createProfession(data: {
 
 export async function updateProfession(id: string, data: {
     name?: string;
+    iconKey?: string;
     weaponTypeIds?: string[];
     armorTypeIds?: string[];
     projectId?: string;
@@ -58,7 +61,7 @@ export async function updateProfession(id: string, data: {
     return db.$transaction(async (tx) => {
         const profession = await tx.profession.update({
             where: { id },
-            data: { name: data.name },
+            data: { name: data.name, iconKey: data.iconKey },
         });
 
         if (data.weaponTypeIds !== undefined) {

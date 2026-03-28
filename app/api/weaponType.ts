@@ -10,12 +10,14 @@ export async function getWeaponTypesByProjectId(projectId: string) {
 
 export async function createWeaponType(data: {
     name: string;
+    iconKey?: string;
     projectId: string;
     damageTypeId?: string | null;
 }) {
     return db.weaponType.create({
         data: {
             name: data.name,
+            iconKey: data.iconKey,
             projectId: data.projectId,
             damageTypeId: data.damageTypeId || null,
         },
@@ -24,6 +26,7 @@ export async function createWeaponType(data: {
 
 export async function updateWeaponType(id: string, data: {
     name?: string;
+    iconKey?: string;
     damageTypeId?: string | null;
 }) {
     return db.weaponType.update({

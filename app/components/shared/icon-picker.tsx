@@ -721,12 +721,14 @@ export const ICON_MAP: Record<string, LucideIcon> = ICON_GROUPS.reduce<
   Record<string, LucideIcon>
 >((acc, group) => ({ ...acc, ...group.icons }), {});
 
+export const DEFAULT_ICON_KEY = "CircleDot";
+
 interface IconPickerProps {
-  value: string;
+  value?: string;
   onValueChange: (value: string) => void;
 }
 
-export function IconPicker({ value, onValueChange }: IconPickerProps) {
+export function IconPicker({ value = DEFAULT_ICON_KEY, onValueChange }: IconPickerProps) {
   return (
     <Select onValueChange={onValueChange} value={value}>
       <SelectTrigger>

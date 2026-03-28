@@ -241,6 +241,15 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: "2026-03-entity-icons",
+    date: "2026-03-28",
+    title: "Icons for All Core Entity Types",
+    description:
+      "Added customizable icon selection to Professions, Ability Types, Armor Types, Equipment Types, and Weapon Types. Each entity now features an icon picker with 260+ grouped icons that display in both the form dialogs and table views.",
+    category: "feature",
+    phase: "phase-1",
+  },
+  {
     id: "2026-03-shared-icon-system",
     date: "2026-03-28",
     title: "Shared Icon System with Grouped Picker",

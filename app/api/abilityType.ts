@@ -9,6 +9,7 @@ export async function getAbilityTypesByProjectId(projectId: string) {
 
 export async function createAbilityType(data: {
     name: string;
+    iconKey?: string;
     projectId: string;
 }) {
     return db.abilityType.create({ data });
@@ -16,6 +17,7 @@ export async function createAbilityType(data: {
 
 export async function updateAbilityType(id: string, data: {
     name?: string;
+    iconKey?: string;
 }) {
     return db.abilityType.update({
         where: { id },

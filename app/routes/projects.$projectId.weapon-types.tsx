@@ -16,6 +16,7 @@ import { Sword, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { WeaponTypeTable, type WeaponTypeItem } from "~/components/core-rules/weapon-type-table";
 import { WeaponTypeFormDialog } from "~/components/core-rules/weapon-type-form-dialog";
+import { DEFAULT_ICON_KEY } from "~/components/shared/icon-picker";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;
@@ -48,8 +49,9 @@ export async function action({ params, request }: ActionFunctionArgs) {
         if (!name) {
           return json({ error: "Name is required" }, { status: 400 });
         }
+        const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
         const damageTypeId = (formData.get("damageTypeId") as string) || null;
-        await createWeaponType({ name, projectId, damageTypeId });
+        await createWeaponType({ name, iconKey, projectId, damageTypeId });
         return json({ success: "Weapon type created successfully" });
       }
 
@@ -62,8 +64,9 @@ export async function action({ params, request }: ActionFunctionArgs) {
         if (!name) {
           return json({ error: "Name is required" }, { status: 400 });
         }
+        const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
         const damageTypeId = (formData.get("damageTypeId") as string) || null;
-        await updateWeaponType(id, { name, damageTypeId });
+        await updateWeaponType(id, { name, iconKey, damageTypeId });
         return json({ success: "Weapon type updated successfully" });
       }
 

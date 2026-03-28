@@ -1,6 +1,7 @@
 model WeaponType {
   id           String  @id @default(uuid())
   name         String
+  iconKey      String  @default("CircleDot")
   projectId    String
   damageTypeId String?
 

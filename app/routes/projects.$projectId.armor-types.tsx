@@ -15,6 +15,7 @@ import { Shield, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { NamedTypeTable, type NamedTypeItem } from "~/components/core-rules/named-type-table";
 import { NamedTypeFormDialog } from "~/components/core-rules/named-type-form-dialog";
+import { DEFAULT_ICON_KEY } from "~/components/shared/icon-picker";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;
@@ -44,7 +45,8 @@ export async function action({ params, request }: ActionFunctionArgs) {
         if (!name) {
           return json({ error: "Name is required" }, { status: 400 });
         }
-        await createArmorType({ name, projectId });
+        const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
+        await createArmorType({ name, iconKey, projectId });
         return json({ success: "Armor type created successfully" });
       }
 
@@ -57,7 +59,8 @@ export async function action({ params, request }: ActionFunctionArgs) {
         if (!name) {
           return json({ error: "Name is required" }, { status: 400 });
         }
-        await updateArmorType(id, { name });
+        const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
+        await updateArmorType(id, { name, iconKey });
         return json({ success: "Armor type updated successfully" });
       }
 

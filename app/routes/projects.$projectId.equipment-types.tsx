@@ -15,6 +15,7 @@ import { Package, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { NamedTypeTable, type NamedTypeItem } from "~/components/core-rules/named-type-table";
 import { NamedTypeFormDialog } from "~/components/core-rules/named-type-form-dialog";
+import { DEFAULT_ICON_KEY } from "~/components/shared/icon-picker";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;
@@ -44,7 +45,8 @@ export async function action({ params, request }: ActionFunctionArgs) {
         if (!name) {
           return json({ error: "Name is required" }, { status: 400 });
         }
-        await createEquipmentType({ name, projectId });
+        const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
+        await createEquipmentType({ name, iconKey, projectId });
         return json({ success: "Equipment type created successfully" });
       }
 
@@ -57,7 +59,8 @@ export async function action({ params, request }: ActionFunctionArgs) {
         if (!name) {
           return json({ error: "Name is required" }, { status: 400 });
         }
-        await updateEquipmentType(id, { name });
+        const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
+        await updateEquipmentType(id, { name, iconKey });
         return json({ success: "Equipment type updated successfully" });
       }
 
