@@ -241,29 +241,11 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
-    id: "2026-03-game-icons",
+    id: "2026-03-icon-system",
     date: "2026-03-28",
-    title: "RPG Icon Library with 160+ Game Icons",
+    title: "Comprehensive Icon System with 4,000+ Icons",
     description:
-      "Integrated game-icons.net via react-icons, adding 160+ RPG-specific icons: weapon types (swords, bows, daggers, axes, polearms, staves), armor pieces (helmets, body armor, gauntlets, boots), shields, accessories (rings, necklaces, amulets, cloaks), profession symbols, status effects, magic schools, and items/loot. The icon picker now features a searchable dialog with tabs to filter between Lucide and Game Icons collections.",
-    category: "feature",
-    phase: "phase-1",
-  },
-  {
-    id: "2026-03-entity-icons",
-    date: "2026-03-28",
-    title: "Icons for All Core Entity Types",
-    description:
-      "Added customizable icon selection to Professions, Ability Types, Armor Types, Equipment Types, and Weapon Types. Each entity now features an icon picker with 260+ grouped icons that display in both the form dialogs and table views.",
-    category: "feature",
-    phase: "phase-1",
-  },
-  {
-    id: "2026-03-shared-icon-system",
-    date: "2026-03-28",
-    title: "Shared Icon System with Grouped Picker",
-    description:
-      "Extracted the icon library into a shared module with ~260 lucide icons across 23 labeled categories including Combat, Defense, Elements, Fire, Ice, Water, Light, Dark, Poison, Psychic, Life, Crystal, Sound, Time, Beast, Tech, Magic, People, Movement, Buffs/Debuffs, Status, Items, and Exploration. The grouped icon picker is now reusable across all entity editors.",
+      "Built a shared icon picker with 4,300+ icons from two libraries: Lucide (340+ clean UI icons) and game-icons.net (4,000+ RPG-specific icons). Icons are auto-categorized into 50+ groups covering weapons, armor, shields, accessories, creatures, professions, status effects, magic, items, nature, buildings, and more. Features a searchable dialog with collection tabs and keyword typeahead — search 'fire' to find flame icons, 'melee' to find swords and axes, etc. All entity editors (Damage Types, Professions, Ability Types, Armor Types, Equipment Types, Weapon Types) now support icon selection.",
     category: "improvement",
     phase: "phase-1",
   },
