@@ -1,9 +1,8 @@
 import { LoaderFunctionArgs, ActionFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData, useActionData, useOutletContext } from "@remix-run/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { requireProjectAccess } from "~/lib/project-access.server";
-import { getStatsByProjectId, createStat, updateStat, deleteStat, reorderStats } from "~/api/statDefinition";
-import { CategoryType } from "../../generated/prisma/browser";
+import { getStatsByProjectId, createStat, updateStat, deleteStat, reorderStats, ensureCoreStats } from "~/api/statDefinition";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { BarChart3, Plus } from "lucide-react";
@@ -18,6 +17,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   }
 
   await requireProjectAccess(request, projectId);
+
+  // Ensure core stats exist (backfills HP/MP/MOV for legacy projects)
+  await ensureCoreStats(projectId);
+
   const stats = await getStatsByProjectId(projectId);
   return json({ stats });
 }
@@ -38,21 +41,21 @@ export async function action({ params, request }: ActionFunctionArgs) {
         const name = (formData.get("name") as string)?.trim();
         const abbreviation = (formData.get("abbreviation") as string)?.trim();
         const description = (formData.get("description") as string)?.trim();
-        const category = formData.get("category") as CategoryType;
+        const group = (formData.get("group") as string)?.trim();
         const minValue = parseInt(formData.get("minValue") as string, 10);
         const maxValue = parseInt(formData.get("maxValue") as string, 10);
         const defaultValue = parseInt(formData.get("defaultValue") as string, 10);
         const isPercentage = formData.get("isPercentage") === "true";
 
-        if (!name || !abbreviation || !category) {
-          return json({ error: "Name, abbreviation, and category are required" }, { status: 400 });
+        if (!name || !abbreviation) {
+          return json({ error: "Name and abbreviation are required" }, { status: 400 });
         }
 
         await createStat({
           name,
           abbreviation,
           description: description || undefined,
-          category,
+          group: group || undefined,
           minValue,
           maxValue,
           defaultValue,
@@ -72,7 +75,7 @@ export async function action({ params, request }: ActionFunctionArgs) {
         const name = (formData.get("name") as string)?.trim();
         const abbreviation = (formData.get("abbreviation") as string)?.trim();
         const description = (formData.get("description") as string)?.trim();
-        const category = formData.get("category") as CategoryType;
+        const group = (formData.get("group") as string)?.trim();
         const minValue = parseInt(formData.get("minValue") as string, 10);
         const maxValue = parseInt(formData.get("maxValue") as string, 10);
         const defaultValue = parseInt(formData.get("defaultValue") as string, 10);
@@ -82,7 +85,7 @@ export async function action({ params, request }: ActionFunctionArgs) {
           name,
           abbreviation,
           description: description || undefined,
-          category,
+          group: group || undefined,
           minValue,
           maxValue,
           defaultValue,
@@ -133,6 +136,12 @@ export default function StatsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingStat, setEditingStat] = useState<(typeof stats)[number] | null>(null);
 
+  // Derive unique group names for autocomplete
+  const existingGroups = useMemo(
+    () => [...new Set(stats.map((s) => s.group).filter(Boolean))] as string[],
+    [stats]
+  );
+
   useEffect(() => {
     if (!actionData) return;
     if ("success" in actionData && typeof actionData.success === "string") {
@@ -163,6 +172,7 @@ export default function StatsPage() {
           </div>
           <p className="text-muted-foreground">
             Define the stats that characters and classes use in your game.
+            Core engine stats (HP, MP, MOV) are required and cannot be removed.
           </p>
         </div>
         <Button onClick={handleNewStat}>
@@ -182,6 +192,7 @@ export default function StatsPage() {
         onOpenChange={setDialogOpen}
         stat={editingStat}
         projectId={projectId}
+        existingGroups={existingGroups}
       />
     </div>
   );

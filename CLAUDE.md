@@ -81,8 +81,8 @@ This is a **Remix** application using **Vite** as the build tool, with a Postgre
 ### Important Configuration
 
 #### Environment Variables
-- `DATABASE_URL`: Prisma Accelerate connection string (used at runtime)
-- `DIRECT_DATABASE_URL`: Direct PostgreSQL connection string (used by Prisma CLI for migrations)
+- `DATABASE_URL`: PostgreSQL connection string (or Prisma Accelerate URL)
+- `DIRECT_DATABASE_URL`: *(Optional)* Direct PostgreSQL connection string for Prisma CLI — falls back to `DATABASE_URL`
 - `AUTH_SECRET`: Required for session encryption
 
 #### Database Management

@@ -82,7 +82,7 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
       "Core RPG data layer: stats, elements, damage types, professions, weapon/armor/ability/equipment types with full editors.",
     status: "complete",
     highlights: [
-      "Stat definitions with categories (Core, Offensive, Defensive, Speed, Luck, Custom)",
+      "Stat definitions with core engine stats (HP, MP, MOV) and free-form grouping",
       "Elements with color/icon customization and N\u00D7N interaction matrix",
       "Full CRUD editors for damage types, professions, weapon/armor/ability/equipment types",
       "Drag-and-drop reordering with @dnd-kit across all editors",
@@ -240,6 +240,15 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 ];
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    id: "2026-03-stat-system-redesign",
+    date: "2026-03-27",
+    title: "Stat System Redesign",
+    description:
+      "Introduced core engine stats (HP, MP, MOV) that are auto-created per project and protected from deletion. Replaced rigid stat categories with free-form groups for full customization. Stats now have a systemKey that decouples engine identity from display names.",
+    category: "feature",
+    phase: "phase-1",
+  },
   {
     id: "2026-03-prisma-7",
     date: "2026-03-27",

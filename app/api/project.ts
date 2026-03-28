@@ -1,4 +1,5 @@
 import { db } from "~/db.server";
+import { CORE_STAT_DEFAULTS } from "./statDefinition";
 
 export async function getProjectById(id: string) {
     return db.project.findUnique({ 
@@ -74,6 +75,13 @@ export async function createProject(data: {
         await tx.projectSettings.create({
             data: { projectId: project.id },
         });
+
+        // Seed core engine stats (HP, MP, MOV)
+        for (const stat of CORE_STAT_DEFAULTS) {
+            await tx.statDefinition.create({
+                data: { ...stat, projectId: project.id },
+            });
+        }
 
         return project;
     });

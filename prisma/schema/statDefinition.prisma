@@ -1,18 +1,16 @@
-enum CategoryType {
-  Core
-  Offensive
-  Defensive
-  Speed
-  Luck
-  Custom
+enum SystemStatKey {
+  HP
+  MP
+  MOV
 }
 
 model StatDefinition {
-  id           String       @id @default(uuid())
+  id           String         @id @default(uuid())
   name         String
   abbreviation String
   description  String?
-  category     CategoryType
+  systemKey    SystemStatKey?
+  group        String?
   minValue     Int
   maxValue     Int
   defaultValue Int
@@ -27,4 +25,5 @@ model StatDefinition {
   updatedAt    DateTime @updatedAt
 
   @@unique([projectId, abbreviation])
+  @@unique([projectId, systemKey])
 }
