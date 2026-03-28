@@ -14,7 +14,7 @@ import { Badge } from "~/components/ui/badge";
 import { Label } from "~/components/ui/label";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { Save } from "lucide-react";
-import { DAMAGE_TYPE_ICONS } from "./damage-type-form-dialog";
+import { ICON_MAP } from "~/components/shared/icon-picker";
 
 interface DamageTypeData {
   id: string;
@@ -123,7 +123,7 @@ export function DamageTypeInteractionDialog({
     setCurrentValues(new Map(currentValues));
   }
 
-  const SourceIcon = sourceDamageType ? DAMAGE_TYPE_ICONS[sourceDamageType.iconKey] : null;
+  const SourceIcon = sourceDamageType ? ICON_MAP[sourceDamageType.iconKey] : null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -176,7 +176,7 @@ export function DamageTypeInteractionDialog({
           <div className="space-y-2 pr-3">
             {targets.map((target) => {
               const value = currentValues.get(target.id) ?? 1.0;
-              const TargetIcon = DAMAGE_TYPE_ICONS[target.iconKey];
+              const TargetIcon = ICON_MAP[target.iconKey];
 
               return (
                 <div

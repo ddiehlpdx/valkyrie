@@ -4,109 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { BaseDamageType } from "../../../generated/prisma/browser";
-import type { LucideIcon } from "lucide-react";
-import {
-  // Combat/Weapon
-  Axe,
-  Bomb,
-  Construction,
-  Crosshair,
-  Hammer,
-  Pickaxe,
-  PocketKnife,
-  Shield,
-  Skull,
-  Sword,
-  Swords,
-  Wand,
-  WandSparkles,
-  // Elemental/Nature
-  Cloud,
-  CloudDrizzle,
-  CloudFog,
-  CloudHail,
-  CloudLightning,
-  CloudMoon,
-  CloudMoonRain,
-  CloudRain,
-  CloudRainWind,
-  CloudSnow,
-  Cloudy,
-  Droplet,
-  Droplets,
-  Earth,
-  Flame,
-  FlameKindling,
-  Gem,
-  Heater,
-  Leaf,
-  LeafyGreen,
-  Mountain,
-  MountainSnow,
-  Rainbow,
-  Shrub,
-  Snowflake,
-  ThermometerSnowflake,
-  Tornado,
-  TreeDeciduous,
-  TreePalm,
-  TreePine,
-  Trees,
-  Waves,
-  Wind,
-  Zap,
-  // Light/Holy
-  Flashlight,
-  FlashlightOff,
-  Sparkle,
-  Sparkles,
-  Star,
-  StarHalf,
-  StarOff,
-  Sun,
-  SunDim,
-  SunMedium,
-  SunMoon,
-  // Dark/Arcane
-  Biohazard,
-  Brain,
-  BrainCircuit,
-  CircleDot,
-  Eclipse,
-  Eye,
-  EyeOff,
-  Ghost,
-  Hexagon,
-  Moon,
-  MoonStar,
-  Orbit,
-  Radiation,
-  // Life/Drain
-  HandHeart,
-  Heart,
-  HeartCrack,
-  HeartOff,
-  HeartPulse,
-  // Crystal/Mineral
-  Diamond,
-  DiamondMinus,
-  // Sound/Sonic
-  AudioLines,
-  Bell,
-  BellRing,
-  // Time/Gravity
-  Hourglass,
-  Timer,
-  // Beast/Animal
-  Bird,
-  Bug,
-  Rat,
-  // Tech/Construct
-  Bot,
-  CircuitBoard,
-  Cpu,
-  Microchip,
-} from "lucide-react";
+import { ICON_MAP, IconPicker } from "~/components/shared/icon-picker";
 import {
   Dialog,
   DialogContent,
@@ -134,109 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-
-export const DAMAGE_TYPE_ICONS: Record<string, LucideIcon> = {
-  // Combat/Weapon
-  Axe,
-  Bomb,
-  Construction,
-  Crosshair,
-  Hammer,
-  Pickaxe,
-  PocketKnife,
-  Shield,
-  Skull,
-  Sword,
-  Swords,
-  Wand,
-  WandSparkles,
-  // Elemental/Nature
-  Cloud,
-  CloudDrizzle,
-  CloudFog,
-  CloudHail,
-  CloudLightning,
-  CloudMoon,
-  CloudMoonRain,
-  CloudRain,
-  CloudRainWind,
-  CloudSnow,
-  Cloudy,
-  Droplet,
-  Droplets,
-  Earth,
-  Flame,
-  FlameKindling,
-  Gem,
-  Heater,
-  Leaf,
-  LeafyGreen,
-  Mountain,
-  MountainSnow,
-  Rainbow,
-  Shrub,
-  Snowflake,
-  ThermometerSnowflake,
-  Tornado,
-  TreeDeciduous,
-  TreePalm,
-  TreePine,
-  Trees,
-  Waves,
-  Wind,
-  Zap,
-  // Light/Holy
-  Flashlight,
-  FlashlightOff,
-  Sparkle,
-  Sparkles,
-  Star,
-  StarHalf,
-  StarOff,
-  Sun,
-  SunDim,
-  SunMedium,
-  SunMoon,
-  // Dark/Arcane
-  Biohazard,
-  Brain,
-  BrainCircuit,
-  CircleDot,
-  Eclipse,
-  Eye,
-  EyeOff,
-  Ghost,
-  Hexagon,
-  Moon,
-  MoonStar,
-  Orbit,
-  Radiation,
-  // Life/Drain
-  HandHeart,
-  Heart,
-  HeartCrack,
-  HeartOff,
-  HeartPulse,
-  // Crystal/Mineral
-  Diamond,
-  DiamondMinus,
-  // Sound/Sonic
-  AudioLines,
-  Bell,
-  BellRing,
-  // Time/Gravity
-  Hourglass,
-  Timer,
-  // Beast/Animal
-  Bird,
-  Bug,
-  Rat,
-  // Tech/Construct
-  Bot,
-  CircuitBoard,
-  Cpu,
-  Microchip,
-};
 
 const damageTypeFormSchema = z.object({
   name: z.string().min(1, "Name is required").max(64, "Name must be 64 characters or less"),
@@ -335,7 +130,7 @@ export function DamageTypeFormDialog({
 
   const selectedIconKey = form.watch("iconKey");
   const selectedColor = form.watch("color");
-  const SelectedIcon = DAMAGE_TYPE_ICONS[selectedIconKey];
+  const SelectedIcon = ICON_MAP[selectedIconKey];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -453,23 +248,12 @@ export function DamageTypeFormDialog({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Icon</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select an icon" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {Object.entries(DAMAGE_TYPE_ICONS).map(([key, Icon]) => (
-                          <SelectItem key={key} value={key}>
-                            <div className="flex items-center gap-2">
-                              <Icon className="h-4 w-4" />
-                              <span>{key}</span>
-                            </div>
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <IconPicker
+                        value={field.value}
+                        onValueChange={field.onChange}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
