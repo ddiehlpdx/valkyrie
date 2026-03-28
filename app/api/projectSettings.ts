@@ -1,5 +1,5 @@
 import { db } from "~/db.server";
-import { TurnSystem, StatGrowthModel } from "@prisma/client";
+import { TurnSystem, StatGrowthModel } from "../../generated/prisma/browser";
 
 export async function getProjectSettings(projectId: string) {
   return db.projectSettings.findUnique({

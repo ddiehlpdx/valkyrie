@@ -3,7 +3,7 @@ import { useLoaderData, useActionData, useOutletContext } from "@remix-run/react
 import { useState, useEffect } from "react";
 import { requireProjectAccess } from "~/lib/project-access.server";
 import { getStatsByProjectId, createStat, updateStat, deleteStat, reorderStats } from "~/api/statDefinition";
-import { CategoryType } from "@prisma/client";
+import { CategoryType } from "../../generated/prisma/browser";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { BarChart3, Plus } from "lucide-react";

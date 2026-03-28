@@ -3,7 +3,7 @@ import { useSubmit } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CategoryType } from "@prisma/client";
+import { CategoryType } from "../../../generated/prisma/browser";
 import {
   Dialog,
   DialogContent,

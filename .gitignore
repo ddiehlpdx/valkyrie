@@ -4,5 +4,8 @@ node_modules
 /build
 .env
 
+# Prisma generated client
+/generated
+
 # User uploads - should be local to each environment
 /public/users/uploads/

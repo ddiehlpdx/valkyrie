@@ -21,7 +21,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
 } from "../ui/sidebar";
-import { Profile } from "@prisma/client";
+import { Profile } from "../../../generated/prisma/browser";
 import { Form, Link } from "@remix-run/react";
 
 interface NavUserProps {

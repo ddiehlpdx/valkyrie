@@ -10,7 +10,7 @@ import {
   deleteProject
 } from "~/api/project";
 import { getProjectSettings, updateProjectSettings } from "~/api/projectSettings";
-import { TurnSystem, StatGrowthModel } from "@prisma/client";
+import { TurnSystem, StatGrowthModel } from "../../generated/prisma/browser";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";

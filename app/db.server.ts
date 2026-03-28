@@ -1,9 +1,11 @@
-import { PrismaClient, User } from '@prisma/client';
+import { PrismaClient, User } from '../generated/prisma/client';
 import { hash, compare } from 'bcrypt';
 
 const SALT_ROUNDS = 12;
 
-const db = new PrismaClient().$extends({
+const db = new PrismaClient({
+    accelerateUrl: process.env.DATABASE_URL!,
+}).$extends({
     model: {
         user: {
             async signUp(email: string, username: string, password: string) {

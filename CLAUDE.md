@@ -26,7 +26,11 @@ This is a **Remix** application using **Vite** as the build tool, with a Postgre
 #### Database Layer (`app/db.server.ts`)
 - Extended Prisma client with custom user authentication methods
 - Centralized database access with built-in password hashing/comparison
-- Uses Prisma schema folder structure for modular schema organization
+- Uses Prisma 7 with `prisma-client` generator and `prisma.config.ts`
+- Generated client output at `generated/prisma/` (gitignored, auto-generated)
+- Server-side code imports from `@prisma/client` (resolves to `generated/prisma/client.ts`)
+- Browser-safe imports (types, enums) use `@prisma/client/browser` (resolves to `generated/prisma/browser.ts`)
+- Uses `accelerateUrl` constructor option for Prisma Accelerate connection
 
 #### Session Management (`app/session.server.ts`)
 - Cookie-based session storage with secure configuration
@@ -77,11 +81,13 @@ This is a **Remix** application using **Vite** as the build tool, with a Postgre
 ### Important Configuration
 
 #### Environment Variables
-- `DATABASE_URL`: PostgreSQL connection string
+- `DATABASE_URL`: Prisma Accelerate connection string (used at runtime)
+- `DIRECT_DATABASE_URL`: Direct PostgreSQL connection string (used by Prisma CLI for migrations)
 - `AUTH_SECRET`: Required for session encryption
 
 #### Database Management
-- Use `npx prisma generate` after schema changes
+- Prisma 7 with config in `prisma.config.ts` (datasource URL, schema path)
+- Use `npx prisma generate` after schema changes (generates to `generated/prisma/`)
 - Use `npx prisma db push` for development schema updates
 - Use `npx prisma migrate dev` for production-ready migrations
 - Schema files are organized in `prisma/schema/` folder

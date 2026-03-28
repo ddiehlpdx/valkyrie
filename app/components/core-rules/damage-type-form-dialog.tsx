@@ -3,7 +3,7 @@ import { useSubmit } from "@remix-run/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { BaseDamageType } from "@prisma/client";
+import { BaseDamageType } from "../../../generated/prisma/browser";
 import type { LucideIcon } from "lucide-react";
 import {
   // Combat/Weapon

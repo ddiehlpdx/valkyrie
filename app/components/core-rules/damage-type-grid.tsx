@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSubmit } from "@remix-run/react";
-import { BaseDamageType } from "@prisma/client";
+import { BaseDamageType } from "../../../generated/prisma/browser";
 import {
   DndContext,
   closestCenter,

@@ -1,5 +1,5 @@
 import { db } from "~/db.server";
-import { BaseDamageType } from "@prisma/client";
+import { BaseDamageType } from "../../generated/prisma/browser";
 
 export async function getDamageTypesByProjectId(projectId: string) {
     return db.damageType.findMany({
