@@ -4,6 +4,7 @@ model WeaponType {
   iconKey      String  @default("CircleDot")
   projectId    String
   damageTypeId String?
+  twoHanded    Boolean @default(false)
 
   project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
   damageType DamageType? @relation(fields: [damageTypeId], references: [id], onDelete: SetNull)

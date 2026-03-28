@@ -13,6 +13,7 @@ export async function createWeaponType(data: {
     iconKey?: string;
     projectId: string;
     damageTypeId?: string | null;
+    twoHanded?: boolean;
 }) {
     return db.weaponType.create({
         data: {
@@ -20,6 +21,7 @@ export async function createWeaponType(data: {
             iconKey: data.iconKey,
             projectId: data.projectId,
             damageTypeId: data.damageTypeId || null,
+            twoHanded: data.twoHanded ?? false,
         },
     });
 }
@@ -28,6 +30,7 @@ export async function updateWeaponType(id: string, data: {
     name?: string;
     iconKey?: string;
     damageTypeId?: string | null;
+    twoHanded?: boolean;
 }) {
     return db.weaponType.update({
         where: { id },

@@ -43,6 +43,7 @@ export interface WeaponTypeItem {
   id: string;
   name: string;
   displayOrder: number;
+  twoHanded?: boolean;
   damageType?: { id: string; name: string } | null;
   [key: string]: unknown;
 }
@@ -90,6 +91,13 @@ function SortableRow({ item, onEdit, onDelete }: SortableRowProps) {
       <TableCell>
         {item.damageType ? (
           <Badge variant="outline">{item.damageType.name}</Badge>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        )}
+      </TableCell>
+      <TableCell>
+        {item.twoHanded ? (
+          <Badge variant="outline">Two-Handed</Badge>
         ) : (
           <span className="text-muted-foreground">—</span>
         )}
@@ -191,6 +199,7 @@ export function WeaponTypeTable({ items: initialItems, onEdit }: WeaponTypeTable
               <TableHead className="w-[40px]" />
               <TableHead>Name</TableHead>
               <TableHead>Damage Type</TableHead>
+              <TableHead>Two-Handed</TableHead>
               <TableHead className="w-[80px]">Actions</TableHead>
             </TableRow>
           </TableHeader>

@@ -51,7 +51,8 @@ export async function action({ params, request }: ActionFunctionArgs) {
         }
         const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
         const damageTypeId = (formData.get("damageTypeId") as string) || null;
-        await createWeaponType({ name, iconKey, projectId, damageTypeId });
+        const twoHanded = formData.get("twoHanded") === "true";
+        await createWeaponType({ name, iconKey, projectId, damageTypeId, twoHanded });
         return json({ success: "Weapon type created successfully" });
       }
 
@@ -66,7 +67,8 @@ export async function action({ params, request }: ActionFunctionArgs) {
         }
         const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
         const damageTypeId = (formData.get("damageTypeId") as string) || null;
-        await updateWeaponType(id, { name, iconKey, damageTypeId });
+        const twoHanded = formData.get("twoHanded") === "true";
+        await updateWeaponType(id, { name, iconKey, damageTypeId, twoHanded });
         return json({ success: "Weapon type updated successfully" });
       }
 

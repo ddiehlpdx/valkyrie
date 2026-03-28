@@ -27,13 +27,15 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
+import { Switch } from "~/components/ui/switch";
 import { Button } from "~/components/ui/button";
-import { DEFAULT_ICON_KEY, IconPicker } from "~/components/shared/icon-picker";
+import { DEFAULT_ICON_KEY, IconPicker, ICON_MAP } from "~/components/shared/icon-picker";
 
 const weaponTypeSchema = z.object({
   name: z.string().min(1, "Name is required").max(64, "Name must be 64 characters or less"),
   iconKey: z.string().min(1, "Select an icon"),
   damageTypeId: z.string().optional().or(z.literal("")),
+  twoHanded: z.boolean().default(false),
 });
 
 type WeaponTypeFormValues = z.infer<typeof weaponTypeSchema>;
@@ -41,12 +43,13 @@ type WeaponTypeFormValues = z.infer<typeof weaponTypeSchema>;
 interface DamageTypeOption {
   id: string;
   name: string;
+  iconKey: string;
 }
 
 interface WeaponTypeFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item?: { id: string; name: string; iconKey?: string; damageType?: { id: string } | null } | null;
+  item?: { id: string; name: string; iconKey?: string; twoHanded?: boolean; damageType?: { id: string } | null } | null;
   projectId: string;
   damageTypes: DamageTypeOption[];
 }
@@ -63,7 +66,7 @@ export function WeaponTypeFormDialog({
 
   const form = useForm<WeaponTypeFormValues>({
     resolver: zodResolver(weaponTypeSchema),
-    defaultValues: { name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "" },
+    defaultValues: { name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "", twoHanded: false },
   });
 
   useEffect(() => {
@@ -74,11 +77,12 @@ export function WeaponTypeFormDialog({
         name: item.name,
         iconKey: item.iconKey || DEFAULT_ICON_KEY,
         damageTypeId: item.damageType?.id || "",
+        twoHanded: item.twoHanded ?? false,
       });
       return;
     }
 
-    form.reset({ name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "" });
+    form.reset({ name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "", twoHanded: false });
   }, [open, item, form]);
 
   function onSubmit(values: WeaponTypeFormValues) {
@@ -91,6 +95,7 @@ export function WeaponTypeFormDialog({
     formData.append("name", values.name);
     formData.append("iconKey", values.iconKey);
     formData.append("damageTypeId", values.damageTypeId || "");
+    formData.append("twoHanded", String(values.twoHanded));
 
     submit(formData, { method: "post" });
     onOpenChange(false);
@@ -157,14 +162,35 @@ export function WeaponTypeFormDialog({
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="none">None</SelectItem>
-                      {damageTypes.map((dt) => (
-                        <SelectItem key={dt.id} value={dt.id}>
-                          {dt.name}
-                        </SelectItem>
-                      ))}
+                      {damageTypes.map((dt) => {
+                        const DtIcon = ICON_MAP[dt.iconKey];
+                        return (
+                          <SelectItem key={dt.id} value={dt.id}>
+                            <span className="flex items-center gap-2">
+                              {DtIcon && <DtIcon className="h-4 w-4" />}
+                              {dt.name}
+                            </span>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="twoHanded"
+              render={({ field }) => (
+                <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                  <div className="space-y-0.5">
+                    <FormLabel>Two-Handed</FormLabel>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
                 </FormItem>
               )}
             />
