@@ -1,5 +1,5 @@
 import { db } from "~/db.server";
-import { CategoryType } from "@prisma/client";
+import { CategoryType } from "../../generated/prisma/browser";
 
 export async function getStatsByProjectId(projectId: string) {
     return db.statDefinition.findMany({

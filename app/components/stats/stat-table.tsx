@@ -15,7 +15,7 @@ import {
   arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CategoryType } from "@prisma/client";
+import { CategoryType } from "../../../generated/prisma/browser";
 import {
   Table,
   TableBody,

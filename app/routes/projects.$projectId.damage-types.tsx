@@ -2,7 +2,7 @@ import { LoaderFunctionArgs, ActionFunctionArgs, json } from "@remix-run/node";
 import { useLoaderData, useActionData, useOutletContext } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import { requireProjectAccess } from "~/lib/project-access.server";
-import { BaseDamageType } from "@prisma/client";
+import { BaseDamageType } from "../../generated/prisma/browser";
 import {
   getDamageTypesByProjectId,
   createDamageType,

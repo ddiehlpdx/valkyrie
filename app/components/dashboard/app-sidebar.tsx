@@ -15,7 +15,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "../ui/sidebar";
-import { Profile } from "@prisma/client";
+import { Profile } from "../../../generated/prisma/browser";
 
 interface SidebarProject {
   id: string;
