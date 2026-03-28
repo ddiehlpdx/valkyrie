@@ -22,18 +22,15 @@ Valkyrie is a web-based game editor and runtime that lets you design grid-based 
 ### Setup
 
 ```sh
-# Install dependencies
+# Install dependencies (also generates Prisma client via postinstall)
 npm install
 
 # Set up environment variables
 cp .env.example .env
-# Edit .env with your DATABASE_URL and AUTH_SECRET
+# Edit .env with your DATABASE_URL, DIRECT_DATABASE_URL, and AUTH_SECRET
 
 # Push the database schema
 npx prisma db push
-
-# Generate Prisma client
-npx prisma generate
 
 # Start the dev server
 npm run dev
@@ -45,7 +42,8 @@ The app will be available at `http://localhost:5173`.
 
 | Variable | Description |
 |---|---|
-| `DATABASE_URL` | PostgreSQL connection string |
+| `DATABASE_URL` | Prisma Accelerate connection string (used at runtime) |
+| `DIRECT_DATABASE_URL` | Direct PostgreSQL connection string (used by Prisma CLI for migrations) |
 | `AUTH_SECRET` | Secret key for session encryption |
 
 ## Scripts
@@ -75,8 +73,13 @@ app/
 ├── session.server.ts # Cookie session management
 └── root.tsx        # App shell
 
+generated/
+└── prisma/         # Auto-generated Prisma client (gitignored)
+
 prisma/
 └── schema/         # Modular Prisma schema files (one per domain)
+
+prisma.config.ts    # Prisma 7 configuration (datasource, schema path)
 
 docs/
 └── ROADMAP.md      # Full feature roadmap
