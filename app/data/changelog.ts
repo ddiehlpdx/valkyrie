@@ -242,12 +242,20 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
     id: "2026-03-stat-system-redesign",
-    date: "2026-03-27",
+    date: "2026-03-28",
     title: "Stat System Redesign",
     description:
       "Introduced core engine stats (HP, MP, MOV) that are auto-created per project and protected from deletion. Replaced rigid stat categories with free-form groups for full customization. Stats now have a systemKey that decouples engine identity from display names.",
     category: "feature",
     phase: "phase-1",
+  },
+  {
+    id: "2026-03-db-resilience",
+    date: "2026-03-28",
+    title: "Database Resilience for Prisma Accelerate",
+    description:
+      "Added automatic retry logic with exponential backoff for transient Prisma Accelerate errors, preventing intermittent connection failures from surfacing to users.",
+    category: "infrastructure",
   },
   {
     id: "2026-03-prisma-7",
