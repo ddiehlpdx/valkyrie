@@ -9,6 +9,7 @@ export async function getArmorTypesByProjectId(projectId: string) {
 
 export async function createArmorType(data: {
     name: string;
+    iconKey?: string;
     projectId: string;
 }) {
     return db.armorType.create({ data });
@@ -16,6 +17,7 @@ export async function createArmorType(data: {
 
 export async function updateArmorType(id: string, data: {
     name?: string;
+    iconKey?: string;
 }) {
     return db.armorType.update({
         where: { id },

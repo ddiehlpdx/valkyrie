@@ -23,9 +23,11 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Label } from "~/components/ui/label";
+import { DEFAULT_ICON_KEY, IconPicker } from "~/components/shared/icon-picker";
 
 const professionSchema = z.object({
   name: z.string().min(1, "Name is required").max(64, "Name must be 64 characters or less"),
+  iconKey: z.string().min(1, "Select an icon"),
   weaponTypeIds: z.array(z.string()).default([]),
   armorTypeIds: z.array(z.string()).default([]),
 });
@@ -43,6 +45,7 @@ interface ProfessionFormDialogProps {
   item?: {
     id: string;
     name: string;
+    iconKey?: string;
     allowedWeaponTypes?: Array<{ weaponType: { id: string } }>;
     allowedArmorTypes?: Array<{ armorType: { id: string } }>;
   } | null;
@@ -64,7 +67,7 @@ export function ProfessionFormDialog({
 
   const form = useForm<ProfessionFormValues>({
     resolver: zodResolver(professionSchema),
-    defaultValues: { name: "", weaponTypeIds: [], armorTypeIds: [] },
+    defaultValues: { name: "", iconKey: DEFAULT_ICON_KEY, weaponTypeIds: [], armorTypeIds: [] },
   });
 
   useEffect(() => {
@@ -73,13 +76,14 @@ export function ProfessionFormDialog({
     if (item) {
       form.reset({
         name: item.name,
+        iconKey: item.iconKey || DEFAULT_ICON_KEY,
         weaponTypeIds: item.allowedWeaponTypes?.map((wt) => wt.weaponType.id) || [],
         armorTypeIds: item.allowedArmorTypes?.map((at) => at.armorType.id) || [],
       });
       return;
     }
 
-    form.reset({ name: "", weaponTypeIds: [], armorTypeIds: [] });
+    form.reset({ name: "", iconKey: DEFAULT_ICON_KEY, weaponTypeIds: [], armorTypeIds: [] });
   }, [open, item, form]);
 
   function onSubmit(values: ProfessionFormValues) {
@@ -90,6 +94,7 @@ export function ProfessionFormDialog({
     }
     formData.append("projectId", projectId);
     formData.append("name", values.name);
+    formData.append("iconKey", values.iconKey);
     formData.append("weaponTypeIds", JSON.stringify(values.weaponTypeIds));
     formData.append("armorTypeIds", JSON.stringify(values.armorTypeIds));
 
@@ -118,6 +123,23 @@ export function ProfessionFormDialog({
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g. Knight, Mage, Thief" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="iconKey"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Icon</FormLabel>
+                  <FormControl>
+                    <IconPicker
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

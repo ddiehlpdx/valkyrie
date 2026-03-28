@@ -17,6 +17,7 @@ import { GraduationCap, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { ProfessionTable, type ProfessionItem } from "~/components/core-rules/profession-table";
 import { ProfessionFormDialog } from "~/components/core-rules/profession-form-dialog";
+import { DEFAULT_ICON_KEY } from "~/components/shared/icon-picker";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;
@@ -52,7 +53,8 @@ export async function action({ params, request }: ActionFunctionArgs) {
         }
         const weaponTypeIds = JSON.parse((formData.get("weaponTypeIds") as string) || "[]");
         const armorTypeIds = JSON.parse((formData.get("armorTypeIds") as string) || "[]");
-        await createProfession({ name, projectId, weaponTypeIds, armorTypeIds });
+        const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
+        await createProfession({ name, iconKey, projectId, weaponTypeIds, armorTypeIds });
         return json({ success: "Profession created successfully" });
       }
 
@@ -67,7 +69,8 @@ export async function action({ params, request }: ActionFunctionArgs) {
         }
         const weaponTypeIds = JSON.parse((formData.get("weaponTypeIds") as string) || "[]");
         const armorTypeIds = JSON.parse((formData.get("armorTypeIds") as string) || "[]");
-        await updateProfession(id, { name, weaponTypeIds, armorTypeIds, projectId });
+        const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
+        await updateProfession(id, { name, iconKey, weaponTypeIds, armorTypeIds, projectId });
         return json({ success: "Profession updated successfully" });
       }
 

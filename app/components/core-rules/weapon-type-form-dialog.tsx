@@ -28,9 +28,11 @@ import {
 } from "~/components/ui/select";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import { DEFAULT_ICON_KEY, IconPicker } from "~/components/shared/icon-picker";
 
 const weaponTypeSchema = z.object({
   name: z.string().min(1, "Name is required").max(64, "Name must be 64 characters or less"),
+  iconKey: z.string().min(1, "Select an icon"),
   damageTypeId: z.string().optional().or(z.literal("")),
 });
 
@@ -44,7 +46,7 @@ interface DamageTypeOption {
 interface WeaponTypeFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item?: { id: string; name: string; damageType?: { id: string } | null } | null;
+  item?: { id: string; name: string; iconKey?: string; damageType?: { id: string } | null } | null;
   projectId: string;
   damageTypes: DamageTypeOption[];
 }
@@ -61,7 +63,7 @@ export function WeaponTypeFormDialog({
 
   const form = useForm<WeaponTypeFormValues>({
     resolver: zodResolver(weaponTypeSchema),
-    defaultValues: { name: "", damageTypeId: "" },
+    defaultValues: { name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "" },
   });
 
   useEffect(() => {
@@ -70,12 +72,13 @@ export function WeaponTypeFormDialog({
     if (item) {
       form.reset({
         name: item.name,
+        iconKey: item.iconKey || DEFAULT_ICON_KEY,
         damageTypeId: item.damageType?.id || "",
       });
       return;
     }
 
-    form.reset({ name: "", damageTypeId: "" });
+    form.reset({ name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "" });
   }, [open, item, form]);
 
   function onSubmit(values: WeaponTypeFormValues) {
@@ -86,6 +89,7 @@ export function WeaponTypeFormDialog({
     }
     formData.append("projectId", projectId);
     formData.append("name", values.name);
+    formData.append("iconKey", values.iconKey);
     formData.append("damageTypeId", values.damageTypeId || "");
 
     submit(formData, { method: "post" });
@@ -113,6 +117,23 @@ export function WeaponTypeFormDialog({
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g. Sword, Bow, Staff" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="iconKey"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Icon</FormLabel>
+                  <FormControl>
+                    <IconPicker
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

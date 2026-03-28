@@ -21,9 +21,11 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import { DEFAULT_ICON_KEY, IconPicker } from "~/components/shared/icon-picker";
 
 const namedTypeSchema = z.object({
   name: z.string().min(1, "Name is required").max(64, "Name must be 64 characters or less"),
+  iconKey: z.string().min(1, "Select an icon"),
 });
 
 type NamedTypeFormValues = z.infer<typeof namedTypeSchema>;
@@ -31,7 +33,7 @@ type NamedTypeFormValues = z.infer<typeof namedTypeSchema>;
 interface NamedTypeFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item?: { id: string; name: string } | null;
+  item?: { id: string; name: string; iconKey?: string } | null;
   projectId: string;
   entityLabel: string;
   createAction: string;
@@ -54,18 +56,18 @@ export function NamedTypeFormDialog({
 
   const form = useForm<NamedTypeFormValues>({
     resolver: zodResolver(namedTypeSchema),
-    defaultValues: { name: "" },
+    defaultValues: { name: "", iconKey: DEFAULT_ICON_KEY },
   });
 
   useEffect(() => {
     if (!open) return;
 
     if (item) {
-      form.reset({ name: item.name });
+      form.reset({ name: item.name, iconKey: item.iconKey || DEFAULT_ICON_KEY });
       return;
     }
 
-    form.reset({ name: "" });
+    form.reset({ name: "", iconKey: DEFAULT_ICON_KEY });
   }, [open, item, form]);
 
   function onSubmit(values: NamedTypeFormValues) {
@@ -76,6 +78,7 @@ export function NamedTypeFormDialog({
     }
     formData.append("projectId", projectId);
     formData.append("name", values.name);
+    formData.append("iconKey", values.iconKey);
 
     submit(formData, { method: "post" });
     onOpenChange(false);
@@ -102,6 +105,23 @@ export function NamedTypeFormDialog({
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input placeholder={`Enter ${entityLabel.toLowerCase()} name`} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="iconKey"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Icon</FormLabel>
+                  <FormControl>
+                    <IconPicker
+                      value={field.value}
+                      onValueChange={field.onChange}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

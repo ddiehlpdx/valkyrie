@@ -9,6 +9,7 @@ export async function getEquipmentTypesByProjectId(projectId: string) {
 
 export async function createEquipmentType(data: {
     name: string;
+    iconKey?: string;
     projectId: string;
 }) {
     return db.equipmentType.create({ data });
@@ -16,6 +17,7 @@ export async function createEquipmentType(data: {
 
 export async function updateEquipmentType(id: string, data: {
     name?: string;
+    iconKey?: string;
 }) {
     return db.equipmentType.update({
         where: { id },

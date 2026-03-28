@@ -36,6 +36,7 @@ import {
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { ICON_MAP } from "~/components/shared/icon-picker";
 
 export interface NamedTypeItem {
   id: string;
@@ -52,6 +53,7 @@ interface SortableRowProps {
 }
 
 function SortableRow({ item, entityLabel, onEdit, onDelete }: SortableRowProps) {
+  const Icon = ICON_MAP[item.iconKey as string];
   const {
     attributes,
     listeners,
@@ -78,7 +80,12 @@ function SortableRow({ item, entityLabel, onEdit, onDelete }: SortableRowProps) 
           <GripVertical className="h-4 w-4" />
         </button>
       </TableCell>
-      <TableCell className="font-medium">{item.name}</TableCell>
+      <TableCell className="font-medium">
+        <div className="flex items-center gap-2">
+          {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
+          {item.name}
+        </div>
+      </TableCell>
       <TableCell className="w-[80px]">
         <div className="flex items-center gap-1">
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(item)}>
