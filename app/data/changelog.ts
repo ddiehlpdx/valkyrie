@@ -241,6 +241,15 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: "2026-03-weapon-type-enhancements",
+    date: "2026-03-28",
+    title: "Weapon Type Enhancements",
+    description:
+      "Weapon types now support a two-handed flag, default min/max range fields displayed in a new Range column, and damage type dropdowns show icons for easier identification.",
+    category: "improvement",
+    phase: "phase-1",
+  },
+  {
     id: "2026-03-equipment-slot-system",
     date: "2026-03-28",
     title: "Equipment Slot System",
