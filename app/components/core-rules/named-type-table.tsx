@@ -35,7 +35,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { GripVertical, Pencil, Trash2, Cpu } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { ICON_MAP } from "~/components/shared/icon-picker";
 
 export interface NamedTypeItem {
@@ -54,6 +60,7 @@ interface SortableRowProps {
 
 function SortableRow({ item, entityLabel, onEdit, onDelete }: SortableRowProps) {
   const Icon = ICON_MAP[item.iconKey as string];
+  const isEngineType = !!item.systemKey;
   const {
     attributes,
     listeners,
@@ -84,6 +91,18 @@ function SortableRow({ item, entityLabel, onEdit, onDelete }: SortableRowProps) 
         <div className="flex items-center gap-2">
           {Icon && <Icon className="h-4 w-4 text-muted-foreground" />}
           {item.name}
+          {isEngineType && (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <Cpu className="h-3.5 w-3.5 text-blue-500" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  Engine {entityLabel.toLowerCase()} ({String(item.systemKey)})
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
       </TableCell>
       <TableCell className="w-[80px]">
@@ -91,30 +110,32 @@ function SortableRow({ item, entityLabel, onEdit, onDelete }: SortableRowProps) 
           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => onEdit(item)}>
             <Pencil className="h-4 w-4" />
           </Button>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete &ldquo;{item.name}&rdquo;?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will permanently remove this {entityLabel.toLowerCase()}. Any game data referencing it may be affected.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => onDelete(item.id)}
-                  className="bg-red-600 hover:bg-red-700 text-white"
-                >
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          {!isEngineType && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive hover:text-destructive">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete &ldquo;{item.name}&rdquo;?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will permanently remove this {entityLabel.toLowerCase()}. Any game data referencing it may be affected.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => onDelete(item.id)}
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </TableCell>
     </TableRow>

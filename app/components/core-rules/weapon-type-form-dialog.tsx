@@ -36,6 +36,8 @@ const weaponTypeSchema = z.object({
   iconKey: z.string().min(1, "Select an icon"),
   damageTypeId: z.string().optional().or(z.literal("")),
   twoHanded: z.boolean().default(false),
+  defaultMinRange: z.coerce.number().int().min(1, "Min range must be at least 1").default(1),
+  defaultMaxRange: z.coerce.number().int().min(1, "Max range must be at least 1").default(1),
 });
 
 type WeaponTypeFormValues = z.infer<typeof weaponTypeSchema>;
@@ -49,7 +51,7 @@ interface DamageTypeOption {
 interface WeaponTypeFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item?: { id: string; name: string; iconKey?: string; twoHanded?: boolean; damageType?: { id: string } | null } | null;
+  item?: { id: string; name: string; iconKey?: string; twoHanded?: boolean; defaultMinRange?: number; defaultMaxRange?: number; damageType?: { id: string } | null } | null;
   projectId: string;
   damageTypes: DamageTypeOption[];
 }
@@ -66,7 +68,7 @@ export function WeaponTypeFormDialog({
 
   const form = useForm<WeaponTypeFormValues>({
     resolver: zodResolver(weaponTypeSchema),
-    defaultValues: { name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "", twoHanded: false },
+    defaultValues: { name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "", twoHanded: false, defaultMinRange: 1, defaultMaxRange: 1 },
   });
 
   useEffect(() => {
@@ -78,11 +80,13 @@ export function WeaponTypeFormDialog({
         iconKey: item.iconKey || DEFAULT_ICON_KEY,
         damageTypeId: item.damageType?.id || "",
         twoHanded: item.twoHanded ?? false,
+        defaultMinRange: item.defaultMinRange ?? 1,
+        defaultMaxRange: item.defaultMaxRange ?? 1,
       });
       return;
     }
 
-    form.reset({ name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "", twoHanded: false });
+    form.reset({ name: "", iconKey: DEFAULT_ICON_KEY, damageTypeId: "", twoHanded: false, defaultMinRange: 1, defaultMaxRange: 1 });
   }, [open, item, form]);
 
   function onSubmit(values: WeaponTypeFormValues) {
@@ -96,6 +100,8 @@ export function WeaponTypeFormDialog({
     formData.append("iconKey", values.iconKey);
     formData.append("damageTypeId", values.damageTypeId || "");
     formData.append("twoHanded", String(values.twoHanded));
+    formData.append("defaultMinRange", String(values.defaultMinRange));
+    formData.append("defaultMaxRange", String(values.defaultMaxRange));
 
     submit(formData, { method: "post" });
     onOpenChange(false);
@@ -194,6 +200,36 @@ export function WeaponTypeFormDialog({
                 </FormItem>
               )}
             />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="defaultMinRange"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Min Range</FormLabel>
+                    <FormControl>
+                      <Input type="number" min={1} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="defaultMaxRange"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Max Range</FormLabel>
+                    <FormControl>
+                      <Input type="number" min={1} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

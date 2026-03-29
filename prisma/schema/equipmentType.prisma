@@ -1,7 +1,13 @@
+enum SystemEquipmentKey {
+  MAIN_HAND
+  OFF_HAND
+}
+
 model EquipmentType {
-  id        String @id @default(uuid())
+  id        String              @id @default(uuid())
   name      String
-  iconKey   String @default("CircleDot")
+  iconKey   String              @default("CircleDot")
+  systemKey SystemEquipmentKey?
   projectId String
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
@@ -9,4 +15,6 @@ model EquipmentType {
   displayOrder Int      @default(autoincrement())
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@unique([projectId, systemKey])
 }

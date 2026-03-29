@@ -241,6 +241,15 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: "2026-03-equipment-slot-system",
+    date: "2026-03-28",
+    title: "Equipment Slot System",
+    description:
+      "Redefined Equipment Types as equipment slots (Right Hand, Left Hand, Head, Body, etc.) with engine-protected Main Hand and Off Hand slots that are auto-created per project and cannot be deleted. Equipment slots will be assigned to individual items, not to weapon or armor type categories.",
+    category: "feature",
+    phase: "phase-1",
+  },
+  {
     id: "2026-03-icon-system",
     date: "2026-03-28",
     title: "Comprehensive Icon System with 4,000+ Icons",

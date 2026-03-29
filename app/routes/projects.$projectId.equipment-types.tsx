@@ -8,6 +8,7 @@ import {
   updateEquipmentType,
   deleteEquipmentType,
   reorderEquipmentTypes,
+  ensureCoreEquipmentTypes,
 } from "~/api/equipmentType";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -24,6 +25,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   }
 
   await requireProjectAccess(request, projectId);
+
+  // Ensure core equipment types exist (backfills Main Hand/Off Hand for legacy projects)
+  await ensureCoreEquipmentTypes(projectId);
+
   const equipmentTypes = await getEquipmentTypesByProjectId(projectId);
   return json({ equipmentTypes });
 }
@@ -133,7 +138,7 @@ export default function EquipmentTypesPage() {
             <h1 className="text-3xl font-bold tracking-tight">Equipment Types</h1>
           </div>
           <p className="text-muted-foreground">
-            Define equipment slot categories (e.g. Accessory, Consumable, Key Item).
+            Define equipment slots that determine where gear is equipped (e.g. Right Hand, Left Hand, Head, Body).
           </p>
         </div>
         <Button onClick={handleNew}>

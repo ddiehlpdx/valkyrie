@@ -21,6 +21,8 @@ import {
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import { Badge } from "~/components/ui/badge";
+import { Cpu } from "lucide-react";
 import { DEFAULT_ICON_KEY, IconPicker } from "~/components/shared/icon-picker";
 
 const namedTypeSchema = z.object({
@@ -33,7 +35,7 @@ type NamedTypeFormValues = z.infer<typeof namedTypeSchema>;
 interface NamedTypeFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  item?: { id: string; name: string; iconKey?: string } | null;
+  item?: { id: string; name: string; iconKey?: string; systemKey?: string | null } | null;
   projectId: string;
   entityLabel: string;
   createAction: string;
@@ -53,6 +55,7 @@ export function NamedTypeFormDialog({
 }: NamedTypeFormDialogProps) {
   const submit = useSubmit();
   const isEditing = !!item;
+  const isEngineType = !!item?.systemKey;
 
   const form = useForm<NamedTypeFormValues>({
     resolver: zodResolver(namedTypeSchema),
@@ -88,11 +91,21 @@ export function NamedTypeFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle>{isEditing ? `Edit ${entityLabel}` : `New ${entityLabel}`}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            {isEditing ? `Edit ${entityLabel}` : `New ${entityLabel}`}
+            {isEngineType && (
+              <Badge variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
+                <Cpu className="h-3 w-3 mr-1" />
+                Engine Type
+              </Badge>
+            )}
+          </DialogTitle>
           <DialogDescription>
-            {isEditing
-              ? `Update this ${entityLabel.toLowerCase()} for your project.`
-              : `Create a new ${entityLabel.toLowerCase()} for your project.`}
+            {isEngineType
+              ? `This is a core engine ${entityLabel.toLowerCase()} required by the game system.`
+              : isEditing
+                ? `Update this ${entityLabel.toLowerCase()} for your project.`
+                : `Create a new ${entityLabel.toLowerCase()} for your project.`}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

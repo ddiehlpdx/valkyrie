@@ -44,6 +44,8 @@ export interface WeaponTypeItem {
   name: string;
   displayOrder: number;
   twoHanded?: boolean;
+  defaultMinRange?: number;
+  defaultMaxRange?: number;
   damageType?: { id: string; name: string } | null;
   [key: string]: unknown;
 }
@@ -52,6 +54,13 @@ interface SortableRowProps {
   item: WeaponTypeItem;
   onEdit: (item: WeaponTypeItem) => void;
   onDelete: (id: string) => void;
+}
+
+function formatRange(min?: number, max?: number) {
+  const minR = min ?? 1;
+  const maxR = max ?? 1;
+  if (minR === maxR) return String(minR);
+  return `${minR}–${maxR}`;
 }
 
 function SortableRow({ item, onEdit, onDelete }: SortableRowProps) {
@@ -94,6 +103,9 @@ function SortableRow({ item, onEdit, onDelete }: SortableRowProps) {
         ) : (
           <span className="text-muted-foreground">—</span>
         )}
+      </TableCell>
+      <TableCell>
+        <Badge variant="outline">{formatRange(item.defaultMinRange, item.defaultMaxRange)}</Badge>
       </TableCell>
       <TableCell>
         {item.twoHanded ? (
@@ -199,6 +211,7 @@ export function WeaponTypeTable({ items: initialItems, onEdit }: WeaponTypeTable
               <TableHead className="w-[40px]" />
               <TableHead>Name</TableHead>
               <TableHead>Damage Type</TableHead>
+              <TableHead>Range</TableHead>
               <TableHead>Two-Handed</TableHead>
               <TableHead className="w-[80px]">Actions</TableHead>
             </TableRow>

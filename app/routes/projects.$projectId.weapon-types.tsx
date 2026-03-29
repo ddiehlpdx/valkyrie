@@ -52,7 +52,9 @@ export async function action({ params, request }: ActionFunctionArgs) {
         const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
         const damageTypeId = (formData.get("damageTypeId") as string) || null;
         const twoHanded = formData.get("twoHanded") === "true";
-        await createWeaponType({ name, iconKey, projectId, damageTypeId, twoHanded });
+        const defaultMinRange = parseInt(formData.get("defaultMinRange") as string) || 1;
+        const defaultMaxRange = parseInt(formData.get("defaultMaxRange") as string) || 1;
+        await createWeaponType({ name, iconKey, projectId, damageTypeId, twoHanded, defaultMinRange, defaultMaxRange });
         return json({ success: "Weapon type created successfully" });
       }
 
@@ -68,7 +70,9 @@ export async function action({ params, request }: ActionFunctionArgs) {
         const iconKey = (formData.get("iconKey") as string) || DEFAULT_ICON_KEY;
         const damageTypeId = (formData.get("damageTypeId") as string) || null;
         const twoHanded = formData.get("twoHanded") === "true";
-        await updateWeaponType(id, { name, iconKey, damageTypeId, twoHanded });
+        const defaultMinRange = parseInt(formData.get("defaultMinRange") as string) || 1;
+        const defaultMaxRange = parseInt(formData.get("defaultMaxRange") as string) || 1;
+        await updateWeaponType(id, { name, iconKey, damageTypeId, twoHanded, defaultMinRange, defaultMaxRange });
         return json({ success: "Weapon type updated successfully" });
       }
 
