@@ -1,5 +1,6 @@
 import { db } from "~/db.server";
 import { CORE_STAT_DEFAULTS } from "./statDefinition";
+import { CORE_EQUIPMENT_DEFAULTS } from "./equipmentType";
 
 export async function getProjectById(id: string) {
     return db.project.findUnique({ 
@@ -80,6 +81,13 @@ export async function createProject(data: {
         for (const stat of CORE_STAT_DEFAULTS) {
             await tx.statDefinition.create({
                 data: { ...stat, projectId: project.id },
+            });
+        }
+
+        // Seed core engine equipment types (Main Hand, Off Hand)
+        for (const equipment of CORE_EQUIPMENT_DEFAULTS) {
+            await tx.equipmentType.create({
+                data: { ...equipment, projectId: project.id },
             });
         }
 

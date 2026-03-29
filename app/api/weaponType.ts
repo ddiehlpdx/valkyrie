@@ -14,6 +14,8 @@ export async function createWeaponType(data: {
     projectId: string;
     damageTypeId?: string | null;
     twoHanded?: boolean;
+    defaultMinRange?: number;
+    defaultMaxRange?: number;
 }) {
     return db.weaponType.create({
         data: {
@@ -22,6 +24,8 @@ export async function createWeaponType(data: {
             projectId: data.projectId,
             damageTypeId: data.damageTypeId || null,
             twoHanded: data.twoHanded ?? false,
+            defaultMinRange: data.defaultMinRange ?? 1,
+            defaultMaxRange: data.defaultMaxRange ?? 1,
         },
     });
 }
@@ -31,6 +35,8 @@ export async function updateWeaponType(id: string, data: {
     iconKey?: string;
     damageTypeId?: string | null;
     twoHanded?: boolean;
+    defaultMinRange?: number;
+    defaultMaxRange?: number;
 }) {
     return db.weaponType.update({
         where: { id },
