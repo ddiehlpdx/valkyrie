@@ -9,3 +9,6 @@ node_modules
 
 # User uploads - should be local to each environment
 /public/users/uploads/
+
+# AI-generated sprites - local to each developer
+/public/sprites/

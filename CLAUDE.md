@@ -84,6 +84,7 @@ This is a **Remix** application using **Vite** as the build tool, with a Postgre
 - `DATABASE_URL`: PostgreSQL connection string (or Prisma Accelerate URL)
 - `DIRECT_DATABASE_URL`: *(Optional)* Direct PostgreSQL connection string for Prisma CLI — falls back to `DATABASE_URL`
 - `AUTH_SECRET`: Required for session encryption
+- `SPRITECOOK_API_KEY`: *(Optional)* API key for SpriteCook sprite generation service
 
 #### Database Management
 - Prisma 7 with config in `prisma.config.ts` (datasource URL, schema path)
@@ -169,3 +170,24 @@ Components live in `app/components/changelog/`: `roadmap-tracker.tsx`, `changelo
 
 ## Additional Important Context
 - The app we are building is called Valkyrie. Valkyrie is meant to be like the "RPG Maker" for tactical RPGs like Final Fantasy Tactics and Ogre Battle. We should always keep this in mind when developing new features and maintaining existing ones.
+
+## SpriteCook Integration
+
+Valkyrie integrates with [SpriteCook](https://spritecook.ai) for AI-powered game asset generation via MCP.
+
+### Setup
+- MCP config lives in `.mcp.json` at project root (committed to repo)
+- Each contributor needs their own `SPRITECOOK_API_KEY` environment variable
+- Get an API key at https://app.spritecook.ai/api-keys
+- Use `/sprite [description]` to generate assets with Valkyrie-appropriate defaults
+
+### Sprite Output
+- Generated sprites save to `public/sprites/` organized by asset type
+- Subdirectories: `characters/`, `items/`, `abilities/`, `effects/`, `tiles/`, `ui/`, `portraits/`, `backgrounds/`
+- This directory is gitignored (developer-local generated assets)
+
+### Art Style
+- Default: 32-bit pixel art (PS1-era, detailed shading), tactical RPG style, isometric perspective
+- Theme: dark fantasy medieval
+- Transparent backgrounds by default
+- Asset type auto-detected from description (no sub-commands needed)
