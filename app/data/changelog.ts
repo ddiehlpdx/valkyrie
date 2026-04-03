@@ -95,8 +95,8 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     name: "Abilities & Status Effects",
     shortName: "P2",
     description:
-      "Combat abilities with formula system, status effects, and targeting rules. Data models already exist — this phase builds the visual editors.",
-    status: "upcoming",
+      "Combat abilities with formula system, status effects, and targeting rules.",
+    status: "in-progress",
     highlights: [
       "Status effects with stat modifiers, duration, and stacking rules",
       "Abilities with formula-based power, AoE targeting shapes, and range settings",
@@ -256,6 +256,24 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 ];
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    id: "2026-04-abilities-editor",
+    date: "2026-04-03",
+    title: "Abilities Editor",
+    description:
+      "Full CRUD editor for combat abilities. Abilities support element and damage type associations, targeting rules (self, single, all, area, line), MP cost, power formulas, and drag-and-drop reordering. Abilities can be linked to professions with per-profession JP costs and to status effects with inflict/cure type and chance.",
+    category: "feature",
+    phase: "phase-3",
+  },
+  {
+    id: "2026-04-status-effects-editor",
+    date: "2026-04-03",
+    title: "Status Effects Editor",
+    description:
+      "Full CRUD editor for status effects (buffs, debuffs, and neutral conditions). Status effects support category, duration types (temporary, permanent, until battle end), behavioral flags (stackable, prevents actions, causes recurring damage/healing), a recurring formula field, and inline stat modifier management with flat or percentage modifiers.",
+    category: "feature",
+    phase: "phase-3",
+  },
   {
     id: "2026-04-roadmap-restructure",
     date: "2026-04-03",

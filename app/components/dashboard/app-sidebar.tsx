@@ -76,6 +76,8 @@ function getGameDesignNav(projectId: string): NavItem[] {
       icon: Zap,
       items: [
         { title: "Ability Types", url: `/projects/${projectId}/ability-types` },
+        { title: "Abilities", url: `/projects/${projectId}/abilities` },
+        { title: "Status Effects", url: `/projects/${projectId}/status-effects` },
       ],
     },
     {
