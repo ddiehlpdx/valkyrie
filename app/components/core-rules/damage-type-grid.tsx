@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSubmit } from "@remix-run/react";
 import { BaseDamageType } from "../../../generated/prisma/browser";
 import {
@@ -51,9 +51,10 @@ export function DamageTypeGrid({
   const submit = useSubmit();
   const [items, setItems] = useState(damageTypes);
 
-  if (damageTypes.length !== items.length || damageTypes.some((d, i) => d.id !== items[i]?.id)) {
+  // Sync local state when loader data changes (e.g., after edit/create/delete)
+  useEffect(() => {
     setItems(damageTypes);
-  }
+  }, [damageTypes]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

@@ -241,6 +241,15 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: "2026-04-edit-table-refresh",
+    date: "2026-04-03",
+    title: "Entity Edit Live Updates",
+    description:
+      "Fixed a bug where editing an entity (renaming, changing icons, etc.) did not update the table view until the page was manually refreshed. All entity editors now reflect changes immediately after saving.",
+    category: "improvement",
+    phase: "phase-1",
+  },
+  {
     id: "2026-04-empty-loading-states",
     date: "2026-04-03",
     title: "Empty & Skeleton Loading States",
