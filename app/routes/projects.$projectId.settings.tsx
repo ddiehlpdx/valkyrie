@@ -50,6 +50,7 @@ import {
   AlertTriangle
 } from "lucide-react";
 import { toast } from "sonner";
+import { EmptyState } from "~/components/ui/empty-state";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;
@@ -812,11 +813,11 @@ export default function ProjectSettingsPage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-muted-foreground">
-                  <Users className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                  <p>No collaborators yet</p>
-                  {isOwner && <p className="text-sm">Search for users above to add collaborators</p>}
-                </div>
+                <EmptyState
+                  icon={Users}
+                  title="No collaborators yet"
+                  description={isOwner ? "Search for users above to add collaborators." : "No collaborators have been added to this project."}
+                />
               )}
             </div>
 

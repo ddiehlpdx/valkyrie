@@ -36,8 +36,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { GripVertical, Pencil, Trash2, Users } from "lucide-react";
 import { ICON_MAP } from "~/components/shared/icon-picker";
+import { EmptyState } from "~/components/ui/empty-state";
 
 export interface ProfessionItem {
   id: string;
@@ -198,10 +199,11 @@ export function ProfessionTable({ items: initialItems, onEdit }: ProfessionTable
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        <p className="text-lg font-medium">No professions defined yet</p>
-        <p className="text-sm mt-1">Create your first profession to get started.</p>
-      </div>
+      <EmptyState
+        icon={Users}
+        title="No professions defined yet"
+        description="Create your first profession to get started."
+      />
     );
   }
 

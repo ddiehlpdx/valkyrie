@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Badge } from "~/components/ui/badge";
-import { Newspaper } from "lucide-react";
+import { Newspaper, FileText } from "lucide-react";
+import { EmptyState } from "~/components/ui/empty-state";
 import {
   CATEGORY_CONFIG,
   CHANGELOG_ENTRIES,
@@ -73,9 +74,12 @@ export function ChangelogFeed() {
       </div>
 
       {filteredEntries.length === 0 && (
-        <p className="text-center text-muted-foreground py-8">
-          No entries match the selected filter.
-        </p>
+        <EmptyState
+          icon={FileText}
+          title="No entries found"
+          description="No entries match the selected filter."
+          className="py-8"
+        />
       )}
     </div>
   );

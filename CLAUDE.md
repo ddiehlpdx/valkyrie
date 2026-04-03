@@ -116,6 +116,17 @@ This is a **Remix** application using **Vite** as the build tool, with a Postgre
   - Use shadcn Form components (`FormField`, `FormItem`, `FormLabel`, `FormControl`, `FormMessage`)
   - Example: `const formSchema = z.object({ email: z.string().email(), username: z.string().min(3).max(64) })`
 
+## Empty & Loading State Standards
+- **Every data-displaying component** must handle the empty case using the `EmptyState` component from `~/components/ui/empty-state`
+  - Provide a contextual lucide icon, descriptive title, and helpful description
+  - Include a CTA action button when the user can create the missing data from within the empty state
+  - Import: `import { EmptyState } from "~/components/ui/empty-state"`
+- **Every new route with a loader** must have a corresponding skeleton defined in the parent layout's skeleton router
+  - Project child routes: add a case to `getSkeletonForRoute()` in `app/routes/projects.$projectId.tsx`
+  - Dashboard child routes: add a case to `getDashboardSkeleton()` in `app/routes/dashboard.tsx`
+  - Use the reusable skeleton components from `~/components/ui/skeletons` (`PageHeaderSkeleton`, `TableSkeleton`, `CardGridSkeleton`, `FormSkeleton`, `StatCardsSkeleton`)
+  - Skeletons display during client-side route transitions via `useNavigation()` in layout routes
+
 ## Editor UI Design Standards
 
 These standards apply to all CRUD editor pages (Stats, Elements, and future entity editors).

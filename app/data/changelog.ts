@@ -241,6 +241,15 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    id: "2026-04-empty-loading-states",
+    date: "2026-04-03",
+    title: "Empty & Skeleton Loading States",
+    description:
+      "Added consistent empty states across all entity editors and data displays using a new reusable EmptyState component. Skeleton loading screens now appear during client-side route transitions for all project and dashboard pages, providing visual feedback while data loads.",
+    category: "improvement",
+    phase: "phase-1",
+  },
+  {
     id: "2026-03-weapon-type-enhancements",
     date: "2026-03-28",
     title: "Weapon Type Enhancements",
