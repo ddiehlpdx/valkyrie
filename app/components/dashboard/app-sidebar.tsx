@@ -59,6 +59,7 @@ function getGameDesignNav(projectId: string): NavItem[] {
       isActive: true,
       items: [
         { title: "Stats", url: `/projects/${projectId}/stats` },
+        { title: "Elements", url: `/projects/${projectId}/elements` },
         { title: "Damage Types", url: `/projects/${projectId}/damage-types` },
       ],
     },
@@ -76,6 +77,8 @@ function getGameDesignNav(projectId: string): NavItem[] {
       icon: Zap,
       items: [
         { title: "Ability Types", url: `/projects/${projectId}/ability-types` },
+        { title: "Abilities", url: `/projects/${projectId}/abilities` },
+        { title: "Status Effects", url: `/projects/${projectId}/status-effects` },
       ],
     },
     {

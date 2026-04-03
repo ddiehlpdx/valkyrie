@@ -71,6 +71,20 @@ function getSkeletonForRoute(pathname: string) {
           <TableSkeleton columns={5} rows={5} />
         </div>
       );
+    case "status-effects":
+      return (
+        <div className="space-y-6">
+          <PageHeaderSkeleton />
+          <TableSkeleton columns={7} rows={5} />
+        </div>
+      );
+    case "abilities":
+      return (
+        <div className="space-y-6">
+          <PageHeaderSkeleton />
+          <TableSkeleton columns={9} rows={5} />
+        </div>
+      );
     case "settings":
       return (
         <div className="space-y-6">

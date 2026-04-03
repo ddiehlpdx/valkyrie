@@ -4,7 +4,7 @@
 
 Valkyrie aims to be the "RPG Maker" for tactical RPGs (Final Fantasy Tactics, Tactics Ogre, Triangle Strategy) — a full in-browser editor AND game runtime.
 
-**Current state:** Phases 0 and 1 are complete. The foundation includes authentication (sign-up/sign-in with async bcrypt, cookie sessions), user profiles with avatar upload, full project CRUD with collaborator management, ProjectSettings (grid/battle/progression config), project deletion with cascade, access control middleware (owner vs collaborator roles), a dashboard with project card grid, and conditional sidebar navigation. Phase 1 delivered the core game data layer: StatDefinition (with CategoryType enum), Element (with color/icon), ElementInteraction (N×N multiplier matrix), plus full CRUD editors for DamageType, Profession (with weapon/armor type permissions), WeaponType, ArmorType, AbilityType, and EquipmentType. All editors feature drag-and-drop reordering (@dnd-kit), Zod + react-hook-form validation, Dialog-based create/edit, AlertDialog delete confirmation, and Sonner toast notifications. The smart save pattern and Editor UI Design Standards are established.
+**Current state:** Phases 0 and 1 are complete. Phase 3 schema is done. The foundation includes authentication (sign-up/sign-in with async bcrypt, cookie sessions), user profiles with avatar upload, full project CRUD with collaborator management, ProjectSettings (grid/battle/progression config + base damage type colors), project deletion with cascade, access control middleware (owner vs collaborator roles), a dashboard with project card grid, and conditional sidebar navigation. Phase 1 delivered the core game data layer: StatDefinition (with CategoryType enum), DamageType (with BaseDamageType enum, color, icon, description, and DamageTypeInteraction N×N multiplier matrix), plus full CRUD editors for Profession (with weapon/armor type permissions), WeaponType, ArmorType, AbilityType, and EquipmentType. Note: the original Element/ElementInteraction models were refactored out — elements are now expressed as DamageTypes with color/icon/description and a DamageTypeInteraction matrix. Phase 3 schema work added StatusEffect, StatusEffectStatModifier, Ability, AbilityStatusEffect, and ProfessionAbility. All editors feature drag-and-drop reordering (@dnd-kit), Zod + react-hook-form validation, Dialog-based create/edit, AlertDialog delete confirmation, and Sonner toast notifications. The smart save pattern and Editor UI Design Standards are established.
 
 This roadmap takes us from current state to a playable MVP across 9 phases.
 
@@ -76,15 +76,16 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 
 **Schema:**
 - `StatDefinition`: id, name, abbreviation, description, category (`CategoryType` enum: Core/Offensive/Defensive/Speed/Luck/Custom), minValue, maxValue, defaultValue, isPercentage, projectId, displayOrder. `@@unique([projectId, abbreviation])`
-- `Element`: id, name, description, color (hex), iconKey, projectId, displayOrder
-- `ElementInteraction`: id, sourceElementId, targetElementId, multiplier (Float, default 1.0), projectId. `@@unique([projectId, sourceElementId, targetElementId])`. Cascade delete from both source/target Element
-- `DamageType`: expanded with `BaseDamageType` enum (Physical/Magical/Chemical/Environmental), optional `elementId` (SetNull on delete)
+- `DamageType`: id, name, description?, color, iconKey, baseType (`BaseDamageType` enum: Physical/Magical/Chemical/Environmental), projectId, displayOrder. Relations: `sourceInteractions DamageTypeInteraction[]`, `targetInteractions DamageTypeInteraction[]`
+- `DamageTypeInteraction`: id, sourceDamageTypeId, targetDamageTypeId, multiplier (Float, default 1.0), projectId. `@@unique([projectId, sourceDamageTypeId, targetDamageTypeId])`. Replaces the old Element/ElementInteraction pattern.
 - `WeaponType`: expanded with optional `damageTypeId` (SetNull on delete)
 - `Profession`: expanded with `displayOrder`, relations to `ProfessionWeaponType` and `ProfessionArmorType`
 - `ProfessionWeaponType`: junction table — professionId + weaponTypeId + projectId. `@@unique([professionId, weaponTypeId])`. Cascade delete from both sides
 - `ProfessionArmorType`: junction table — professionId + armorTypeId + projectId. `@@unique([professionId, armorTypeId])`. Cascade delete from both sides
 - `ArmorType`, `AbilityType`, `EquipmentType`: expanded with `displayOrder`
+- `ProjectSettings`: expanded with `physicalColor`, `magicalColor`, `chemicalColor`, `environmentalColor` (base damage type color defaults)
 - Project model updated with relations to all new entities
+- **Note:** `Element` and `ElementInteraction` models were removed in a post-Phase-1 refactor. DamageType now fulfills the visual/elemental role (color, icon, description, interaction matrix).
 
 **Routes (8 new editor routes):**
 - `projects.$projectId.stats.tsx` — stat definition CRUD with sortable table
@@ -195,15 +196,16 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 - **FormulaInput as shared component**: `app/components/shared/formula-input.tsx` — reused in battle config (Phase 7a) and ability editor. Provides stat autocomplete, syntax validation, and a "Test" popover for sample evaluation.
 - **JP cost on junction only**: `ProfessionAbility.jpCost` is the only JP cost field. No `jpCost` on Ability itself — JP is class-specific, not skill-intrinsic. `mpCost` stays on Ability since it's inherent to the skill.
 
-### Schema
-- **Shared enum** `ModifierType`: Flat, Percentage (used by status effects, abilities, and equipment)
-- **Enums**: `AoEShape` (Single, Line, Cross, Diamond, Square, Circle), `TargetType` (Self, Ally, Enemy, AllAllies, AllEnemies, Any)
-- **StatusEffect**: name, description, iconKey, duration (Int, turns), isPositive (Boolean), stackable, maxStacks, projectId. Relations: `statModifiers StatusEffectStatModifier[]`
-- **StatusEffectStatModifier**: statusEffectId + statDefinitionId + modifierType + value (Float). `@@unique([statusEffectId, statDefinitionId])`
-- **Ability**: name, description, iconKey, abilityTypeId, elementId?, mpCost, formula?, power (Int), accuracy (Int), rangeMin, rangeMax, aoeShape, aoeSize, targetType, projectId, displayOrder. Relations: `statusEffects AbilityStatusEffect[]`, `statModifiers AbilityStatModifier[]`
-- **AbilityStatusEffect**: abilityId + statusEffectId + chance (Int, 0-100). `@@unique([abilityId, statusEffectId])`
-- **AbilityStatModifier**: abilityId + statDefinitionId + modifierType + value. `@@unique([abilityId, statDefinitionId])`
-- **ProfessionAbility**: professionId + abilityId + learnLevel + jpCost. `@@unique([professionId, abilityId])`
+### Schema — BUILT
+- **Enums**: `TargetType` (Self, SingleAlly, SingleEnemy, AllAllies, AllEnemies, Area, Line), `StatusEffectCategory` (Buff/Debuff/Neutral), `DurationType` (Temporary/Permanent/UntilBattleEnd), `EffectType` (Inflict/Cure), `ModifierType` (Flat/Percentage)
+- **StatusEffect**: name, description?, color, iconKey, category (StatusEffectCategory), durationType, duration (Int?), stackable, preventsActions, causesRecurring, recurringFormula?, projectId, displayOrder. Relations: `statModifiers StatusEffectStatModifier[]`, `abilities AbilityStatusEffect[]`
+- **StatusEffectStatModifier**: statusEffectId + statId (→StatDefinition) + modifierType (ModifierType) + value (Float) + projectId. `@@unique([statusEffectId, statId])`
+- **Ability**: name, description?, abilityTypeId?, damageTypeId?, targetType, rangeMin, rangeMax, aoeRadius, mpCost, powerFormula?, projectId, displayOrder. Relations: `professions ProfessionAbility[]`, `statusEffects AbilityStatusEffect[]`
+- **AbilityStatusEffect**: abilityId + statusEffectId + effectType (EffectType) + chance (Float, 0–1.0) + projectId. `@@unique([abilityId, statusEffectId, effectType])`
+- **ProfessionAbility**: professionId + abilityId + jpCost + projectId. `@@unique([professionId, abilityId])`
+
+### Schema — PLANNED (not yet built)
+- **AbilityStatModifier**: abilityId + statDefinitionId + modifierType + value. `@@unique([abilityId, statDefinitionId])` — direct stat boosts from abilities (buffs, debuffs that aren't via status effects)
 
 ### Routes
 - `projects.$projectId.status-effects.tsx` — list with Dialog CRUD (status effects are simple enough for dialogs)
@@ -211,8 +213,8 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 - `projects.$projectId.abilities.$abilityId.tsx` — tabbed detail editor (Overview, Targeting, Formula & Power, Effects)
 
 ### Sub-Tasks
-1. Create enums and StatusEffect + StatusEffectStatModifier schemas. Update Project relations.
-2. Create Ability schema and junction tables (AbilityStatusEffect, AbilityStatModifier, ProfessionAbility). Update Project, Profession, AbilityType, Element relations.
+1. ✓ Create enums and StatusEffect + StatusEffectStatModifier schemas. Update Project relations.
+2. ✓ Create Ability schema and junction tables (AbilityStatusEffect, ProfessionAbility). Update Project, Profession, AbilityType, DamageType relations.
 3. Build `app/api/statusEffect.ts` — CRUD + reorder + `upsertStatModifiers`.
 4. Build `app/api/ability.ts` — CRUD + reorder + junction table management.
 5. Add profession ability functions to `app/api/profession.ts`: getProfessionAbilities, add/remove/updateProfessionAbility.
@@ -226,7 +228,7 @@ This roadmap takes us from current state to a playable MVP across 9 phases.
 13. Update sidebar — add "Status Effects" and "Abilities" under "Abilities & Skills". Update breadcrumbs.
 
 ### Dependencies
-- Phase 1 (StatDefinition, Element) ✓
+- Phase 1 (StatDefinition) ✓
 - Phase 2 (Profession — for ProfessionAbility)
 
 ### Risks
