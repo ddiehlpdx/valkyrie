@@ -35,7 +35,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { GripVertical, Pencil, Trash2, Cpu } from "lucide-react";
+import { GripVertical, Pencil, Trash2, Cpu, Package } from "lucide-react";
+import { EmptyState } from "~/components/ui/empty-state";
 import {
   Tooltip,
   TooltipContent,
@@ -199,10 +200,11 @@ export function NamedTypeTable({
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        <p className="text-lg font-medium">No {entityLabel.toLowerCase()}s defined yet</p>
-        <p className="text-sm mt-1">Create your first {entityLabel.toLowerCase()} to get started.</p>
-      </div>
+      <EmptyState
+        icon={Package}
+        title={`No ${entityLabel.toLowerCase()}s defined yet`}
+        description={`Create your first ${entityLabel.toLowerCase()} to get started.`}
+      />
     );
   }
 

@@ -42,7 +42,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "~/components/ui/tooltip";
-import { GripVertical, Pencil, Trash2, Percent, Cpu } from "lucide-react";
+import { GripVertical, Pencil, Trash2, Percent, Cpu, BarChart3 } from "lucide-react";
+import { EmptyState } from "~/components/ui/empty-state";
 import { SystemStatKey } from "../../../generated/prisma/browser";
 
 interface Stat {
@@ -244,10 +245,11 @@ export function StatTable({ stats, onEdit }: StatTableProps) {
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        <p className="text-lg font-medium">No stats defined yet</p>
-        <p className="text-sm mt-1">Create your first stat definition to get started.</p>
-      </div>
+      <EmptyState
+        icon={BarChart3}
+        title="No stats defined yet"
+        description="Create your first stat definition to get started."
+      />
     );
   }
 

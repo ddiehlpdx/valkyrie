@@ -13,7 +13,8 @@ import { Button } from "~/components/ui/button";
 import { Badge } from "~/components/ui/badge";
 import { Label } from "~/components/ui/label";
 import { ScrollArea } from "~/components/ui/scroll-area";
-import { Save } from "lucide-react";
+import { Save, Zap } from "lucide-react";
+import { EmptyState } from "~/components/ui/empty-state";
 import { ICON_MAP } from "~/components/shared/icon-picker";
 
 interface DamageTypeData {
@@ -227,9 +228,12 @@ export function DamageTypeInteractionDialog({
             })}
 
             {targets.length === 0 && (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                Create at least two damage types to configure interactions.
-              </p>
+              <EmptyState
+                icon={Zap}
+                title="Not enough damage types"
+                description="Create at least two damage types of the same category to configure interactions."
+                className="py-6"
+              />
             )}
           </div>
         </ScrollArea>

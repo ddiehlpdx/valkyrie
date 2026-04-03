@@ -36,8 +36,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "~/components/ui/alert-dialog";
-import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { GripVertical, Pencil, Trash2, Swords } from "lucide-react";
 import { ICON_MAP } from "~/components/shared/icon-picker";
+import { EmptyState } from "~/components/ui/empty-state";
 
 export interface WeaponTypeItem {
   id: string;
@@ -195,10 +196,11 @@ export function WeaponTypeTable({ items: initialItems, onEdit }: WeaponTypeTable
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-12 text-muted-foreground">
-        <p className="text-lg font-medium">No weapon types defined yet</p>
-        <p className="text-sm mt-1">Create your first weapon type to get started.</p>
-      </div>
+      <EmptyState
+        icon={Swords}
+        title="No weapon types defined yet"
+        description="Create your first weapon type to get started."
+      />
     );
   }
 

@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs } from "@remix-run/node";
-import { useLoaderData, Outlet, useParams, useLocation } from "@remix-run/react";
+import { useLoaderData, Outlet, useParams, useLocation, useNavigation } from "@remix-run/react";
 import { getSession } from "~/session.server";
 import { getUserById } from "~/api/user";
 import { getProjectById } from "~/api/project";
@@ -21,6 +21,74 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
+import {
+  PageHeaderSkeleton,
+  TableSkeleton,
+  CardGridSkeleton,
+  FormSkeleton,
+  StatCardsSkeleton,
+} from "~/components/ui/skeletons";
+
+function getSkeletonForRoute(pathname: string) {
+  const segments = pathname.split("/").filter(Boolean);
+  const subRoute = segments.slice(2).join("/");
+
+  switch (subRoute) {
+    case "stats":
+      return (
+        <div className="space-y-6">
+          <PageHeaderSkeleton />
+          <TableSkeleton columns={8} rows={6} />
+        </div>
+      );
+    case "ability-types":
+    case "armor-types":
+    case "equipment-types":
+      return (
+        <div className="space-y-6">
+          <PageHeaderSkeleton />
+          <TableSkeleton columns={3} rows={5} />
+        </div>
+      );
+    case "damage-types":
+      return (
+        <div className="space-y-6">
+          <PageHeaderSkeleton />
+          <CardGridSkeleton cards={4} columns={4} />
+        </div>
+      );
+    case "weapon-types":
+      return (
+        <div className="space-y-6">
+          <PageHeaderSkeleton />
+          <TableSkeleton columns={6} rows={5} />
+        </div>
+      );
+    case "professions":
+      return (
+        <div className="space-y-6">
+          <PageHeaderSkeleton />
+          <TableSkeleton columns={5} rows={5} />
+        </div>
+      );
+    case "settings":
+      return (
+        <div className="space-y-6">
+          <PageHeaderSkeleton />
+          <FormSkeleton fields={2} />
+          <FormSkeleton fields={3} />
+          <FormSkeleton fields={2} />
+        </div>
+      );
+    default:
+      return (
+        <div className="space-y-6">
+          <PageHeaderSkeleton />
+          <StatCardsSkeleton />
+        </div>
+      );
+  }
+}
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   const projectId = params.projectId;
@@ -60,6 +128,8 @@ export default function ProjectLayout() {
   const { user, project, profile, projects, userRole, isOwner } = useLoaderData<typeof loader>();
   const params = useParams();
   const location = useLocation();
+  const navigation = useNavigation();
+  const isNavigating = navigation.state === "loading" && navigation.location?.pathname !== location.pathname;
 
   // Generate breadcrumb based on current path  
   const getBreadcrumb = () => {
@@ -136,14 +206,17 @@ export default function ProjectLayout() {
           </header>
           <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
             <div className="max-w-6xl mx-auto w-full">
-              {/* Pass project context to child routes */}
-              <Outlet context={{ 
-                user, 
-                project, 
-                userRole, 
-                isOwner,
-                projectId: params.projectId 
-              }} />
+              {isNavigating ? (
+                getSkeletonForRoute(navigation.location!.pathname)
+              ) : (
+                <Outlet context={{
+                  user,
+                  project,
+                  userRole,
+                  isOwner,
+                  projectId: params.projectId
+                }} />
+              )}
             </div>
           </div>
         </SidebarInset>
