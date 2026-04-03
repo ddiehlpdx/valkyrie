@@ -11,12 +11,13 @@ export type PhaseId =
   | "phase-3"
   | "phase-4"
   | "phase-5"
-  | "phase-5b"
   | "phase-6"
-  | "phase-7a"
-  | "phase-7b"
-  | "phase-7c"
-  | "phase-8";
+  | "phase-7"
+  | "phase-8"
+  | "phase-9"
+  | "phase-10"
+  | "phase-11"
+  | "phase-12";
 
 export interface ChangelogEntry {
   id: string;
@@ -91,24 +92,10 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
   },
   {
     id: "phase-2",
-    name: "Professions & Templates",
+    name: "Abilities & Status Effects",
     shortName: "P2",
     description:
-      "Job class system with base stats, growth rates, prerequisites, and starter template seeding.",
-    status: "upcoming",
-    highlights: [
-      "Tabbed profession detail editor (overview, base stats, growth rates, prerequisites)",
-      "Profession prerequisite chains with cycle detection",
-      "Starter template seeding on project creation (FFT-inspired defaults)",
-      "Base stats and growth rates per profession linked to stat definitions",
-    ],
-  },
-  {
-    id: "phase-3",
-    name: "Abilities & Status Effects",
-    shortName: "P3",
-    description:
-      "Combat abilities with formula system, status effects, and targeting rules.",
+      "Combat abilities with formula system, status effects, and targeting rules. Data models already exist — this phase builds the visual editors.",
     status: "upcoming",
     highlights: [
       "Status effects with stat modifiers, duration, and stacking rules",
@@ -119,9 +106,9 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     ],
   },
   {
-    id: "phase-4",
+    id: "phase-3",
     name: "Equipment",
-    shortName: "P4",
+    shortName: "P3",
     description:
       "Weapons, armor, accessories, and consumable items with stat modifiers and requirements.",
     status: "upcoming",
@@ -131,6 +118,21 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
       "Accessories with stat modifiers, granted abilities, and status effects",
       "Consumable items with targeting and formula-based effects",
       "Shared stat modifier and element resistance editor components",
+    ],
+  },
+  {
+    id: "phase-4",
+    name: "Professions",
+    shortName: "P4",
+    description:
+      "Full-page tabbed profession editor with base stats, growth rates, ability integration, equipment ties, and prerequisite chains.",
+    status: "upcoming",
+    highlights: [
+      "Tabbed profession detail editor (overview, base stats, growth rates, abilities, prerequisites)",
+      "Profession prerequisite chains with cycle detection",
+      "Base stats and growth rates per profession linked to stat definitions",
+      "Ability-profession links with learn level and JP cost",
+      "Equipment proficiency rules per profession",
     ],
   },
   {
@@ -149,9 +151,23 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     ],
   },
   {
-    id: "phase-5b",
+    id: "phase-6",
+    name: "Templates",
+    shortName: "P6",
+    description:
+      "Starter kits that seed stats, damage types, professions, abilities, and equipment into new projects. FFT-inspired defaults out of the box.",
+    status: "upcoming",
+    highlights: [
+      "Starter template seeding on project creation (FFT-inspired defaults)",
+      "Template bundles covering stats, damage types, elements, professions, and abilities",
+      "Preview and customize template contents before applying",
+      "Community-shared templates for different tactical RPG styles",
+    ],
+  },
+  {
+    id: "phase-7",
     name: "Asset Management",
-    shortName: "P5b",
+    shortName: "P7",
     description:
       "Cloud-based asset storage with Cloudflare R2 for sprites, portraits, and tilesets.",
     status: "upcoming",
@@ -164,9 +180,9 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     ],
   },
   {
-    id: "phase-6",
+    id: "phase-8",
     name: "Maps & Terrain",
-    shortName: "P6",
+    shortName: "P8",
     description:
       "Isometric map editor with Pixi.js for tile placement, elevation, and terrain types.",
     status: "upcoming",
@@ -179,9 +195,9 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     ],
   },
   {
-    id: "phase-7a",
+    id: "phase-9",
     name: "Battle Config & Formulas",
-    shortName: "P7a",
+    shortName: "P9",
     description:
       "Battle system configuration, damage formulas, and turn order mechanics.",
     status: "upcoming",
@@ -193,9 +209,9 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     ],
   },
   {
-    id: "phase-7b",
+    id: "phase-10",
     name: "Campaigns & Scenarios",
-    shortName: "P7b",
+    shortName: "P10",
     description:
       "Campaign structure with scenario conditions, win/loss states, and progression.",
     status: "upcoming",
@@ -207,9 +223,9 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     ],
   },
   {
-    id: "phase-7c",
+    id: "phase-11",
     name: "Dialogue & Flags",
-    shortName: "P7c",
+    shortName: "P11",
     description:
       "Branching dialogue system with boolean flags and enum state variables.",
     status: "upcoming",
@@ -221,9 +237,9 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     ],
   },
   {
-    id: "phase-8",
+    id: "phase-12",
     name: "Game Runtime",
-    shortName: "P8",
+    shortName: "P12",
     description:
       "In-browser playtest engine that brings all systems together into a playable tactical RPG.",
     status: "upcoming",
@@ -240,6 +256,14 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
 ];
 
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
+  {
+    id: "2026-04-roadmap-restructure",
+    date: "2026-04-03",
+    title: "Roadmap Restructured: 13 Phases",
+    description:
+      "Reorganized the development roadmap to move Professions to its own dedicated phase (P4) after Abilities and Equipment are built, enabling a full-page tabbed editor design. Templates separated into P6 as standalone starter kits. Abilities & Status Effects promoted to P2 since the data models already exist. All phases now use flat sequential numbering (P0\u2013P12).",
+    category: "infrastructure",
+  },
   {
     id: "2026-04-edit-table-refresh",
     date: "2026-04-03",
@@ -317,7 +341,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     description:
       "Laid the groundwork for the combat system with new data models for abilities, status effects, targeting rules, and the formula system. Visual editors are coming next.",
     category: "feature",
-    phase: "phase-3",
+    phase: "phase-2",
   },
   {
     id: "2026-03-damage-types-overhaul",
