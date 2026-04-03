@@ -129,16 +129,16 @@ This is a **Remix** application using **Vite** as the build tool, with a Postgre
 
 ## Editor UI Design Standards
 
-These standards apply to all CRUD editor pages (Stats, Elements, and future entity editors).
+These standards apply to all CRUD editor pages (Stats, Damage Types, and future entity editors).
 
 ### Page Layout
 - **Header**: Entity name as `h1` with a lucide icon, descriptive subtitle below, and a "+ New [Entity]" button aligned right
-- **Data Display**: Use data tables (`app/components/ui/table`) for entities with many fields (e.g., Stats); use card grids for visual/compact entities (e.g., Elements)
-- **Sections**: If a page has multiple concerns (e.g., Elements + Interactions), separate with `<Separator>` and distinct Card boundaries
+- **Data Display**: Use data tables (`app/components/ui/table`) for entities with many fields (e.g., Stats); use card grids for visual/compact entities (e.g., Damage Types)
+- **Sections**: If a page has multiple concerns (e.g., Damage Types + Interactions), separate with `<Separator>` and distinct Card boundaries
 
 ### CRUD Pattern
 - **Create/Edit**: Use `Dialog` component (not Sheet or separate route) with Zod + react-hook-form validation inside shadcn `Form` components
-- **Delete**: Always confirm via `AlertDialog` with a clear description of consequences (e.g., "This will permanently remove the element and all of its interactions.")
+- **Delete**: Always confirm via `AlertDialog` with a clear description of consequences (e.g., "This will permanently remove the damage type and all of its interactions.")
 - **Reorder**: Use `@dnd-kit` drag-and-drop with `GripVertical` handle icon; persist order immediately on drop via form submission
 - **Notifications**: All success/error feedback via Sonner toast (never Alert components)
 
@@ -150,15 +150,15 @@ These standards apply to all CRUD editor pages (Stats, Elements, and future enti
 - Cancel button uses `variant="outline"`; submit button is primary
 
 ### Interaction Matrices
-- Use for NxN entity-vs-entity relationships (e.g., Element Interactions)
+- Use for NxN entity-vs-entity relationships (e.g., Damage Type Interactions)
 - Provide both grid view and per-entity list view, toggleable via a `INTERACTION_VIEW` constant (`"A"` = grid, `"B"` = list)
 - Default multiplier is `1.0` (neutral); color-code cells: red tint for < 1.0 (resistance), green tint for > 1.0 (weakness)
 - Use bulk save with the smart save pattern (unsaved changes badge + save button)
 
 ### Component Organization
-- Editor components live in `app/components/{entity-name}/` folders (e.g., `app/components/stats/`, `app/components/elements/`)
+- Editor components live in `app/components/{entity-name}/` folders (e.g., `app/components/stats/`, `app/components/core-rules/`)
 - Common component types per entity: `{entity}-form-dialog.tsx`, `{entity}-table.tsx` or `{entity}-card.tsx` + `{entity}-grid.tsx`
-- Icon/constant mappings (e.g., `ELEMENT_ICONS`) are exported from the form dialog file for reuse by card/grid components
+- Icon/constant mappings (e.g., `DAMAGE_TYPE_ICONS`) are exported from the form dialog file for reuse by card/grid components
 
 ### Route Conventions for Editors
 - Routes live at `app/routes/projects.$projectId.{entity}.tsx`
