@@ -87,17 +87,21 @@ docs/
 
 ## Roadmap
 
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the full feature roadmap from current state to playable MVP, organized across 9 phases:
+See [docs/ROADMAP.md](docs/ROADMAP.md) for the full feature roadmap from current state to playable MVP, organized across 13 phases:
 
-0. **Project Management** — create/manage game projects
-1. **Stats & Elements** — hybrid stat system, elemental interactions
-2. **Professions/Jobs** — class system with stat growth and equipment permissions
-3. **Abilities & Status Effects** — skills with custom formulas, targeting, AoE
-4. **Equipment** — weapons, armor, accessories, consumables
-5. **Characters/Units** — player, enemy, and NPC unit definitions
-6. **Maps & Terrain** — canvas-based map editor with elevation and terrain types
-7. **Story & Scenarios** — campaigns, battle scenarios, dialogue system
-8. **Game Runtime** — in-browser playtest engine with pathfinding, combat, and AI
+0. **Project Management** — user auth, project CRUD, collaborator management ✅
+1. **Stats, Damage Types & Type Editors** — core RPG data layer with full editors ✅
+2. **Abilities & Status Effects** — combat abilities with formula system and targeting
+3. **Equipment** — weapons, armor, accessories, consumables with stat modifiers
+4. **Professions** — full-page tabbed editor with base stats, growth rates, prerequisites
+5. **Characters & Units** — player, enemy, NPC definitions with computed stats
+6. **Templates** — starter kits seeding stats, professions, abilities into new projects
+7. **Asset Management** — cloud-based storage for sprites, portraits, tilesets
+8. **Maps & Terrain** — isometric map editor with elevation and terrain types
+9. **Battle Config & Formulas** — damage formulas, turn order mechanics
+10. **Campaigns & Scenarios** — campaign structure with win/loss conditions
+11. **Dialogue & Flags** — branching dialogue with boolean/enum state variables
+12. **Game Runtime** — in-browser playtest engine with pathfinding, combat, and AI
 
 ## License
 
