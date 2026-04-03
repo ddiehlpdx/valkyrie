@@ -11,7 +11,6 @@ import {
 } from "~/api/ability";
 import { getAbilityTypesByProjectId } from "~/api/abilityType";
 import { getDamageTypesByProjectId } from "~/api/damageType";
-import { getProfessionsByProjectId } from "~/api/profession";
 import { getStatusEffectsByProjectId } from "~/api/statusEffect";
 import { Card, CardContent } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -28,16 +27,15 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
     await requireProjectAccess(request, projectId);
 
-    const [abilities, abilityTypes, damageTypes, professions, statusEffects] =
+    const [abilities, abilityTypes, damageTypes, statusEffects] =
         await Promise.all([
             getAbilitiesByProjectId(projectId),
             getAbilityTypesByProjectId(projectId),
             getDamageTypesByProjectId(projectId),
-            getProfessionsByProjectId(projectId),
             getStatusEffectsByProjectId(projectId),
         ]);
 
-    return json({ abilities, abilityTypes, damageTypes, professions, statusEffects });
+    return json({ abilities, abilityTypes, damageTypes, statusEffects });
 }
 
 export async function action({ params, request }: ActionFunctionArgs) {
@@ -67,7 +65,6 @@ export async function action({ params, request }: ActionFunctionArgs) {
                 const aoeRadius = parseInt(formData.get("aoeRadius") as string, 10);
                 const mpCost = parseInt(formData.get("mpCost") as string, 10);
                 const powerFormula = (formData.get("powerFormula") as string)?.trim() || null;
-                const professionEntries = JSON.parse((formData.get("professionEntries") as string) || "[]");
                 const statusEffectEntries = JSON.parse((formData.get("statusEffectEntries") as string) || "[]");
 
                 await createAbility({
@@ -82,7 +79,6 @@ export async function action({ params, request }: ActionFunctionArgs) {
                     mpCost: isNaN(mpCost) ? 0 : mpCost,
                     powerFormula,
                     projectId,
-                    professionEntries,
                     statusEffectEntries,
                 });
 
@@ -109,7 +105,6 @@ export async function action({ params, request }: ActionFunctionArgs) {
                 const aoeRadius = parseInt(formData.get("aoeRadius") as string, 10);
                 const mpCost = parseInt(formData.get("mpCost") as string, 10);
                 const powerFormula = (formData.get("powerFormula") as string)?.trim() || null;
-                const professionEntries = JSON.parse((formData.get("professionEntries") as string) || "[]");
                 const statusEffectEntries = JSON.parse((formData.get("statusEffectEntries") as string) || "[]");
 
                 await updateAbility(abilityId, {
@@ -124,7 +119,6 @@ export async function action({ params, request }: ActionFunctionArgs) {
                     mpCost: isNaN(mpCost) ? 0 : mpCost,
                     powerFormula,
                     projectId,
-                    professionEntries,
                     statusEffectEntries,
                 });
 
@@ -166,7 +160,7 @@ interface ProjectContext {
 }
 
 export default function AbilitiesPage() {
-    const { abilities, abilityTypes, damageTypes, professions, statusEffects } =
+    const { abilities, abilityTypes, damageTypes, statusEffects } =
         useLoaderData<typeof loader>();
     const actionData = useActionData<typeof action>();
     const { projectId } = useOutletContext<ProjectContext>();
@@ -225,7 +219,6 @@ export default function AbilitiesPage() {
                 projectId={projectId}
                 abilityTypes={abilityTypes}
                 damageTypes={damageTypes}
-                professions={professions}
                 statusEffects={statusEffects}
             />
         </div>

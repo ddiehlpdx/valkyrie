@@ -496,14 +496,19 @@ export function StatusEffectFormDialog({
                                             </SelectContent>
                                         </Select>
 
-                                        <Input
-                                            type="number"
-                                            value={modifier.value}
-                                            onChange={(e) =>
-                                                updateModifier(index, { value: parseFloat(e.target.value) || 0 })
-                                            }
-                                            className="w-[80px]"
-                                        />
+                                        <div className="flex items-center gap-1 shrink-0">
+                                            <Input
+                                                type="number"
+                                                value={modifier.value}
+                                                onChange={(e) =>
+                                                    updateModifier(index, { value: parseFloat(e.target.value) || 0 })
+                                                }
+                                                className="w-[80px]"
+                                            />
+                                            <span className="text-sm text-muted-foreground w-4">
+                                                {modifier.modifierType === "Percentage" ? "%" : ""}
+                                            </span>
+                                        </div>
 
                                         <Button
                                             type="button"

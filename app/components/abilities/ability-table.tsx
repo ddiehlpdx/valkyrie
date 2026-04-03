@@ -48,7 +48,6 @@ interface Ability {
     mpCost: number;
     displayOrder: number;
     abilityType: { id: string; name: string } | null;
-    professions: { professionId: string }[];
     statusEffects: { statusEffectId: string }[];
 }
 
@@ -117,10 +116,6 @@ function SortableRow({ ability, onEdit, onDelete }: SortableRowProps) {
             </TableCell>
 
             <TableCell className="text-sm text-muted-foreground">{ability.mpCost}</TableCell>
-
-            <TableCell className="text-sm text-muted-foreground">
-                {ability.professions.length > 0 ? ability.professions.length : "—"}
-            </TableCell>
 
             <TableCell className="text-sm text-muted-foreground">
                 {ability.statusEffects.length > 0 ? ability.statusEffects.length : "—"}
@@ -231,7 +226,6 @@ export function AbilityTable({ abilities, onEdit }: AbilityTableProps) {
                             <TableHead>Target</TableHead>
                             <TableHead>Range</TableHead>
                             <TableHead>MP</TableHead>
-                            <TableHead>Professions</TableHead>
                             <TableHead>Effects</TableHead>
                             <TableHead className="w-[80px]">Actions</TableHead>
                         </TableRow>

@@ -59,7 +59,6 @@ function getGameDesignNav(projectId: string): NavItem[] {
       isActive: true,
       items: [
         { title: "Stats", url: `/projects/${projectId}/stats` },
-        { title: "Elements", url: `/projects/${projectId}/elements` },
         { title: "Damage Types", url: `/projects/${projectId}/damage-types` },
       ],
     },

@@ -1,11 +1,6 @@
 import { db } from "~/db.server";
 import { EffectType } from "../../generated/prisma/browser";
 
-type ProfessionEntry = {
-    professionId: string;
-    jpCost: number;
-};
-
 type StatusEffectEntry = {
     statusEffectId: string;
     effectType: EffectType;
@@ -19,7 +14,6 @@ export async function getAbilitiesByProjectId(projectId: string) {
         include: {
             abilityType: true,
             damageType: true,
-            professions: { include: { profession: true } },
             statusEffects: { include: { statusEffect: true } },
         },
     });
@@ -37,7 +31,6 @@ export async function createAbility(data: {
     mpCost: number;
     powerFormula?: string | null;
     projectId: string;
-    professionEntries?: ProfessionEntry[];
     statusEffectEntries?: StatusEffectEntry[];
 }) {
     return db.$transaction(async (tx) => {
@@ -56,17 +49,6 @@ export async function createAbility(data: {
                 projectId: data.projectId,
             },
         });
-
-        if (data.professionEntries?.length) {
-            await tx.professionAbility.createMany({
-                data: data.professionEntries.map((e) => ({
-                    professionId: e.professionId,
-                    abilityId: ability.id,
-                    jpCost: e.jpCost,
-                    projectId: data.projectId,
-                })),
-            });
-        }
 
         if (data.statusEffectEntries?.length) {
             await tx.abilityStatusEffect.createMany({
@@ -98,7 +80,6 @@ export async function updateAbility(
         mpCost?: number;
         powerFormula?: string | null;
         projectId?: string;
-        professionEntries?: ProfessionEntry[];
         statusEffectEntries?: StatusEffectEntry[];
     }
 ) {
@@ -118,20 +99,6 @@ export async function updateAbility(
                 powerFormula: data.powerFormula,
             },
         });
-
-        if (data.professionEntries !== undefined) {
-            await tx.professionAbility.deleteMany({ where: { abilityId: id } });
-            if (data.professionEntries.length) {
-                await tx.professionAbility.createMany({
-                    data: data.professionEntries.map((e) => ({
-                        professionId: e.professionId,
-                        abilityId: id,
-                        jpCost: e.jpCost,
-                        projectId: data.projectId!,
-                    })),
-                });
-            }
-        }
 
         if (data.statusEffectEntries !== undefined) {
             await tx.abilityStatusEffect.deleteMany({ where: { abilityId: id } });
