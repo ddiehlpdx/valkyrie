@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, ActionFunctionArgs, json, redirect } from "@remix-run/node";
-import { useActionData, useSubmit, useOutletContext, useRevalidator, useLoaderData } from "@remix-run/react";
+import { useActionData, useFetcher, useSubmit, useOutletContext, useRevalidator, useLoaderData } from "@remix-run/react";
 import { useState, useEffect } from "react";
 import { requireProjectOwnership } from "~/lib/project-access.server";
 import {
@@ -237,9 +237,9 @@ export default function ProjectSettingsPage() {
   const actionData = useActionData<typeof action>();
   const submit = useSubmit();
   const revalidator = useRevalidator();
+  const userSearchFetcher = useFetcher<{ users: Array<{id: string, username: string, email: string}> }>();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Array<{id: string, username: string, email: string}>>([]);
   const [pendingRemovalId, setPendingRemovalId] = useState<string | null>(null);
 
   // Project editing state
@@ -301,23 +301,14 @@ export default function ProjectSettingsPage() {
     }
   }, [actionData]);
 
-  const handleUserSearch = async (query: string) => {
+  const handleUserSearch = (query: string) => {
     setSearchQuery(query);
-
-    if (query.length < 2) {
-      setSearchResults([]);
-      return;
-    }
+    if (query.length < 2) return;
 
     const formData = new FormData();
     formData.append('action', 'search_users');
     formData.append('query', query);
-
-    submit(formData, {
-      method: 'post',
-      replace: true,
-      fetcherKey: 'user-search'
-    });
+    userSearchFetcher.submit(formData, { method: 'post' });
   };
 
   const handleAddCollaborator = (collaboratorId: string) => {
@@ -326,7 +317,6 @@ export default function ProjectSettingsPage() {
     formData.append('collaboratorId', collaboratorId);
     submit(formData, { method: 'post' });
     setSearchQuery('');
-    setSearchResults([]);
   };
 
   const handleRemoveCollaborator = (collaboratorId: string) => {
@@ -354,7 +344,7 @@ export default function ProjectSettingsPage() {
   };
 
   // Filter out users who are already collaborators or the owner
-  const availableUsers = searchResults.filter(searchUser =>
+  const availableUsers = (userSearchFetcher.data?.users ?? []).filter(searchUser =>
     searchUser.id !== project.ownerId &&
     !project.collaborators.some(collab => collab.userId === searchUser.id)
   );
