@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSubmit } from "@remix-run/react";
 import {
   DndContext,
@@ -199,10 +199,10 @@ export function StatTable({ stats, onEdit }: StatTableProps) {
   const submit = useSubmit();
   const [items, setItems] = useState(stats);
 
-  // Sync when loader data changes
-  if (stats.length !== items.length || stats.some((s, i) => s.id !== items[i]?.id)) {
+  // Sync local state when loader data changes (e.g., after edit/create/delete)
+  useEffect(() => {
     setItems(stats);
-  }
+  }, [stats]);
 
   // Build a stable color map from unique group names
   const groupColorMap = useMemo(() => {
