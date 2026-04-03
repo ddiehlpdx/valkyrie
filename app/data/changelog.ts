@@ -77,15 +77,15 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
   },
   {
     id: "phase-1",
-    name: "Stats, Elements & Type Editors",
+    name: "Stats, Damage Types & Type Editors",
     shortName: "P1",
     description:
-      "Core RPG data layer: stats, elements, damage types, professions, weapon/armor/ability/equipment types with full editors.",
+      "Core RPG data layer: stats, damage types, professions, weapon/armor/ability/equipment types with full editors.",
     status: "complete",
     highlights: [
       "Stat definitions with core engine stats (HP, MP, MOV) and free-form grouping",
-      "Elements with color/icon customization and N\u00D7N interaction matrix",
-      "Full CRUD editors for damage types, professions, weapon/armor/ability/equipment types",
+      "Damage types with base type classification, color/icon customization, and N\u00D7N interaction matrix",
+      "Full CRUD editors for professions, weapon/armor/ability/equipment types",
       "Drag-and-drop reordering with @dnd-kit across all editors",
       "Dialog-based create/edit with Zod validation and smart save pattern",
     ],
@@ -114,10 +114,10 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     status: "upcoming",
     highlights: [
       "Weapons with attack power, accuracy, range, and granted abilities",
-      "Armor with defense stats and element resistances",
+      "Armor with defense stats and damage type resistances",
       "Accessories with stat modifiers, granted abilities, and status effects",
       "Consumable items with targeting and formula-based effects",
-      "Shared stat modifier and element resistance editor components",
+      "Shared stat modifier and damage type resistance editor components",
     ],
   },
   {
@@ -159,7 +159,7 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
     status: "upcoming",
     highlights: [
       "Starter template seeding on project creation (FFT-inspired defaults)",
-      "Template bundles covering stats, damage types, elements, professions, and abilities",
+      "Template bundles covering stats, damage types, professions, and abilities",
       "Preview and customize template contents before applying",
       "Community-shared templates for different tactical RPG styles",
     ],
@@ -247,7 +247,7 @@ export const ROADMAP_PHASES: RoadmapPhase[] = [
       "Full in-browser playtest engine with isometric rendering",
       "A* pathfinding with movement range and attack range overlays",
       "Three turn order systems: Initiative (CT), Round Robin, and Phase-Based",
-      "Combat resolver with formula evaluation, element interactions, and terrain bonuses",
+      "Combat resolver with formula evaluation, damage type interactions, and terrain bonuses",
       "AI controller with aggressive, defensive, support, and balanced behaviors",
       "Dialogue overlay with branching choices and flag consequences",
       "Victory/defeat condition checking after every action",
@@ -348,16 +348,16 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     date: "2026-03-27",
     title: "DamageTypes Overhaul",
     description:
-      "Refined the damage type system with a new base type classification (Physical, Magical, Chemical, Environmental) and optional element associations for richer combat interactions.",
+      "Refined the damage type system with a new base type classification (Physical, Magical, Chemical, Environmental) and an N\u00D7N interaction matrix for richer combat interactions.",
     category: "improvement",
     phase: "phase-1",
   },
   {
     id: "2026-03-editors",
     date: "2026-03-22",
-    title: "Stats & Elements Editors",
+    title: "Stats & Damage Type Editors",
     description:
-      "Full visual editors for stats and elements are live. Create custom stat definitions with categories, define elements with colors and icons, and configure element interaction matrices — all with drag-and-drop reordering.",
+      "Full visual editors for stats and damage types are live. Create custom stat definitions with categories, define damage types with base classifications, colors, and icons, and configure damage type interaction matrices — all with drag-and-drop reordering.",
     category: "feature",
     phase: "phase-1",
   },
@@ -366,7 +366,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     date: "2026-03-22",
     title: "Core RPG Type System",
     description:
-      "Introduced the foundational RPG data layer: stat definitions, elements with interaction multipliers, and complete CRUD editors for damage types, professions, weapon types, armor types, ability types, and equipment types.",
+      "Introduced the foundational RPG data layer: stat definitions, damage types with interaction multipliers, and complete CRUD editors for professions, weapon types, armor types, ability types, and equipment types.",
     category: "feature",
     phase: "phase-1",
   },

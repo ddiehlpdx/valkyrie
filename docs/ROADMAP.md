@@ -4,7 +4,7 @@
 
 Valkyrie aims to be the "RPG Maker" for tactical RPGs (Final Fantasy Tactics, Tactics Ogre, Triangle Strategy) — a full in-browser editor AND game runtime.
 
-**Current state:** Phases 0 and 1 are complete. The foundation includes authentication (sign-up/sign-in with async bcrypt, cookie sessions), user profiles with avatar upload, full project CRUD with collaborator management, ProjectSettings (grid/battle/progression config), project deletion with cascade, access control middleware (owner vs collaborator roles), a dashboard with project card grid, and conditional sidebar navigation. Phase 1 delivered the core game data layer: StatDefinition (with CategoryType enum), Element (with color/icon), ElementInteraction (N×N multiplier matrix), plus full CRUD editors for DamageType, Profession (with weapon/armor type permissions), WeaponType, ArmorType, AbilityType, and EquipmentType. All editors feature drag-and-drop reordering (@dnd-kit), Zod + react-hook-form validation, Dialog-based create/edit, AlertDialog delete confirmation, and Sonner toast notifications. The smart save pattern and Editor UI Design Standards are established.
+**Current state:** Phases 0 and 1 are complete. The foundation includes authentication (sign-up/sign-in with async bcrypt, cookie sessions), user profiles with avatar upload, full project CRUD with collaborator management, ProjectSettings (grid/battle/progression config), project deletion with cascade, access control middleware (owner vs collaborator roles), a dashboard with project card grid, and conditional sidebar navigation. Phase 1 delivered the core game data layer: StatDefinition (with CategoryType enum), DamageType (with BaseDamageType enum, color/icon, and N×N interaction multiplier matrix via DamageTypeInteraction), plus full CRUD editors for Profession (with weapon/armor type permissions), WeaponType, ArmorType, AbilityType, and EquipmentType. All editors feature drag-and-drop reordering (@dnd-kit), Zod + react-hook-form validation, Dialog-based create/edit, AlertDialog delete confirmation, and Sonner toast notifications. The smart save pattern and Editor UI Design Standards are established.
 
 This roadmap takes us from current state to a playable MVP across 13 phases (P0–P12).
 
@@ -70,15 +70,14 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 
 ---
 
-## Phase 1: Stats, Elements & Core Type Editors — COMPLETE
+## Phase 1: Stats, Damage Types & Core Type Editors — COMPLETE
 
-**The atoms of the RPG system.** Stats and elements are referenced by everything. This phase also delivered full CRUD editors for all existing game type models (DamageType, Profession, WeaponType, ArmorType, AbilityType, EquipmentType) and established the Editor UI Design Standards used by all future phases.
+**The atoms of the RPG system.** Stats and damage types are referenced by everything. This phase also delivered full CRUD editors for all existing game type models (DamageType, Profession, WeaponType, ArmorType, AbilityType, EquipmentType) and established the Editor UI Design Standards used by all future phases.
 
 **Schema:**
 - `StatDefinition`: id, name, abbreviation, description, category (`CategoryType` enum: Core/Offensive/Defensive/Speed/Luck/Custom), minValue, maxValue, defaultValue, isPercentage, projectId, displayOrder. `@@unique([projectId, abbreviation])`
-- `Element`: id, name, description, color (hex), iconKey, projectId, displayOrder
-- `ElementInteraction`: id, sourceElementId, targetElementId, multiplier (Float, default 1.0), projectId. `@@unique([projectId, sourceElementId, targetElementId])`. Cascade delete from both source/target Element
-- `DamageType`: expanded with `BaseDamageType` enum (Physical/Magical/Chemical/Environmental), optional `elementId` (SetNull on delete)
+- `DamageType`: id, name, description, color (hex), iconKey, baseDamageType (`BaseDamageType` enum: Physical/Magical/Chemical/Environmental), projectId, displayOrder
+- `DamageTypeInteraction`: id, sourceDamageTypeId, targetDamageTypeId, multiplier (Float, default 1.0), projectId. `@@unique([projectId, sourceDamageTypeId, targetDamageTypeId])`. Cascade delete from both source/target DamageType
 - `WeaponType`: expanded with optional `damageTypeId` (SetNull on delete)
 - `Profession`: expanded with `displayOrder`, relations to `ProfessionWeaponType` and `ProfessionArmorType`
 - `ProfessionWeaponType`: junction table — professionId + weaponTypeId + projectId. `@@unique([professionId, weaponTypeId])`. Cascade delete from both sides
@@ -88,29 +87,26 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 
 **Routes (8 new editor routes):**
 - `projects.$projectId.stats.tsx` — stat definition CRUD with sortable table
-- `projects.$projectId.elements.tsx` — element CRUD with card grid + per-element interaction dialog
-- `projects.$projectId.damage-types.tsx` — damage type CRUD with element association
+- `projects.$projectId.damage-types.tsx` — damage type CRUD with card grid + interaction matrix
 - `projects.$projectId.professions.tsx` — profession CRUD with weapon/armor type checkboxes
 - `projects.$projectId.weapon-types.tsx` — weapon type CRUD
 - `projects.$projectId.armor-types.tsx` — armor type CRUD
 - `projects.$projectId.ability-types.tsx` — ability type CRUD
 - `projects.$projectId.equipment-types.tsx` — equipment type CRUD
 
-**API (8 new service files in `app/api/`):**
+**API (7 new service files in `app/api/`):**
 - `statDefinition.ts` — `getStatsByProjectId`, `createStat`, `updateStat`, `deleteStat`, `reorderStats`
-- `element.ts` — `getElementsByProjectId`, `createElement`, `updateElement`, `deleteElement`, `reorderElements`
-- `elementInteraction.ts` — `getInteractionsByProjectId`, `upsertInteraction`, `bulkUpsertInteractions` (transactional batch), `deleteInteraction`
-- `damageType.ts` — CRUD + `reorderDamageTypes` (includes element relation)
+- `damageType.ts` — CRUD + `reorderDamageTypes`
+- `damageTypeInteraction.ts` — `getInteractionsByProjectId`, `upsertInteraction`, `bulkUpsertInteractions` (transactional batch), `deleteInteraction`
 - `profession.ts` — CRUD + `reorderProfessions` (transactional with junction table cascade delete/recreate)
 - `weaponType.ts`, `armorType.ts`, `abilityType.ts`, `equipmentType.ts` — standard CRUD + reorder
 
 **Components:**
 - `app/components/stats/` — `stat-form-dialog.tsx` (Zod validation with cross-field refinements: maxValue > minValue, defaultValue in range), `stat-table.tsx` (dnd-kit sortable rows, `CATEGORY_COLORS` color-coded badges, GripVertical drag handles)
-- `app/components/elements/` — `element-form-dialog.tsx` (hex color picker, `ELEMENT_ICONS` map with 19 Lucide icons, live preview), `element-grid.tsx` (dnd-kit rect sorting strategy), `element-card.tsx` (sortable card with icon/color/description/interaction count), `interaction-dialog.tsx` (smart save pattern with unsaved changes badge, color-tinted multiplier inputs: red < 1.0, green > 1.0, bulk upsert on save)
-- `app/components/core-rules/` — `damage-type-form-dialog.tsx` (BaseDamageType enum + element dropdown), `profession-form-dialog.tsx` (weapon/armor type checkbox lists), `named-type-form-dialog.tsx` (reusable for simple name-only entities), matching `*-table.tsx` components for each with dnd-kit reordering
+- `app/components/core-rules/` — `damage-type-form-dialog.tsx` (BaseDamageType enum, hex color picker, `DAMAGE_TYPE_ICONS` map with Lucide icons, live preview), `damage-type-card.tsx` (sortable card with icon/color/description/interaction count), `damage-type-grid.tsx` (dnd-kit rect sorting strategy), `damage-type-interaction-dialog.tsx` (smart save pattern with unsaved changes badge, color-tinted multiplier inputs: red < 1.0, green > 1.0, bulk upsert on save), `profession-form-dialog.tsx` (weapon/armor type checkbox lists), `named-type-form-dialog.tsx` (reusable for simple name-only entities), matching `*-table.tsx` components for each with dnd-kit reordering
 
 **Sidebar & navigation:**
-- Game Design sections now active with collapsible groups: Core Rules (Stats, Elements, Damage Types), Characters & Classes (Professions), Abilities & Skills (Ability Types), Equipment & Items (Armor Types, Equipment Types, Weapon Types)
+- Game Design sections now active with collapsible groups: Core Rules (Stats, Damage Types), Characters & Classes (Professions), Abilities & Skills (Ability Types), Equipment & Items (Armor Types, Equipment Types, Weapon Types)
 - Dynamic breadcrumbs for all new routes in project layout
 
 **Patterns established (Editor UI Design Standards):**
@@ -146,7 +142,7 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 - **Enums**: `AoEShape` (Single, Line, Cross, Diamond, Square, Circle), `TargetType` (Self, Ally, Enemy, AllAllies, AllEnemies, Any)
 - **StatusEffect**: name, description, iconKey, duration (Int, turns), isPositive (Boolean), stackable, maxStacks, projectId. Relations: `statModifiers StatusEffectStatModifier[]`
 - **StatusEffectStatModifier**: statusEffectId + statDefinitionId + modifierType + value (Float). `@@unique([statusEffectId, statDefinitionId])`
-- **Ability**: name, description, iconKey, abilityTypeId, elementId?, mpCost, formula?, power (Int), accuracy (Int), rangeMin, rangeMax, aoeShape, aoeSize, targetType, projectId, displayOrder. Relations: `statusEffects AbilityStatusEffect[]`, `statModifiers AbilityStatModifier[]`
+- **Ability**: name, description, iconKey, abilityTypeId, damageTypeId?, mpCost, formula?, power (Int), accuracy (Int), rangeMin, rangeMax, aoeShape, aoeSize, targetType, projectId, displayOrder. Relations: `statusEffects AbilityStatusEffect[]`, `statModifiers AbilityStatModifier[]`
 - **AbilityStatusEffect**: abilityId + statusEffectId + chance (Int, 0-100). `@@unique([abilityId, statusEffectId])`
 - **AbilityStatModifier**: abilityId + statDefinitionId + modifierType + value. `@@unique([abilityId, statDefinitionId])`
 - **ProfessionAbility**: professionId + abilityId + learnLevel + jpCost. `@@unique([professionId, abilityId])` *(junction table created here; profession-side integration in Phase 4)*
@@ -158,19 +154,19 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 
 ### Sub-Tasks
 1. Create enums and StatusEffect + StatusEffectStatModifier schemas. Update Project relations.
-2. Create Ability schema and junction tables (AbilityStatusEffect, AbilityStatModifier, ProfessionAbility). Update Project, AbilityType, Element relations.
+2. Create Ability schema and junction tables (AbilityStatusEffect, AbilityStatModifier, ProfessionAbility). Update Project, AbilityType, DamageType relations.
 3. Build `app/api/statusEffect.ts` — CRUD + reorder + `upsertStatModifiers`.
 4. Build `app/api/ability.ts` — CRUD + reorder + junction table management.
 5. Install `expr-eval`. Build formula utility module (`app/lib/formula/`): `variables.ts`, `validate.ts`, `evaluate.ts`.
 7. Build FormulaInput component (`app/components/shared/formula-input.tsx`) — stat autocomplete via Popover, syntax validation on blur, "Test" popover with sample variable inputs.
 8. Build status effects list route + components (`app/components/status-effects/`). Dialog includes inline stat modifier section.
 9. Build abilities list route with AbilityType filtering (tabs or select).
-10. Build ability detail route with tabs: Overview (name, type, element, costs, icon), Targeting (range, AoE shape selector, target type), Formula & Power (FormulaInput, power, accuracy), Effects (status effects junction + direct stat modifiers).
+10. Build ability detail route with tabs: Overview (name, type, damage type, costs, icon), Targeting (range, AoE shape selector, target type), Formula & Power (FormulaInput, power, accuracy), Effects (status effects junction + direct stat modifiers).
 11. Build ability components in `app/components/abilities/`.
 12. Update sidebar — add "Status Effects" and "Abilities" under "Abilities & Skills". Update breadcrumbs.
 
 ### Dependencies
-- Phase 1 (StatDefinition, Element) ✓
+- Phase 1 (StatDefinition, DamageType) ✓
 
 ### Risks
 - **Formula validation depth**: Validate syntax only at this stage (balanced parens, known operators, known variables). Actual evaluation is a runtime concern (Phase 12).
@@ -182,52 +178,52 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 
 ## Phase 3: Equipment
 
-**Concrete items that units equip.** Expands the Phase 1 type models (WeaponType, ArmorType, EquipmentType) into actual item instances with stat modifiers, element associations, and granted abilities.
+**Concrete items that units equip.** Expands the Phase 1 type models (WeaponType, ArmorType, EquipmentType) into actual item instances with stat modifiers, damage type associations, and granted abilities.
 
 ### Key Architectural Decisions
 - **Separate stat modifier tables** (not polymorphic): `WeaponStatModifier`, `ArmorStatModifier`, `AccessoryStatModifier` as separate tables. Prisma doesn't support union FK constraints, and separate tables keep queries simple and type-safe. Shared Zod schema and shared form component.
-- **Shared equipment editor components**: Build Weapons first as the reference implementation, then replicate. Extract shared components: stat modifier editor, granted ability selector, element resistance editor.
-- **Consumables are simpler**: No stat modifiers or element associations. Just name, icon, target type, optional formula, optional status effect reference. Dialog-based CRUD (no detail route).
+- **Shared equipment editor components**: Build Weapons first as the reference implementation, then replicate. Extract shared components: stat modifier editor, granted ability selector, damage type resistance editor.
+- **Consumables are simpler**: No stat modifiers or damage type associations. Just name, icon, target type, optional formula, optional status effect reference. Dialog-based CRUD (no detail route).
 - **Equipment slot system**: Slots are determined by EquipmentType and WeaponType, not by the equipment item itself. Validation (e.g., two-handed blocks off-hand) happens in Phase 5's API layer.
 
 ### Schema
-- **Weapon**: name, description, iconKey, weaponTypeId, damageTypeId?, elementId?, attackPower, accuracy, critRate, rangeMin, rangeMax, twoHanded (Boolean), projectId, displayOrder. Relations: `statModifiers WeaponStatModifier[]`, `grantedAbilities WeaponGrantedAbility[]`
+- **Weapon**: name, description, iconKey, weaponTypeId, damageTypeId?, attackPower, accuracy, critRate, rangeMin, rangeMax, twoHanded (Boolean), projectId, displayOrder. Relations: `statModifiers WeaponStatModifier[]`, `grantedAbilities WeaponGrantedAbility[]`
 - **WeaponStatModifier**: weaponId + statDefinitionId + modifierType + value. `@@unique([weaponId, statDefinitionId])`
 - **WeaponGrantedAbility**: weaponId + abilityId. `@@unique([weaponId, abilityId])`
-- **Armor**: name, description, iconKey, armorTypeId, defense, magicDefense, projectId, displayOrder. Relations: `statModifiers ArmorStatModifier[]`, `elementResistances ArmorElementResistance[]`
+- **Armor**: name, description, iconKey, armorTypeId, defense, magicDefense, projectId, displayOrder. Relations: `statModifiers ArmorStatModifier[]`, `damageTypeResistances ArmorDamageTypeResistance[]`
 - **ArmorStatModifier**: armorId + statDefinitionId + modifierType + value. `@@unique([armorId, statDefinitionId])`
-- **ArmorElementResistance**: armorId + elementId + resistance (Float, default 1.0 — 0.5 = resist, 0.0 = immune, 2.0 = weak). `@@unique([armorId, elementId])`
-- **Accessory**: name, description, iconKey, projectId, displayOrder. Relations: statModifiers, grantedAbilities, statusEffects, elementResistances (same pattern as weapon/armor)
-- **AccessoryStatModifier, AccessoryGrantedAbility, AccessoryStatusEffect, AccessoryElementResistance** — same structural patterns
+- **ArmorDamageTypeResistance**: armorId + damageTypeId + resistance (Float, default 1.0 — 0.5 = resist, 0.0 = immune, 2.0 = weak). `@@unique([armorId, damageTypeId])`
+- **Accessory**: name, description, iconKey, projectId, displayOrder. Relations: statModifiers, grantedAbilities, statusEffects, damageTypeResistances (same pattern as weapon/armor)
+- **AccessoryStatModifier, AccessoryGrantedAbility, AccessoryStatusEffect, AccessoryDamageTypeResistance** — same structural patterns
 - **Consumable**: name, description, iconKey, targetType, formula?, statusEffectId?, aoeShape, aoeSize, projectId, displayOrder
 
 ### Routes
 - `projects.$projectId.weapons.tsx` — list + `weapons.$weaponId.tsx` detail (tabs: Overview, Stat Bonuses, Granted Abilities)
-- `projects.$projectId.armor.tsx` — list + `armor.$armorId.tsx` detail (tabs: Overview, Stat Bonuses, Element Resistances)
-- `projects.$projectId.accessories.tsx` — list + `accessories.$accessoryId.tsx` detail (tabs: Overview, Stat Bonuses, Granted Abilities, Status Effects, Element Resistances)
+- `projects.$projectId.armor.tsx` — list + `armor.$armorId.tsx` detail (tabs: Overview, Stat Bonuses, Damage Type Resistances)
+- `projects.$projectId.accessories.tsx` — list + `accessories.$accessoryId.tsx` detail (tabs: Overview, Stat Bonuses, Granted Abilities, Status Effects, Damage Type Resistances)
 - `projects.$projectId.consumables.tsx` — list with Dialog CRUD (no detail route)
 
 ### Sub-Tasks
-1. Create Weapon + WeaponStatModifier + WeaponGrantedAbility schemas. Update Project, WeaponType, DamageType, Element, Ability relations.
-2. Create Armor + ArmorStatModifier + ArmorElementResistance schemas. Update relations.
+1. Create Weapon + WeaponStatModifier + WeaponGrantedAbility schemas. Update Project, WeaponType, DamageType, Ability relations.
+2. Create Armor + ArmorStatModifier + ArmorDamageTypeResistance schemas. Update relations.
 3. Create Accessory + four junction table schemas. Update relations.
 4. Create Consumable schema. Update relations.
-5. Build shared equipment components in `app/components/shared/`: `stat-modifier-editor.tsx` (reusable table/form for stat modifiers with smart save), `granted-ability-selector.tsx` (combobox for ability selection), `element-resistance-editor.tsx` (grid with color-coded multipliers matching Element Interaction pattern).
+5. Build shared equipment components in `app/components/shared/`: `stat-modifier-editor.tsx` (reusable table/form for stat modifiers with smart save), `granted-ability-selector.tsx` (combobox for ability selection), `damage-type-resistance-editor.tsx` (grid with color-coded multipliers matching Damage Type Interaction pattern).
 6. Build `app/api/weapon.ts` — CRUD + reorder + stat modifier upsert + granted ability management.
 7. Build Weapon list route + detail route + components in `app/components/weapons/`.
-8. Build Armor API, routes, and components (replicate weapon pattern, swap granted abilities for element resistances).
+8. Build Armor API, routes, and components (replicate weapon pattern, swap granted abilities for damage type resistances).
 9. Build Accessory API, routes, and components (most complex — touches four junction tables).
 10. Build Consumable API + list route with Dialog CRUD.
 11. Update sidebar — replace "Equipment & Items" children with: Weapons, Armor, Accessories, Consumables. Move type definitions (Weapon Types, Armor Types, Equipment Types) to a "Configuration" sub-group.
 12. Update breadcrumbs for all new routes.
 
 ### Dependencies
-- Phase 1 (StatDefinition, Element) ✓
+- Phase 1 (StatDefinition, DamageType) ✓
 - Phase 2 (Ability — for weapon granted abilities, consumable effects; StatusEffect — for accessory status effects)
 
 ### Risks
 - **Schema file count**: Phase 3 adds ~12 new schema files. Test `prisma generate` performance with `prismaSchemaFolder`.
-- **Accessory complexity**: Accessories touch four junction tables. Consider deferring `AccessoryStatusEffect` and `AccessoryElementResistance` to a fast-follow if scope becomes an issue.
+- **Accessory complexity**: Accessories touch four junction tables. Consider deferring `AccessoryStatusEffect` and `AccessoryDamageTypeResistance` to a fast-follow if scope becomes an issue.
 - **WeaponType vs Weapon naming**: Same as AbilityType/Ability. WeaponType = category ("Sword"), Weapon = specific item ("Excalibur"). Clarify in UI copy.
 - **Two-handed constraint**: Plan for this now even though enforcement happens in Phase 5's equipment slot validation.
 
@@ -345,12 +341,12 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 **Starter kits that seed stats, damage types, professions, abilities, and equipment into new projects.** FFT-inspired defaults out of the box.
 
 ### Key Architectural Decisions
-- **Template as typed constant**: Template data lives in `app/lib/seed-templates.server.ts` as typed constants. Each template defines a full set of stats, elements, element interactions, damage types, weapon/armor types, professions (with base stats and growth rates), and abilities.
-- **Seeding as transaction extension**: `seedStarterTemplate()` is called inside the `createProject` transaction in `app/api/project.ts`. Seeds in dependency order: stats → elements → interactions → damage types → weapon/armor types → professions → abilities.
+- **Template as typed constant**: Template data lives in `app/lib/seed-templates.server.ts` as typed constants. Each template defines a full set of stats, damage types, damage type interactions, weapon/armor types, professions (with base stats and growth rates), and abilities.
+- **Seeding as transaction extension**: `seedStarterTemplate()` is called inside the `createProject` transaction in `app/api/project.ts`. Seeds in dependency order: stats → damage types → damage type interactions → weapon/armor types → professions → abilities.
 - **Template preview**: Project creation wizard shows template contents before applying.
 
 ### Sub-Tasks
-1. Create `app/lib/seed-templates.server.ts` with STARTER_TEMPLATE constant: stats (HP, MP, STR, MAG, DEF, RES, SPD, MOV, LCK), elements (Fire, Water, Earth, Wind, Lightning, Ice, Light, Dark) with interactions, damage types (Physical, Magical), weapon types (Sword, Spear, Axe, Bow, Staff, Dagger), armor types (Heavy, Light, Robes, Shield), professions (Squire, Knight, Mage, Archer, Thief, Priest) with weapon/armor assignments and base stats.
+1. Create `app/lib/seed-templates.server.ts` with STARTER_TEMPLATE constant: stats (HP, MP, STR, MAG, DEF, RES, SPD, MOV, LCK), damage types (Physical, Magical, Fire, Water, Earth, Wind, Lightning, Ice, Light, Dark) with interactions, weapon types (Sword, Spear, Axe, Bow, Staff, Dagger), armor types (Heavy, Light, Robes, Shield), professions (Squire, Knight, Mage, Archer, Thief, Priest) with weapon/armor assignments and base stats.
 2. Update `createProject` in `app/api/project.ts` — when `template === 'starter'`, call `seedStarterTemplate(tx, projectId)` within the existing transaction. Seed in dependency order.
 3. Build template preview UI in the project creation wizard.
 4. Add additional templates (Fire Emblem-style, custom blank, etc.).
@@ -387,7 +383,7 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 - **Enums**: `AssetType` (Sprite, Portrait, Tileset, Icon, Effect)
 - **Asset**: id, projectId, assetType, filename, storageKey (R2 object key), mimeType, width (Int?), height (Int?), fileSize (Int), thumbnailKey?, uploadedById (FK to User), createdAt. `@@index([projectId, assetType])`
 - **Entity updates** — add `assetId: String?` (FK to Asset, onDelete: SetNull) to every entity with an `iconKey`:
-  - StatDefinition, Element, DamageType, Profession, AbilityType, WeaponType, ArmorType, EquipmentType (Phase 1 entities)
+  - StatDefinition, DamageType, Profession, AbilityType, WeaponType, ArmorType, EquipmentType (Phase 1 entities)
   - StatusEffect, Ability (Phase 2)
   - Weapon, Armor, Accessory, Consumable (Phase 3)
   - Unit (Phase 5 — portrait + sprite, so `portraitAssetId` and `spriteAssetId`)
@@ -404,7 +400,7 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 5. **Build asset library route** `projects.$projectId.assets.tsx`: gallery grid with type filter tabs, search by filename, drag-drop upload zone, delete with AlertDialog. Upload flow: user drops file → client generates thumbnail → server returns presigned URL → browser uploads to R2 → on success, server creates Asset record with metadata.
 6. **Build `AssetBrowserDialog` component** (`app/components/shared/asset-browser-dialog.tsx`): reusable dialog for selecting an asset. Props: `projectId`, `assetType` (filter), `onSelect(asset)`, `currentAssetId?`. Shows filtered gallery grid + "Upload New" button. Used by every entity editor's icon/image field.
 7. **Build `AssetPreview` component** (`app/components/shared/asset-preview.tsx`): small inline preview showing either the uploaded asset thumbnail or the fallback Lucide icon. Used in entity cards, tables, and form fields.
-8. **Retrofit Phase 1 entities**: Add `assetId` to StatDefinition, Element, DamageType, Profession, AbilityType, WeaponType, ArmorType, EquipmentType schemas. Update their form dialogs to show an optional "Custom Image" section with AssetBrowserDialog alongside the existing iconKey dropdown. Update table/card displays to use AssetPreview.
+8. **Retrofit Phase 1 entities**: Add `assetId` to StatDefinition, DamageType, Profession, AbilityType, WeaponType, ArmorType, EquipmentType schemas. Update their form dialogs to show an optional "Custom Image" section with AssetBrowserDialog alongside the existing iconKey dropdown. Update table/card displays to use AssetPreview.
 9. **Update sidebar** — add "Asset Library" under a "Project" group or as a top-level link.
 10. **Document the asset integration pattern** so Phases 2-5 add `assetId` to their entities naturally as they're built (each phase's schema section should include the assetId FK).
 
@@ -438,7 +434,7 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 - **Isometric from day one**: Tiles render as isometric diamonds. `app/lib/pixi/iso-math.ts` provides `gridToScreen(x, y, elevation)` and `screenToGrid(screenX, screenY)` conversions. Tile dimensions driven by `ProjectSettings.defaultTileSize`.
 - **Bulk tile persistence with debounced saves**: Paint strokes accumulate in a local buffer. Debounced submit (500ms after last paint) sends the batch as a single `bulk_upsert_tiles` action.
 - **Full-page editor layout**: Map editor route breaks out of the standard `max-w-6xl` container. Left toolbar + center Pixi canvas + collapsible right properties panel.
-- **TerrainType as standard CRUD entity**: Follows the exact same editor pattern as Elements — cards, drag-and-drop reorder, Dialog CRUD.
+- **TerrainType as standard CRUD entity**: Follows the exact same editor pattern as Damage Types — cards, drag-and-drop reorder, Dialog CRUD.
 - **MapTile terrainTypeId uses onDelete: Restrict**: Cannot delete a terrain type that's in use on a map. Forces user to repaint first.
 
 ### Schema
@@ -456,7 +452,7 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 - **`pixi-map-renderer.ts`**: Facade class. Constructor: `{container, width, height}`. Methods: `loadMap()`, `setTool()`, `onTilePaint(callback)`, `onTileSelect(callback)`, `destroy()`. Single entry point for both editor and runtime.
 
 ### Routes
-- `projects.$projectId.terrain.tsx` — terrain type CRUD (card grid, same pattern as elements)
+- `projects.$projectId.terrain.tsx` — terrain type CRUD (card grid, same pattern as damage types)
 - `projects.$projectId.maps.tsx` — replace existing placeholder with real map list (card grid). Create dialog: name, description, width, height. On create, API generates width×height tiles with default terrain.
 - `projects.$projectId.maps.$mapId.tsx` — full-page isometric map editor
 
@@ -469,7 +465,7 @@ This roadmap takes us from current state to a playable MVP across 13 phases (P0�
 ### Sub-Tasks
 1. Create all 5 schema files (TerrainType, BattleMap, MapTile, SpawnZone, MapEvent). Add Project relations. `prisma db push`.
 2. Build API layer: `terrainType.ts` (CRUD + reorder), `battleMap.ts` (CRUD + create with default tiles), `mapTile.ts` (bulkUpsert using transaction), `spawnZone.ts` (CRUD), `mapEvent.ts` (CRUD).
-3. Build Terrain Type editor route + components in `app/components/terrain/` (card grid pattern from elements).
+3. Build Terrain Type editor route + components in `app/components/terrain/` (card grid pattern from damage types).
 4. Replace mock data in maps list route with real loader. Add create/delete actions.
 5. Install Pixi.js v8: `npm install pixi.js`.
 6. Build `app/lib/pixi/` module: iso-math, tile-renderer, camera-controller, overlay-renderer, pixi-map-renderer facade.
@@ -683,7 +679,7 @@ No new models required.
 - **Separate route tree**: `/play/$projectId/$scenarioId`, completely outside the editor layout. No sidebar. Full-viewport game canvas.
 - **Client-side state machine**: `useReducer`-based (not Zustand — keep deps minimal). Well-defined game phases: `LOADING`, `DIALOGUE`, `PLAYER_TURN_SELECT_UNIT`, `PLAYER_TURN_SELECT_ACTION`, `PLAYER_TURN_SELECT_TARGET`, `PLAYER_TURN_ANIMATE`, `ENEMY_TURN`, `CONDITION_CHECK`, `VICTORY`, `DEFEAT`.
 - **Reuse PixiMapRenderer from Phase 8**: Extended with runtime mode — unit sprites (colored rectangles + name/HP bar for MVP), movement range overlay (blue), attack range overlay (red), animated movement along path nodes.
-- **Formula evaluator reuse**: `app/lib/formula/evaluate.ts` from Phase 9. Runtime builds variable context from unit stats, terrain bonuses, element interactions, then calls `evaluateFormula`.
+- **Formula evaluator reuse**: `app/lib/formula/evaluate.ts` from Phase 9. Runtime builds variable context from unit stats, terrain bonuses, damage type interactions, then calls `evaluateFormula`.
 - **AI runs synchronously**: Simple heuristic loops with brief animation delays via `requestAnimationFrame`. Web Workers for AI is post-MVP.
 - **No save/load for MVP**: Single scenario from start to finish. Refresh restarts. Save/load is post-MVP.
 
@@ -695,7 +691,7 @@ No new models required.
   - *Initiative*: CT-based accumulation. Unit turns when CT ≥ threshold. Uses project's ctFormula.
   - *RoundRobin*: All player units, then all enemy units.
   - *PhaseBased*: All units of one faction in speed order, then the other.
-- **`combat-resolver.ts`**: `resolveAction(attacker, target, ability, map, config): CombatResult`. Applies damage formulas (physical vs magical based on damage type), element interaction multipliers, terrain defense bonuses, status effect modifiers. Returns `{damage, hit, critical, effectsApplied, targetDefeated}`.
+- **`combat-resolver.ts`**: `resolveAction(attacker, target, ability, map, config): CombatResult`. Applies damage formulas (physical vs magical based on damage type), damage type interaction multipliers, terrain defense bonuses, status effect modifiers. Returns `{damage, hit, critical, effectsApplied, targetDefeated}`.
 - **`ai-controller.ts`**: `determineAIAction(unit, gameState): AIAction`. Implements AIBehavior logic:
   - *Aggressive*: prioritize attacking, move toward priority target
   - *Defensive*: stay near allies, heal/buff if available
@@ -716,14 +712,14 @@ No new models required.
 - **`debug-panel.tsx`**: Toggle-able (F12). Shows game phase, unit CT values, last damage calc breakdown, AI reasoning, hovered tile info, flag states.
 
 ### Route: `app/routes/play.$projectId.$scenarioId.tsx`
-Single loader fetches scenario with deep includes (map + tiles + terrain types, units with profession/stats/equipment/abilities, conditions, rewards, dialogue triggers with nested lines/choices/flag actions) plus project-level data (settings with formulas, elements, element interactions, project flags).
+Single loader fetches scenario with deep includes (map + tiles + terrain types, units with profession/stats/equipment/abilities, conditions, rewards, dialogue triggers with nested lines/choices/flag actions) plus project-level data (settings with formulas, damage types, damage type interactions, project flags).
 
 ### Sub-Tasks
 1. Game state types and reducer skeleton — all TypeScript types, reducer with phase transitions (no logic yet).
 2. Pathfinding — A* in `pathfinding.ts`, self-contained and testable. Include `getMovementRange` and `getAttackRange`.
 3. Turn order system — all three variants in `turn-order.ts`. CT accumulation loop for Initiative (with max-iteration guard against infinite loop).
 4. Formula evaluator integration — helper functions in `stat-calculator.ts` that build variable context from UnitState and call `evaluateFormula`.
-5. Combat resolver — needs formula evaluator, element interactions, terrain data.
+5. Combat resolver — needs formula evaluator, damage type interactions, terrain data.
 6. Pixi.js runtime rendering — extend Phase 6 renderer with unit sprites, movement/attack overlays, animated movement tweens.
 7. Runtime route + basic UI shell — route with loader, game canvas + turn order bar + unit info panel. See map with units placed.
 8. Player interaction flow — full turn loop: select unit → action menu → select action → targeting overlay → confirm → resolve → animate → check conditions → next turn.
@@ -749,7 +745,7 @@ Single loader fetches scenario with deep includes (map + tiles + terrain types, 
 - Move unit → animated movement along path
 - Select ability → targeting overlay with AoE preview
 - Execute ability → damage calculated per battle config formulas
-- Element interaction multipliers affect damage correctly
+- Damage type interaction multipliers affect damage correctly
 - Terrain defense bonuses applied
 - AI enemies take reasonable actions
 - Dialogue triggers at battle start → overlay with choices
@@ -799,7 +795,7 @@ Pre-play validation checking project readiness:
 ```
 Phase 0: Project Management               [COMPLETE]
     |
-Phase 1: Stats, Elements & Editors        [COMPLETE]
+Phase 1: Stats, Damage Types & Editors    [COMPLETE]
     |
     +-- Phase 7: Asset Management          [PARALLEL with 2-5, depends on Phase 1]
     |       |
@@ -849,7 +845,6 @@ Existing (Phases 0-1):
   /projects/:projectId                              (existing — Phase 0, project layout)
   /projects/:projectId/settings                     (existing — Phase 0, game settings + danger zone)
   /projects/:projectId/stats                        (existing — Phase 1)
-  /projects/:projectId/elements                     (existing — Phase 1)
   /projects/:projectId/damage-types                 (existing — Phase 1)
   /projects/:projectId/professions                  (existing — Phase 1, enhanced in Phase 4)
   /projects/:projectId/weapon-types                 (existing — Phase 1)
@@ -908,9 +903,9 @@ Phase 12 (Runtime):
 
 **Project model growth**: By Phase 5, Project has ~30+ relation arrays. This is normal for an aggregate root. Each child route fetches only what it needs — never eagerly load all relations in the layout loader.
 
-**Sidebar organization**: By Phase 5, sidebar sections should be: Core Rules (Stats, Elements, Damage Types), Classes & Abilities (Professions, Abilities, Status Effects), Equipment (Weapons, Armor, Accessories, Consumables), Units, Maps & Terrain, Story (Campaign, Dialogues, Flags), Battle System (Battle Config). Type definitions (Ability Types, Weapon Types, etc.) in a "Configuration" section.
+**Sidebar organization**: By Phase 5, sidebar sections should be: Core Rules (Stats, Damage Types), Classes & Abilities (Professions, Abilities, Status Effects), Equipment (Weapons, Armor, Accessories, Consumables), Units, Maps & Terrain, Story (Campaign, Dialogues, Flags), Battle System (Battle Config). Type definitions (Ability Types, Weapon Types, etc.) in a "Configuration" section.
 
-**Shared component library**: Phases 2-5 produce reusable components in `app/components/shared/`: FormulaInput, StatModifierEditor, GrantedAbilitySelector, ElementResistanceEditor, StatPreview, AssetBrowserDialog, AssetPreview. These are building blocks for all entity editors.
+**Shared component library**: Phases 2-5 produce reusable components in `app/components/shared/`: FormulaInput, StatModifierEditor, GrantedAbilitySelector, DamageTypeResistanceEditor, StatPreview, AssetBrowserDialog, AssetPreview. These are building blocks for all entity editors.
 
 **Asset integration pattern**: Every entity phase should add `assetId: String?` (FK to Asset, onDelete: SetNull) to new entities alongside `iconKey`. Entity form dialogs include an optional "Custom Image" section using AssetBrowserDialog. Display components use AssetPreview (shows uploaded asset or falls back to Lucide icon).
 
